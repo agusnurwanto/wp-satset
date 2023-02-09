@@ -104,4 +104,33 @@ class Wp_Satset_Admin {
 
 	}
 
+	function crb_attach_satset_options(){
+		global $wpdb;
+
+		$peta_satset = $this->functions->generatePage(array(
+			'nama_page' => 'Peta Data Terpadu', 
+			'content' => '[peta_satset]',
+        	'show_header' => 1,
+        	'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
+		$basic_options_container = Container::make( 'theme_options', __( 'SATSET Options' ) )
+			->set_page_menu_position( 4 )
+	        ->add_fields( array(
+				Field::make( 'html', 'crb_satset_halaman_terkait' )
+		        	->set_html( '
+					<h5>HALAMAN TERKAIT</h5>
+	            	<ol>
+	            		<li><a target="_blank" href="'.$peta_satset['url'].'">'.$peta_satset['title'].'</a></li>
+	            	</ol>
+		        	' ),
+	            Field::make( 'text', 'crb_apikey_satset', 'API KEY' )
+	            	->set_default_value($this->functions->generateRandomString())
+	            	->set_help_text('Wajib diisi. API KEY digunakan untuk integrasi data.')
+
+	            )
+	   		);
+	}
+
 }
