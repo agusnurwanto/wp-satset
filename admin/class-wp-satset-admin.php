@@ -20,6 +20,9 @@
  * @subpackage Wp_Satset/admin
  * @author     Agus Nurwanto <agusnurwantomuslim@gmail.com>
  */
+use Carbon_Fields\Container;
+use Carbon_Fields\Field;
+
 class Wp_Satset_Admin {
 
 	/**
@@ -47,10 +50,11 @@ class Wp_Satset_Admin {
 	 * @param      string    $plugin_name       The name of this plugin.
 	 * @param      string    $version    The version of this plugin.
 	 */
-	public function __construct( $plugin_name, $version ) {
+	public function __construct( $plugin_name, $version, $functions ) {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+		$this->functions = $functions;
 
 	}
 

@@ -124,6 +124,13 @@ class Wp_Satset {
 
 		$this->loader = new Wp_Satset_Loader();
 
+		// Functions tambahan
+		require_once plugin_dir_path(dirname(__FILE__)) . 'includes/class-wp-satset-functions.php';
+
+		$this->functions = new SATSET_Functions( $this->plugin_name, $this->version );
+
+		$this->loader->add_action('template_redirect', $this->functions, 'allow_access_private_post', 0);
+
 	}
 
 	/**
@@ -152,7 +159,7 @@ class Wp_Satset {
 	 */
 	private function define_admin_hooks() {
 
-		$plugin_admin = new Wp_Satset_Admin( $this->get_plugin_name(), $this->get_version() );
+		$plugin_admin = new Wp_Satset_Admin( $this->get_plugin_name(), $this->get_version(), $this->functions );
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
@@ -168,7 +175,7 @@ class Wp_Satset {
 	 */
 	private function define_public_hooks() {
 
-		$plugin_public = new Wp_Satset_Public( $this->get_plugin_name(), $this->get_version() );
+		$plugin_public = new Wp_Satset_Public( $this->get_plugin_name(), $this->get_version(), $this->functions );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
