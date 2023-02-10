@@ -117,7 +117,7 @@ class Wp_Satset_Public {
 
 	function get_map_url(){
 		$api_googlemap = get_option( '_crb_google_api_satset' );
-		$api_googlemap = "https://maps.googleapis.com/maps/api/js?key=$api_googlemap&callback=initMap&libraries=places&libraries=drawing";
+		$api_googlemap = "https://maps.googleapis.com/maps/api/js?key=$api_googlemap&callback=initMap&libraries=places&libraries=drawing&v=beta";
 		return $api_googlemap;
 	}
 
@@ -127,6 +127,43 @@ class Wp_Satset_Public {
 			return '';
 		}
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-peta.php';
+	}
+
+	function get_polygon(){
+		global $wpdb;
+
+		$default_color = get_option('_crb_warna_p3ke_satset');
+		$prov = get_option('_crb_prov_satset');
+		$where = " pro_nama='$prov'";
+		$kab = get_option('_crb_kab_satset');
+		if(!empty($kab)){
+			$where .= " and kab_nama='$kab'";
+		}
+		$data = $wpdb->get_results("
+			SELECT 
+				* 
+			FROM geojson_kel 
+			WHERE $where
+		", ARRAY_A);
+		$new_data = array();
+		foreach($data as $val){
+			$json = json_decode($val['geometry'], true);
+			$coordinate = array();
+			foreach($json['coordinates'][0] as $coor){
+				$coordinate[] = array(
+					'lat' => $coor[1],
+					'lng' => $coor[0]
+				);
+			}
+			if(!empty($coordinate)){
+				$new_data[] = array(
+					'coor' => $coordinate,
+					'data' => $val,
+					'color' => $default_color
+				);
+			}
+		}
+		return $new_data;
 	}
 
 }

@@ -128,7 +128,14 @@ class Wp_Satset_Admin {
 		        	' ),
 	            Field::make( 'text', 'crb_apikey_satset', 'API KEY' )
 	            	->set_default_value($this->functions->generateRandomString())
-	            	->set_help_text('Wajib diisi. API KEY digunakan untuk integrasi data.')
+	            	->set_help_text('Wajib diisi. API KEY digunakan untuk integrasi data.'),
+	            Field::make( 'text', 'crb_prov_satset', 'Nama Provinsi' )
+	            	->set_default_value( 'JAWA TIMUR' )
+            		->set_required( true )
+	            	->set_help_text('Nama provinsi dalam huruf besar dan tanpa awalan.'),
+	            Field::make( 'text', 'crb_kab_satset', 'Nama Kabupaten/Kota' )
+	            	->set_default_value( 'MAGETAN' )
+	            	->set_help_text('Nama kabupaten dalam huruf besar dan tanpa awalan.')
 
             ) );
 
@@ -136,6 +143,9 @@ class Wp_Satset_Admin {
 			->set_page_parent( $basic_options_container )
 			->add_fields( array(
 	        	Field::make( 'map', 'crb_google_map_center_satset', 'Lokasi default Google Maps' ),
+	        	Field::make( 'text', 'crb_google_map_id', 'ID google map' )
+	        		->set_default_value('118b4b0052053d3a')
+	        		->set_help_text('Referensi untuk untuk membuat ID Google Maps <a href="https://youtu.be/tAR63GBwk90" target="blank">https://youtu.be/tAR63GBwk90</a>'),
 	        	Field::make( 'text', 'crb_google_api_satset', 'Google Maps APIKEY' )
 	        		->set_default_value('AIzaSyDBrDSUIMFDIleLOFUUXf1wFVum9ae3lJ0')
 	        		->set_help_text('Referensi untuk menampilkan google map <a href="https://developers.google.com/maps/documentation/javascript/examples/map-simple" target="blank">https://developers.google.com/maps/documentation/javascript/examples/map-simple</a>. Referensi untuk manajemen layer di Google Maps <a href="https://youtu.be/tAR63GBwk90" target="blank">https://youtu.be/tAR63GBwk90</a>'),
