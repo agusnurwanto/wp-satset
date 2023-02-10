@@ -101,4 +101,32 @@ class Wp_Satset_Public {
 
 	}
 
+	function get_center(){
+		$center_map_default = get_option('_crb_google_map_center_satset');
+		$ret = array(
+			'lat' => 0,
+			'lng' => 0
+		);
+		if(!empty($center_map_default)){
+			$center_map_default = explode(',', $center_map_default);
+			$ret['lat'] = $center_map_default[0];
+			$ret['lng'] = $center_map_default[1];
+		}
+		return $ret;
+	}
+
+	function get_map_url(){
+		$api_googlemap = get_option( '_crb_google_api_satset' );
+		$api_googlemap = "https://maps.googleapis.com/maps/api/js?key=$api_googlemap&callback=initMap&libraries=places&libraries=drawing";
+		return $api_googlemap;
+	}
+
+	function peta_satset(){
+		// untuk disable render shortcode di halaman edit page/post
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-peta.php';
+	}
+
 }

@@ -110,7 +110,8 @@ class Wp_Satset_Admin {
 		$peta_satset = $this->functions->generatePage(array(
 			'nama_page' => 'Peta Data Terpadu', 
 			'content' => '[peta_satset]',
-        	'show_header' => 1,
+        	'show_header' => 0,
+        	'update' => 1,
         	'no_key' => 1,
 			'post_status' => 'publish'
 		));
@@ -129,8 +130,31 @@ class Wp_Satset_Admin {
 	            	->set_default_value($this->functions->generateRandomString())
 	            	->set_help_text('Wajib diisi. API KEY digunakan untuk integrasi data.')
 
-	            )
-	   		);
+            ) );
+
+		Container::make( 'theme_options', __( 'Google Maps' ) )
+			->set_page_parent( $basic_options_container )
+			->add_fields( array(
+	        	Field::make( 'map', 'crb_google_map_center_satset', 'Lokasi default Google Maps' ),
+	        	Field::make( 'text', 'crb_google_api_satset', 'Google Maps APIKEY' )
+	        		->set_default_value('AIzaSyDBrDSUIMFDIleLOFUUXf1wFVum9ae3lJ0')
+	        		->set_help_text('Referensi untuk menampilkan google map <a href="https://developers.google.com/maps/documentation/javascript/examples/map-simple" target="blank">https://developers.google.com/maps/documentation/javascript/examples/map-simple</a>. Referensi untuk manajemen layer di Google Maps <a href="https://youtu.be/tAR63GBwk90" target="blank">https://youtu.be/tAR63GBwk90</a>'),
+	        	Field::make( 'color', 'crb_warna_p3ke_satset', 'Warna garis P3KE' )
+	        		->set_default_value('#00cc00'),
+	        	Field::make( 'image', 'crb_icon_p3ke_satset', 'Icon keluarga P3KE' )
+	        		->set_value_type('url')
+        			->set_default_value(SATSET_PLUGIN_URL.'public/images/lokasi.png'),
+	        	Field::make( 'color', 'crb_warna_stanting_satset', 'Warna garis stanting' )
+	        		->set_default_value('#CC0003'),
+	        	Field::make( 'image', 'crb_icon_stanting_satset', 'Icon anak stanting' )
+	        		->set_value_type('url')
+        			->set_default_value(SATSET_PLUGIN_URL.'public/images/lokasi.png'),
+	        	Field::make( 'color', 'crb_warna_dtks_satset', 'Warna garis DTKS' )
+	        		->set_default_value('#005ACC'),
+	        	Field::make( 'image', 'crb_icon_dtks_satset', 'Icon dtks' )
+	        		->set_value_type('url')
+        			->set_default_value(SATSET_PLUGIN_URL.'public/images/lokasi.png')
+	        ) );
 	}
 
 }
