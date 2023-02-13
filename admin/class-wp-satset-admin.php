@@ -116,6 +116,24 @@ class Wp_Satset_Admin {
 			'post_status' => 'publish'
 		));
 
+		$peta_batas_desa = $this->functions->generatePage(array(
+			'nama_page' => 'Peta Batas Desa', 
+			'content' => '[peta_satset_desa]',
+        	'show_header' => 0,
+        	'update' => 1,
+        	'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
+		$peta_batas_kecamatan = $this->functions->generatePage(array(
+			'nama_page' => 'Peta Batas Kecamatan', 
+			'content' => '[peta_satset_kecamatan]',
+        	'show_header' => 0,
+        	'update' => 1,
+        	'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
 		$conversi_peta_satset = $this->functions->generatePage(array(
 			'nama_page' => 'Conversi Data SHP ke GEOJSON', 
 			'content' => '[conversi_peta_satset]',
@@ -134,6 +152,8 @@ class Wp_Satset_Admin {
 	            	<ol>
 	            		<li><a target="_blank" href="'.$conversi_peta_satset['url'].'">'.$conversi_peta_satset['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$peta_satset['url'].'">'.$peta_satset['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$peta_batas_desa['url'].'">'.$peta_batas_desa['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$peta_batas_kecamatan['url'].'">'.$peta_batas_kecamatan['title'].'</a></li>
 	            	</ol>
 		        	' ),
 	            Field::make( 'text', 'crb_apikey_satset', 'API KEY' )

@@ -131,7 +131,8 @@ class Wp_Satset_Public {
 
 	function get_map_url(){
 		$api_googlemap = get_option( '_crb_google_api_satset' );
-		$api_googlemap = "https://maps.googleapis.com/maps/api/js?key=$api_googlemap&callback=initMap&libraries=places&libraries=drawing&v=beta";
+		$api_googlemap = "https://maps.googleapis.com/maps/api/js?key=$api_googlemap&callback=initMap&libraries=places&libraries=drawing";
+		// $api_googlemap = "https://maps.googleapis.com/maps/api/js?key=$api_googlemap&callback=initMap&libraries=places&libraries=drawing&v=beta";
 		return $api_googlemap;
 	}
 
@@ -151,22 +152,50 @@ class Wp_Satset_Public {
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-conversi-peta.php';
 	}
 
-	function get_polygon(){
+	function peta_satset_desa(){
+		// untuk disable render shortcode di halaman edit page/post
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-peta-batas-desa.php';
+	}
+
+	function peta_satset_kecamatan(){
+		// untuk disable render shortcode di halaman edit page/post
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-peta-batas-kecamatan.php';
+	}
+
+	function get_polygon($options = array( 'type' => 'desa' )){
 		global $wpdb;
 
 		$default_color = get_option('_crb_warna_p3ke_satset');
 		$prov = get_option('_crb_prov_satset');
 		$where = " provinsi='$prov'";
 		$kab = get_option('_crb_kab_satset');
-		if(!empty($kab)){
-			$where .= " and kab_kot='$kab'";
+		if($options['type'] == 'desa'){
+			if(!empty($kab)){
+				$where .= " and kab_kot='$kab'";
+			}
+			$data = $wpdb->get_results("
+				SELECT 
+					* 
+				FROM data_batas_desa 
+				WHERE $where
+			", ARRAY_A);
+		}else if($options['type'] == 'kecamatan'){
+			if(!empty($kab)){
+				$where .= " and kabkot='$kab'";
+			}
+			$data = $wpdb->get_results("
+				SELECT 
+					* 
+				FROM data_batas_kecamatan 
+				WHERE $where
+			", ARRAY_A);
 		}
-		$data = $wpdb->get_results("
-			SELECT 
-				* 
-			FROM data_batas_desa 
-			WHERE $where
-		", ARRAY_A);
 		$new_data = array();
 		foreach($data as $val){
 			$coordinate = json_decode($val['polygon'], true);
