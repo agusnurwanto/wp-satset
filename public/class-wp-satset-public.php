@@ -371,4 +371,14 @@ class Wp_Satset_Public {
 	    }
 	    return $data;
 	}
+
+	public function getNamaDaerah($value=''){
+		$prov = get_option('_crb_prov_satset');
+		$ret = "Provinsi $prov";
+		$kab = get_option('_crb_kab_satset');
+		if(!empty($kab)){
+			$ret = "Kabupaten $kab<br>$ret";
+		}
+		return $ret;
+	}
 }
