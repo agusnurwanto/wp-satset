@@ -1,8 +1,22 @@
 <?php
+$opsi1 = array(
+    'file' => SATSET_PLUGIN_PATH.'public/media/desa_all_magetan/administrasi_kab_magetan_.shp',
+    'type' => 'desa',
+    'kode_daerah' => false
+);
+$opsi = array(
+    'file' => SATSET_PLUGIN_PATH.'public/media/desa_no/Magetan_Desa.shp',
+    'type' => 'desa',
+    'kode_daerah' => true
+);
+$opsi3 = array(
+    'file' => SATSET_PLUGIN_PATH.'public/media/kecamatan_no/Magetan_Kec.shp',
+    'type' => 'kecamatan'
+);
+$maps_all = $this->read_shapefile($opsi);
 $center = $this->get_center();
-$maps_all = $this->get_polygon();
 ?>
-<h1 class="text-center">Peta Satu Data</h1>
+<h1 class="text-center">Conversi File SHP ke Google Maps</h1>
 <div style="width: 95%; margin: 0 auto; height: 90vh; padding-bottom: 75px;">
     <div id="map-canvas" style="width: 100%; height: 100%;"></div>
 </div>

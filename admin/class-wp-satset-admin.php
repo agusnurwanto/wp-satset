@@ -116,6 +116,15 @@ class Wp_Satset_Admin {
 			'post_status' => 'publish'
 		));
 
+		$conversi_peta_satset = $this->functions->generatePage(array(
+			'nama_page' => 'Conversi Data SHP ke GEOJSON', 
+			'content' => '[conversi_peta_satset]',
+        	'show_header' => 0,
+        	'update' => 1,
+        	'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
 		$basic_options_container = Container::make( 'theme_options', __( 'SATSET Options' ) )
 			->set_page_menu_position( 4 )
 	        ->add_fields( array(
@@ -123,6 +132,7 @@ class Wp_Satset_Admin {
 		        	->set_html( '
 					<h5>HALAMAN TERKAIT</h5>
 	            	<ol>
+	            		<li><a target="_blank" href="'.$conversi_peta_satset['url'].'">'.$conversi_peta_satset['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$peta_satset['url'].'">'.$peta_satset['title'].'</a></li>
 	            	</ol>
 		        	' ),

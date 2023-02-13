@@ -4,6 +4,7 @@ CREATE TABLE `data_batas_desa` (
     `desa` TEXT DEFAULT NULL,
     `kecamatan` TEXT DEFAULT NULL,
     `kab_kot` TEXT DEFAULT NULL,
+    `provinsi` TEXT DEFAULT NULL,
     `area` TEXT DEFAULT NULL,
     `perimeter` TEXT DEFAULT NULL,
     `hectares` TEXT DEFAULT NULL,

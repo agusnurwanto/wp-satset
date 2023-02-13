@@ -143,32 +143,33 @@ class Wp_Satset_Public {
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-peta.php';
 	}
 
+	function conversi_peta_satset(){
+		// untuk disable render shortcode di halaman edit page/post
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-conversi-peta.php';
+	}
+
 	function get_polygon(){
 		global $wpdb;
 
 		$default_color = get_option('_crb_warna_p3ke_satset');
 		$prov = get_option('_crb_prov_satset');
-		$where = " pro_nama='$prov'";
+		$where = " provinsi='$prov'";
 		$kab = get_option('_crb_kab_satset');
 		if(!empty($kab)){
-			$where .= " and kab_nama='$kab'";
+			$where .= " and kab_kot='$kab'";
 		}
 		$data = $wpdb->get_results("
 			SELECT 
 				* 
-			FROM geojson_kel 
+			FROM data_batas_desa 
 			WHERE $where
 		", ARRAY_A);
 		$new_data = array();
 		foreach($data as $val){
-			$json = json_decode($val['geometry'], true);
-			$coordinate = array();
-			foreach($json['coordinates'][0] as $coor){
-				$coordinate[] = array(
-					'lat' => $coor[1],
-					'lng' => $coor[0]
-				);
-			}
+			$coordinate = json_decode($val['polygon'], true);
 			if(!empty($coordinate)){
 				$new_data[] = array(
 					'coor' => $coordinate,
@@ -177,15 +178,15 @@ class Wp_Satset_Public {
 				);
 			}
 		}
+
+		// SELECT * FROM data_batas_desa WHERE provinsi='JAWA TIMUR' and kab_kot='MAGETAN' and desa IN ('KAUMAN','PATIHAN', 'ALASTUWO') order by desa;
 		return $new_data;
 	}
 
-	function read_shapefile(){
+	function read_shapefile($params = array()){
 		global $wpdb;
 		$default_color = get_option('_crb_warna_p3ke_satset');
-		$file_shp = SATSET_PLUGIN_PATH.'public/media/desa_all_magetan/administrasi_kab_magetan_.shp';
-		// $file_shp = SATSET_PLUGIN_PATH.'public/media/kecamatan_no/Magetan_Kec.shp';
-		// $file_shp = SATSET_PLUGIN_PATH.'public/media/desa_no/Magetan_Desa.shp';
+		$file_shp = $params['file'];
 		$file_prj = trim(file_get_contents(str_replace('.shp', '.prj', $file_shp)));
 
 	    // Open Shapefile
@@ -240,6 +241,11 @@ class Wp_Satset_Public {
 			}else{
 				$data_meta['KABKOT'] = 'MAGETAN';
 			}
+	        if(!empty($data_meta['PROVINSI'])){
+				$data_meta['PROVINSI'] = strtoupper($data_meta['PROVINSI']);
+			}else{
+				$data_meta['PROVINSI'] = 'JAWA TIMUR';
+			}
 
 	        $data[] =  array(
 				'coor' => $coordinate,
@@ -247,70 +253,91 @@ class Wp_Satset_Public {
 				'color' => $default_color
 			);
 
-	        /*
-	        // input data kecamatan
-			$cek_id = $wpdb->get_var($wpdb->prepare("
-				SELECT
-					id
-				FROM data_batas_kecamatan
-				WHERE kecamatan = %s
-					AND kabkot = %s
-					AND provinsi = %s
-			", $data_meta['KECAMATAN'], $data_meta['KABKOT'], $data_meta['PROVINSI']));
-			$opsi = array(
-			    'provno' => $data_meta['PROVNO'],
-			    'kabkotno' => $data_meta['KABKOTNO'],
-			    'kecno' => $data_meta['KECNO'],
-			    'provinsi' => $data_meta['PROVINSI'],
-			    'kabkot' => $data_meta['KABKOT'],
-			    'kecamatan' => $data_meta['KECAMATAN'],
-			    'id2012' => $data_meta['ID2012'],
-			    'polygon' => json_encode($coordinate),
-			);
-			if(empty($cek_id)){
-				$cek_id = $wpdb->insert('data_batas_kecamatan', $opsi);
-			}else{
-				$wpdb->update('data_batas_kecamatan', $opsi, array(
-					'id' => $cek_id
-				));
-			}
-			*/
-
-	        
-	        // input data desa
-			$cek_id = $wpdb->get_var($wpdb->prepare("
-				SELECT
-					id
-				FROM data_batas_desa
-				WHERE desa = %s
-					AND kecamatan = %s
-					AND kab_kot = %s
-			", $data_meta['DESA'], $data_meta['KECAMATAN'], $data_meta['KABKOT']));
-			// echo $wpdb->last_query; die();
-			$opsi = array(
-			    'id_desa' => $data_meta['ID'],
-			    'desa' => $data_meta['DESA'],
-			    'kecamatan' => $data_meta['KECAMATAN'],
-			    'kab_kot' => $data_meta['KABKOT'],
-			    'area' => $data_meta['AREA'],
-			    'perimeter' => $data_meta['PERIMETER'],
-			    'hectares' => $data_meta['HECTARES'],
-			    'ukuran_kot' => $data_meta['UKURAN_KOT'],
-			    'pemusatan' => $data_meta['PEMUSATAN'],
-			    'jumplah_pen' => $data_meta['JUMLAH_PEN'],
-			    'polygon' => json_encode($coordinate),
-			    // 'provno' => $data_meta['PROVNO'],
-			    // 'kabkotno' => $data_meta['KABKOTNO'],
-			    // 'kecno' => $data_meta['KECNO'],
-			    // 'desano' => $data_meta['DESANO'],
-			    // 'id2012' => $data_meta['ID2012'],
-			);
-			if(empty($cek_id)){
-				$cek_id = $wpdb->insert('data_batas_desa', $opsi);
-			}else{
-				$wpdb->update('data_batas_desa', $opsi, array(
-					'id' => $cek_id
-				));
+		    // input data kecamatan
+	        if($params['type'] == 'kecamatan'){
+				$cek_id = $wpdb->get_var($wpdb->prepare("
+					SELECT
+						id
+					FROM data_batas_kecamatan
+					WHERE kecamatan = %s
+						AND kabkot = %s
+						AND provinsi = %s
+				", $data_meta['KECAMATAN'], $data_meta['KABKOT'], $data_meta['PROVINSI']));
+				$opsi = array(
+				    'provno' => $data_meta['PROVNO'],
+				    'kabkotno' => $data_meta['KABKOTNO'],
+				    'kecno' => $data_meta['KECNO'],
+				    'provinsi' => $data_meta['PROVINSI'],
+				    'kabkot' => $data_meta['KABKOT'],
+				    'kecamatan' => $data_meta['KECAMATAN'],
+				    'id2012' => $data_meta['ID2012'],
+				    'polygon' => json_encode($coordinate),
+				);
+				if(empty($cek_id)){
+					$cek_id = $wpdb->insert('data_batas_kecamatan', $opsi);
+				}else{
+					$wpdb->update('data_batas_kecamatan', $opsi, array(
+						'id' => $cek_id
+					));
+				}
+		    // input data desa
+			}else if($params['type'] == 'desa'){
+				// echo $wpdb->last_query; die();
+				if(true == $params['kode_daerah']){
+					$cek_id = $wpdb->get_var($wpdb->prepare("
+						SELECT
+							id
+						FROM data_batas_desa
+						WHERE desa = %s
+							AND kecamatan = %s
+							AND kab_kot = %s
+							AND provinsi = %s
+					", $data_meta['DESA'], $data_meta['KECAMATAN'], $data_meta['KABKOT'], $data_meta['PROVINSI']));
+					$opsi = array(
+					    'provno' => $data_meta['PROVNO'],
+					    'kabkotno' => $data_meta['KABKOTNO'],
+					    'kecno' => $data_meta['KECNO'],
+					    'desano' => $data_meta['DESANO'],
+					    'id2012' => $data_meta['ID2012']
+					);
+					if(!empty($cek_id)){
+						$wpdb->update('data_batas_desa', $opsi, array(
+							'id' => $cek_id
+						));
+					}
+				}else{
+					$cek_id = $wpdb->get_var($wpdb->prepare("
+						SELECT
+							id
+						FROM data_batas_desa
+						WHERE desa = %s
+							AND id_desa = %s
+							AND kecamatan = %s
+							AND kab_kot = %s
+							AND provinsi = %s
+					", $data_meta['DESA'], $data_meta['ID'], $data_meta['KECAMATAN'], $data_meta['KABKOT'], $data_meta['PROVINSI']));
+					$opsi = array(
+					    'id_desa' => $data_meta['ID'],
+					    'desa' => $data_meta['DESA'],
+					    'kecamatan' => $data_meta['KECAMATAN'],
+					    'kab_kot' => $data_meta['KABKOT'],
+					    'provinsi' => $data_meta['PROVINSI'],
+					    'area' => $data_meta['AREA'],
+					    'perimeter' => $data_meta['PERIMETER'],
+					    'hectares' => $data_meta['HECTARES'],
+					    'ukuran_kot' => $data_meta['UKURAN_KOT'],
+					    'pemusatan' => $data_meta['PEMUSATAN'],
+					    'jumplah_pen' => $data_meta['JUMLAH_PEN'],
+					    'polygon' => json_encode($coordinate)
+					);
+					if(empty($cek_id)){
+						$cek_id = $wpdb->insert('data_batas_desa', $opsi);
+					}else{
+						$wpdb->update('data_batas_desa', $opsi, array(
+							'id' => $cek_id
+						));
+					}
+				}
 			}
 	    }
 	    return $data;
