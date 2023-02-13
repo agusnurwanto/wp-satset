@@ -20,6 +20,20 @@
  * @subpackage Wp_Satset/public
  * @author     Agus Nurwanto <agusnurwantomuslim@gmail.com>
  */
+
+require_once(SATSET_PLUGIN_PATH.'Shapefile/ShapefileAutoloader.php');
+
+Shapefile\ShapefileAutoloader::register();
+use Shapefile\Shapefile;
+use Shapefile\ShapefileException;
+use Shapefile\ShapefileReader;
+
+require_once(SATSET_PLUGIN_PATH."proj4php/vendor/autoload.php");
+
+use proj4php\Proj4php;
+use proj4php\Proj;
+use proj4php\Point;
+
 class Wp_Satset_Public {
 
 	/**
@@ -166,4 +180,139 @@ class Wp_Satset_Public {
 		return $new_data;
 	}
 
+	function read_shapefile(){
+		global $wpdb;
+		$default_color = get_option('_crb_warna_p3ke_satset');
+		$file_shp = SATSET_PLUGIN_PATH.'public/media/desa_all_magetan/administrasi_kab_magetan_.shp';
+		// $file_shp = SATSET_PLUGIN_PATH.'public/media/kecamatan_no/Magetan_Kec.shp';
+		// $file_shp = SATSET_PLUGIN_PATH.'public/media/desa_no/Magetan_Desa.shp';
+		$file_prj = trim(file_get_contents(str_replace('.shp', '.prj', $file_shp)));
+
+	    // Open Shapefile
+	    $Shapefile = new ShapefileReader($file_shp);
+	    
+		// Initialise Proj4
+		$proj4 = new Proj4php();
+
+		// Create two different projections.
+		$projL93    = new Proj($file_prj, $proj4);
+		$projWGS84  = new Proj('EPSG:4326', $proj4);
+
+	    $data = array();
+	    // Read all the records
+	    while ($Geometry = $Shapefile->fetchRecord()) {
+	        if (
+	        	$Geometry->isDeleted()
+	        	// || !empty($data)
+	        ) {
+	            continue;
+	        }
+
+			$data_map = $Geometry->getArray();
+			if(empty($data_map['rings'])){
+				continue;
+			}
+
+	        $data_meta = $Geometry->getDataArray();
+			$coordinate = array();
+			foreach($data_map['rings'][0]['points'] as $coor){
+				$pointSrc = new Point($coor['x'], $coor['y'], $projL93);
+				$pointDest = $proj4->transform($projWGS84, $pointSrc);
+				$coordinate[] = array(
+					'lat' => $pointDest->y,
+					'lng' => $pointDest->x
+				);
+			}
+
+			// print_r($data_meta); die();
+			foreach($data_meta as $i => $meta){
+				$data_meta[$i] = trim($meta);
+			}
+
+	        if(!empty($data_meta['DESA'])){
+				$data_meta['DESA'] = strtoupper($data_meta['DESA']);
+			}
+	        if(!empty($data_meta['KECAMATAN'])){
+				$data_meta['KECAMATAN'] = str_replace('KEC.', '', strtoupper($data_meta['KECAMATAN']));
+			}
+	        if(!empty($data_meta['KABKOT'])){
+				$data_meta['KABKOT'] = strtoupper($data_meta['KABKOT']);
+			}else{
+				$data_meta['KABKOT'] = 'MAGETAN';
+			}
+
+	        $data[] =  array(
+				'coor' => $coordinate,
+				'data' => $data_meta,
+				'color' => $default_color
+			);
+
+	        /*
+	        // input data kecamatan
+			$cek_id = $wpdb->get_var($wpdb->prepare("
+				SELECT
+					id
+				FROM data_batas_kecamatan
+				WHERE kecamatan = %s
+					AND kabkot = %s
+					AND provinsi = %s
+			", $data_meta['KECAMATAN'], $data_meta['KABKOT'], $data_meta['PROVINSI']));
+			$opsi = array(
+			    'provno' => $data_meta['PROVNO'],
+			    'kabkotno' => $data_meta['KABKOTNO'],
+			    'kecno' => $data_meta['KECNO'],
+			    'provinsi' => $data_meta['PROVINSI'],
+			    'kabkot' => $data_meta['KABKOT'],
+			    'kecamatan' => $data_meta['KECAMATAN'],
+			    'id2012' => $data_meta['ID2012'],
+			    'polygon' => json_encode($coordinate),
+			);
+			if(empty($cek_id)){
+				$cek_id = $wpdb->insert('data_batas_kecamatan', $opsi);
+			}else{
+				$wpdb->update('data_batas_kecamatan', $opsi, array(
+					'id' => $cek_id
+				));
+			}
+			*/
+
+	        
+	        // input data desa
+			$cek_id = $wpdb->get_var($wpdb->prepare("
+				SELECT
+					id
+				FROM data_batas_desa
+				WHERE desa = %s
+					AND kecamatan = %s
+					AND kab_kot = %s
+			", $data_meta['DESA'], $data_meta['KECAMATAN'], $data_meta['KABKOT']));
+			// echo $wpdb->last_query; die();
+			$opsi = array(
+			    'id_desa' => $data_meta['ID'],
+			    'desa' => $data_meta['DESA'],
+			    'kecamatan' => $data_meta['KECAMATAN'],
+			    'kab_kot' => $data_meta['KABKOT'],
+			    'area' => $data_meta['AREA'],
+			    'perimeter' => $data_meta['PERIMETER'],
+			    'hectares' => $data_meta['HECTARES'],
+			    'ukuran_kot' => $data_meta['UKURAN_KOT'],
+			    'pemusatan' => $data_meta['PEMUSATAN'],
+			    'jumplah_pen' => $data_meta['JUMLAH_PEN'],
+			    'polygon' => json_encode($coordinate),
+			    // 'provno' => $data_meta['PROVNO'],
+			    // 'kabkotno' => $data_meta['KABKOTNO'],
+			    // 'kecno' => $data_meta['KECNO'],
+			    // 'desano' => $data_meta['DESANO'],
+			    // 'id2012' => $data_meta['ID2012'],
+			);
+			if(empty($cek_id)){
+				$cek_id = $wpdb->insert('data_batas_desa', $opsi);
+			}else{
+				$wpdb->update('data_batas_desa', $opsi, array(
+					'id' => $cek_id
+				));
+			}
+	    }
+	    return $data;
+	}
 }

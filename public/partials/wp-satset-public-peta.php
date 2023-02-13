@@ -1,6 +1,7 @@
 <?php
+$maps_all = $this->read_shapefile();
 $center = $this->get_center();
-$maps_all = $this->get_polygon();
+// $maps_all = $this->get_polygon();
 ?>
 <h1 class="text-center">Peta Satu Data</h1>
 <div style="width: 95%; margin: 0 auto; height: 90vh; padding-bottom: 75px;">
