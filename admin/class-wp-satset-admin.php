@@ -107,6 +107,15 @@ class Wp_Satset_Admin {
 	function crb_attach_satset_options(){
 		global $wpdb;
 
+		$satset_homepage = $this->functions->generatePage(array(
+			'nama_page' => 'Beranda / Homepage SATSET', 
+			'content' => '[satset_homepage]',
+        	'show_header' => 0,
+        	'update' => 1,
+        	'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
 		$peta_satset = $this->functions->generatePage(array(
 			'nama_page' => 'Peta Data Terpadu', 
 			'content' => '[peta_satset]',
@@ -143,6 +152,30 @@ class Wp_Satset_Admin {
 			'post_status' => 'publish'
 		));
 
+		$petunjuk_penggunaan = $this->functions->generatePage(array(
+			'nama_page' => 'Petunjuk Penggunaan SATSET',
+			'content' => '[petunjuk_penggunaan_satset]',
+        	'show_header' => 1,
+        	'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
+		$dokumentasi_sistem = $this->functions->generatePage(array(
+			'nama_page' => 'Dokumentasi Sistem SATSET',
+			'content' => '[dokumentasi_sistem_satset]',
+        	'show_header' => 1,
+        	'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
+		$tanggapan_publik = $this->functions->generatePage(array(
+			'nama_page' => 'Tanggapan Publik SATSET',
+			'content' => '[tanggapan_publik_satset]',
+			'show_header' => 1,
+			'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
 		$basic_options_container = Container::make( 'theme_options', __( 'SATSET Options' ) )
 			->set_page_menu_position( 4 )
 	        ->add_fields( array(
@@ -150,6 +183,7 @@ class Wp_Satset_Admin {
 		        	->set_html( '
 					<h5>HALAMAN TERKAIT</h5>
 	            	<ol>
+	            		<li><a target="_blank" href="'.$satset_homepage['url'].'">'.$satset_homepage['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$conversi_peta_satset['url'].'">'.$conversi_peta_satset['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$peta_satset['url'].'">'.$peta_satset['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$peta_batas_desa['url'].'">'.$peta_batas_desa['title'].'</a></li>
@@ -168,6 +202,163 @@ class Wp_Satset_Admin {
 	            	->set_help_text('Nama kabupaten dalam huruf besar dan tanpa awalan.')
 
             ) );
+
+		Container::make( 'theme_options', __( 'Tampilan Beranda' ) )
+			->set_page_parent( $basic_options_container )
+			->add_tab( __( 'Logo' ), array(
+		        Field::make( 'image', 'crb_satset_menu_logo_dashboard', __( 'Gambar Logo' ) )
+		        	->set_value_type('url')
+        			->set_default_value('https://via.placeholder.com/135x25'),
+		        Field::make( 'textarea', 'crb_satset_judul_header', __( 'Judul' ) )
+		        	->set_default_value('Satu Data Terpadu Stanting, Kemiskinan Ekstrim, ATM, DTKS dan RTLH'),
+		        Field::make( 'text', 'crb_satset_menu_video_loading', __( 'Video Loading' ) ),
+		        Field::make( 'text', 'crb_satset_lama_loading', __( 'Lama Loading' ) )
+        			->set_default_value('10000')
+            		->set_attribute('type', 'number')
+        			->set_help_text('Lama waktu untuk menghilangkan gambar atau video intro. Satuan dalam mili detik.'),
+		    	Field::make( 'complex', 'crb_satset_background_beranda', 'Background Beranda' )
+		    		->add_fields( 'beranda', array(
+				        Field::make( 'image', 'gambar', 'Gambar' )
+		        			->set_value_type('url')
+		        			->set_default_value('https://via.placeholder.com/1200x900')
+		        		) ),
+		    ) )
+			->add_tab( __( 'Icon & Menu' ), array(
+		        Field::make( 'image', 'crb_satset_menu_logo_1', __( 'Gambar Menu 1' ) )
+		        	->set_value_type('url'),
+		        Field::make( 'text', 'crb_satset_menu_text_1', __( 'Text Menu 1' ) )
+        			->set_default_value('Peta Data'),
+		        Field::make( 'text', 'crb_satset_menu_url_1', __( 'URL Menu 1' ) )
+        			->set_default_value($peta_satset['url']),
+		        Field::make( 'rich_text', 'crb_satset_menu_keterangan_1', __( 'Keterangan Menu 1' ) )
+        			->set_default_value('keterangan'),
+		        Field::make( 'image', 'crb_satset_menu_logo_2', __( 'Gambar Menu 2' ) )
+		        	->set_value_type('url'),
+		        Field::make( 'text', 'crb_satset_menu_text_2', __( 'Text Menu 2' ) )
+        			->set_default_value('Batas Kecamatan'),
+		        Field::make( 'text', 'crb_satset_menu_url_2', __( 'URL Menu 2' ) )
+        			->set_default_value($peta_batas_kecamatan['url']),
+		        Field::make( 'rich_text', 'crb_satset_menu_keterangan_2', __( 'Keterangan Menu 2' ) )
+        			->set_default_value('keterangan'),
+		        Field::make( 'image', 'crb_satset_menu_logo_3', __( 'Gambar Menu 3' ) )
+		        	->set_value_type('url'),
+		        Field::make( 'text', 'crb_satset_menu_text_3', __( 'Text Menu 3' ) )
+        			->set_default_value('Batas Desa/Kelurahan'),
+		        Field::make( 'text', 'crb_satset_menu_url_3', __( 'URL Menu 3' ) )
+        			->set_default_value($peta_batas_desa['url']),
+		        Field::make( 'rich_text', 'crb_satset_menu_keterangan_3', __( 'Keterangan Menu 3' ) )
+        			->set_default_value('keterangan'),
+		        Field::make( 'image', 'crb_satset_menu_logo_4', __( 'Gambar Menu 4' ) )
+		        	->set_value_type('url'),
+		        Field::make( 'text', 'crb_satset_menu_text_4', __( 'Text Menu 4' ) )
+        			->set_default_value('...'),
+		        Field::make( 'text', 'crb_satset_menu_url_4', __( 'URL Menu 4' ) )
+        			->set_default_value('#'),
+		        Field::make( 'rich_text', 'crb_satset_menu_keterangan_4', __( 'Keterangan Menu 4' ) )
+        			->set_default_value('keterangan'),
+		        Field::make( 'image', 'crb_satset_menu_logo_5', __( 'Gambar Menu 5' ) )
+		        	->set_value_type('url'),
+		        Field::make( 'text', 'crb_satset_menu_text_5', __( 'Text Menu 5' ) )
+        			->set_default_value('...'),
+		        Field::make( 'text', 'crb_satset_menu_url_5', __( 'URL Menu 5' ) )
+        			->set_default_value('#'),
+		        Field::make( 'rich_text', 'crb_satset_menu_keterangan_5', __( 'Keterangan Menu 5' ) )
+        			->set_default_value('keterangan'),
+		        Field::make( 'image', 'crb_satset_menu_logo_6', __( 'Gambar Menu 6' ) )
+		        	->set_value_type('url'),
+		        Field::make( 'text', 'crb_satset_menu_text_6', __( 'Text Menu 6' ) )
+        			->set_default_value('...'),
+		        Field::make( 'text', 'crb_satset_menu_url_6', __( 'URL Menu 6' ) )
+        			->set_default_value('#'),
+		        Field::make( 'rich_text', 'crb_satset_menu_keterangan_6', __( 'Keterangan Menu 6' ) )
+        			->set_default_value('keterangan'),
+		        Field::make( 'image', 'crb_satset_menu_logo_7', __( 'Gambar Menu 7' ) )
+		        	->set_value_type('url'),
+		        Field::make( 'text', 'crb_satset_menu_text_7', __( 'Text Menu 7' ) )
+        			->set_default_value('...'),
+		        Field::make( 'text', 'crb_satset_menu_url_7', __( 'URL Menu 7' ) )
+        			->set_default_value('#'),
+		        Field::make( 'rich_text', 'crb_satset_menu_keterangan_7', __( 'Keterangan Menu 7' ) )
+        			->set_default_value('keterangan'.'?sertifikat=1'),
+		        Field::make( 'image', 'crb_satset_menu_logo_8', __( 'Gambar Menu 8' ) )
+		        	->set_value_type('url'),
+		        Field::make( 'text', 'crb_satset_menu_text_8', __( 'Text Menu 8' ) )
+        			->set_default_value('...'),
+		        Field::make( 'text', 'crb_satset_menu_url_8', __( 'URL Menu 8' ) )
+        			->set_default_value('#'),
+		        Field::make( 'rich_text', 'crb_satset_menu_keterangan_8', __( 'Keterangan Menu 8' ) )
+        			->set_default_value('keterangan'),
+		        Field::make( 'image', 'crb_satset_menu_logo_9', __( 'Gambar Menu 9' ) )
+		        	->set_value_type('url'),
+		        Field::make( 'text', 'crb_satset_menu_text_9', __( 'Text Menu 9' ) )
+        			->set_default_value('...'),
+		        Field::make( 'text', 'crb_satset_menu_url_9', __( 'URL Menu 9' ) )
+        			->set_default_value('#'),
+		        Field::make( 'rich_text', 'crb_satset_menu_keterangan_9', __( 'Keterangan Menu 9' ) )
+        			->set_default_value('keterangan'),
+		        Field::make( 'image', 'crb_satset_menu_logo_10', __( 'Gambar Menu 10' ) )
+		        	->set_value_type('url'),
+		        Field::make( 'text', 'crb_satset_menu_text_10', __( 'Text Menu 10' ) )
+        			->set_default_value('...'),
+		        Field::make( 'text', 'crb_satset_menu_url_10', __( 'URL Menu 10' ) )
+        			->set_default_value('#'),
+		        Field::make( 'rich_text', 'crb_satset_menu_keterangan_10', __( 'Keterangan Menu 10' ) )
+		        	->set_default_value('keterangan'),
+		        Field::make( 'image', 'crb_satset_menu_logo_11', __( 'Gambar Menu 11' ) )
+		        	->set_value_type('url'),
+		        Field::make( 'text', 'crb_satset_menu_text_11', __( 'Text Menu 11' ) )
+        			->set_default_value('Petunjuk Penggunaan'),
+		        Field::make( 'text', 'crb_satset_menu_url_11', __( 'URL Menu 11' ) )
+        			->set_default_value($petunjuk_penggunaan['url']),
+		        Field::make( 'rich_text', 'crb_satset_menu_keterangan_11', __( 'Keterangan Menu 11' ) )
+		        	->set_default_value('keterangan'),
+		        Field::make( 'image', 'crb_satset_menu_logo_0', __( 'Gambar Menu Lainya' ) )
+		        	->set_value_type('url'),
+		        Field::make( 'text', 'crb_satset_menu_text_0', __( 'Text Menu Lainya' ) )
+        			->set_default_value('Lainnya'),
+		        Field::make( 'rich_text', 'crb_satset_menu_keterangan_0', __( 'Keterangan Menu Lainya' ) )
+		        	->set_default_value('keterangan'),
+		        Field::make( 'image', 'crb_satset_menu_logo_12', __( 'Gambar Menu 12' ) )
+		        	->set_value_type('url'),
+		        Field::make( 'text', 'crb_satset_menu_text_12', __( 'Text Menu 12' ) )
+        			->set_default_value('Dokumentasi Sistem'),
+		        Field::make( 'text', 'crb_satset_menu_url_12', __( 'URL Menu 12' ) )
+        			->set_default_value($dokumentasi_sistem['url']),
+		        Field::make( 'rich_text', 'crb_satset_menu_keterangan_12', __( 'Keterangan Menu 12' ) )
+		        	->set_default_value('keterangan'),
+		        Field::make( 'image', 'crb_satset_menu_logo_13', __( 'Gambar Menu 13' ) )
+		        	->set_value_type('url'),
+		        Field::make( 'text', 'crb_satset_menu_text_13', __( 'Text Menu 13' ) )
+        			->set_default_value('...'),
+		        Field::make( 'text', 'crb_satset_menu_url_13', __( 'URL Menu 13' ) )
+        			->set_default_value('#'),
+		        Field::make( 'rich_text', 'crb_satset_menu_keterangan_13', __( 'Keterangan Menu 13' ) )
+		        	->set_default_value('keterangan'),
+		        Field::make( 'image', 'crb_satset_menu_logo_14', __( 'Gambar Menu 14' ) )
+		        	->set_value_type('url'),
+		        Field::make( 'text', 'crb_satset_menu_text_14', __( 'Text Menu 14' ) )
+        			->set_default_value('...'),
+		        Field::make( 'text', 'crb_satset_menu_url_14', __( 'URL Menu 14' ) )
+        			->set_default_value('#'),
+		        Field::make( 'rich_text', 'crb_satset_menu_keterangan_14', __( 'Keterangan Menu 14' ) )
+		        	->set_default_value('keterangan'),
+		        Field::make( 'image', 'crb_satset_menu_logo_15', __( 'Gambar Menu 15' ) )
+		        	->set_value_type('url'),
+		        Field::make( 'text', 'crb_satset_menu_text_15', __( 'Text Menu 15' ) )
+        			->set_default_value('...'),
+		        Field::make( 'text', 'crb_satset_menu_url_15', __( 'URL Menu 15' ) )
+        			->set_default_value('#'),
+		        Field::make( 'rich_text', 'crb_satset_menu_keterangan_15', __( 'Keterangan Menu 15' ) )
+		        	->set_default_value('keterangan'),
+		        Field::make( 'image', 'crb_satset_menu_logo_16', __( 'Gambar Menu 16' ) )
+		        	->set_value_type('url'),
+		        Field::make( 'text', 'crb_satset_menu_text_16', __( 'Text Menu 16' ) )
+        			->set_default_value('Tanggapan Publik'),
+		        Field::make( 'text', 'crb_satset_menu_url_16', __( 'URL Menu 16' ) )
+        			->set_default_value($tanggapan_publik['url']),
+		        Field::make( 'rich_text', 'crb_satset_menu_keterangan_16', __( 'Keterangan Menu 16' ) )
+		        	->set_default_value('keterangan')
+		    ) );
 
 		Container::make( 'theme_options', __( 'Google Maps' ) )
 			->set_page_parent( $basic_options_container )

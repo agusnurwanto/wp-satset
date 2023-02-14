@@ -1,0 +1,247 @@
+/* Portfolio Filter */
+.filter-menu{
+	text-align: center;
+	margin:10px auto 40px;
+}
+.filter-menu ul{
+	padding-left:3px;
+}
+.filter-menu ul li{
+	display: inline-block;
+	margin:0 4px;
+	padding: 8px 23px;
+	text-transform: capitalize;
+	background: #e0e5eb;
+	border-radius: 30px;
+	color: #485056;
+	font-size: 14px;
+	-webkit-transition: all 0.3s;
+	-moz-transition: all 0.3s;
+	transition: all 0.3s;
+	cursor: pointer;
+}
+.filter-menu ul li:hover, .filter-menu ul li.active{
+	color:white;
+}
+.filter-menu ul li.active{
+	font-weight:700;
+}
+#portfolio .portfolio-items{
+	height: auto;
+	width: 100%;
+	overflow: hidden;
+	position: relative;
+}
+#filters {
+	margin-bottom: 5px;
+}
+#filters .filter {
+	background: none;
+	border: 1px solid #CCCCCC;
+	margin:10px 5px 0;
+	padding: 8px;
+}
+#filters .filter:hover, #filters .filter:focus, #filters .filter:visited {
+	color:#fff;
+}
+
+/* Portfolio Works */
+.slide{
+	float:none !important;
+	margin-left:0px !important;
+}
+.five{
+	width:20%;
+	float:left;
+}
+.five-big{
+	width: 40%;
+	float:left;
+}
+
+/* Isotope styles */
+.isotope-item {
+  z-index: 2;
+}
+.isotope-hidden.isotope-item {
+  pointer-events: none;
+  z-index: 1;
+}
+
+/**** Isotope CSS3 transitions ****/
+.isotope,
+.isotope .isotope-item {
+  -webkit-transition-duration: 0.8s;
+	 -moz-transition-duration: 0.8s;
+	  -ms-transition-duration: 0.8s;
+	   -o-transition-duration: 0.8s;
+		  transition-duration: 0.8s;
+}
+.isotope {
+  -webkit-transition-property: height, width;
+	 -moz-transition-property: height, width;
+	  -ms-transition-property: height, width;
+	   -o-transition-property: height, width;
+		  transition-property: height, width;
+}
+.isotope .isotope-item {
+  -webkit-transition-property: -webkit-transform, opacity;
+	 -moz-transition-property:    -moz-transform, opacity;
+	  -ms-transition-property:     -ms-transform, opacity;
+	   -o-transition-property:      -o-transform, opacity;
+		  transition-property:         transform, opacity;
+}
+
+/**** disabling Isotope CSS3 transitions ****/
+.isotope.no-transition,
+.isotope.no-transition .isotope-item,
+.isotope .isotope-item.no-transition {
+  -webkit-transition-duration: 0s;
+	 -moz-transition-duration: 0s;
+	  -ms-transition-duration: 0s;
+	   -o-transition-duration: 0s;
+		  transition-duration: 0s;
+}
+
+/* Expander Item Styles */
+.item-expander {
+	position:relative;
+	padding:20px 0 50px;
+	display: none;
+	margin:35px auto;
+	text-align: center;
+	background:#fcfcfc;
+}
+#item-expander{
+	position: relative;
+	padding:10px 0;
+	width:100%;
+	max-width:1170px;
+	margin:0 auto;
+	overflow: hidden;
+}
+
+/* Expander Item Controls */
+.project-controls{
+	position: relative;
+	width:100%;
+	height: auto;
+	top:15px;
+	max-width: 1170px;
+	margin:10px auto;
+}
+.expander-inner{
+	position: relative;
+	top:0;
+}
+.cls-btn{
+	width:100%;
+	padding: 0;
+	margin:0;
+	display: block;
+	height: auto;
+	text-align:left;
+}
+.item-expander .cls-btn .close {
+	position:relative;
+	display: inline-block;
+	color:#000;
+	top:0;
+	left:49%;
+	margin:0px auto 20px;
+	width:auto;
+	height:auto;
+	font-size:60px;
+	font-weight:100;
+	text-align:center;
+	cursor: pointer;
+	float:none;
+	-webkit-transition: all 0.3s;
+	-moz-transition: all 0.3s;
+	transition: all 0.3s;
+}
+.expander-close:hover {
+	color:#3a3a3a;
+	cursor:pointer;
+}
+.inner:after{
+	clear: both;
+}
+
+/* Expander Project */
+.project{
+	position: relative;
+	text-align: left;
+}
+.project ul{
+	padding-left:0px;
+}
+.project ul.project-slides li{
+	display:inline-block !important;
+}
+.project ul.project-slides li.slide img{
+	width: 100%;
+}
+
+/* Flex Slider Direction */
+.project ul.flex-direction-nav{
+	display: block;
+	opacity: 1;
+}
+.project ul.flex-direction-nav li a{
+	opacity: 1;
+	width:31px;
+	height: 52px;
+	top:50%;
+	background:#1d1d1d center center no-repeat;
+	opacity: 0.8;
+	margin-top:-26px;
+}
+.project ul.flex-direction-nav li a.flex-prev{
+	left:0;
+	background-image:url(../images/arrow-left.png);
+}
+.project ul.flex-direction-nav li a.flex-next{
+	background-image:url(../images/arrow-right.png);
+	right:0;
+	left:auto;
+}
+.project ul.flex-direction-nav li a:hover{
+	opacity: 1;
+}
+
+/* Flex Slider Control */
+ol.flex-control-nav{
+	bottom:15px;
+	position: absolute;
+	z-index: 2;
+}
+.project .flex-control-paging li a{
+	background-color:#666666;
+}
+.project .flex-control-paging li a.flex-active{
+	background-color:#FFFFFF;
+}
+
+/* Project Header and Description styles */
+.project-header{
+	text-align: left !important;
+	font-size:20px;
+	font-weight: bold;
+	margin:0 0 15px;
+	padding:0px;
+}
+.project-desc{
+	text-align: left;
+	font-size:13px;
+}
+.project-detail{
+	text-align: left;
+	padding:10px 0;
+	border-bottom:1px dashed #ebebeb;
+	font-size:13px;
+	margin:0;
+}
+.project-detail span{
+	font-weight:bold;
+}

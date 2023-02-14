@@ -1,0 +1,94 @@
+/* Color */
+.welcome-box .read-more a:hover, .welcome-box:hover a,
+.features-section h4,
+.fact-number .factor,
+.infograph-section ul li i,
+.contact .btn:hover,
+.tab-content i,
+.blog-outer .span-inner,
+.blog-outer .blog-status .read-more,
+.blog-outer .blog-status .social-title,
+.sidebar-social li a:hover,
+.blog-outer .archives a:hover,
+.blog-outer .sidebar-facebook h4,
+.blog-outer .categories li:hover a,
+.blog-outer .tags li:hover a,
+.shortcodes .nav-tabs > li.active > a, .shortcodes .nav-tabs > li.active > a:hover, .shortcodes .nav-tabs > li.active > a:focus,
+.shortcodes .testimonial .testimonial-inner .testimonial-content:after,
+.shortcodes .testimonial .testimonial2-inner .testimonial-content:after,
+.shortcodes .short-code .accordion-toggle:before ,
+.shortcodes .short-code .accordion-toggle.collapsed:before,
+.shortcodes .piechart span,
+.color,
+.team-box h4,
+.blog-content h2 a,
+.features-list  li:hover > .features-content h5,
+.about-right li:hover > i,header .navbar li a:hover,
+header .navbar li a:focus,
+header .navbar li.active a,.title span,.text-color,.title span,
+.welcome-section li:hover h5,.pricing-box .price,.pricing-more:hover a,#mobileslider.owl-theme .owl-controls .owl-buttons .owl-prev:hover:before,#mobileslider.owl-theme .owl-controls .owl-buttons .owl-next:hover:before{
+	color:#3498db;
+}
+
+/* Background Color */
+.title h2:before,
+.title:before,
+.home-slider .slide-item ,
+.service-more:hover,.infograph-section .btn,
+.blog .btn:hover,
+.contact .btn,
+.copyright .copyright-social-icon i:hover, 
+.footer-social-icon i:hover, 
+.footer .btn-default,
+.team .social-icon i:hover,
+.filter-menu ul li:hover, 
+.filter-menu ul li.active,
+.twitter-feed,
+.twitter-feed i,
+.blog-outer .blog-social i:hover,
+.blog-single .btn:hover,
+.faq .left-part .faq-panel .accordion-toggle:before,
+.faq #accordion1 .panel-body,  
+.shortcodes #accordion1 .panel-body,
+.shortcodes .testimonial .testimonial-inner .testimonial-content:hover,
+.shortcodes .testimonial .testimonial2-inner .testimonial-content:hover,
+.shortcodes .testimonial3-inner .carousel-indicators li.active,
+.shortcodes .carousel .carousel-content a,
+.pagination ul li a, 
+.pagination ul li span,
+.features-list  li:hover > i,
+.highlight h3,
+.subscribe-form-submit,
+.social-media i:hover,
+.timeline-title span, 
+.timeline-title2 span,
+.blog-timeline-event-left:before,
+.blog-timeline-event-right:before,
+.additional-features > i,
+.features-border-top .col-md-3:after,
+.features-border-top .right-border:before,.bg-inverse{
+	background-color: #3498db;
+}
+
+/* Border Color */
+
+.faq .panel-group .panel,
+.shortcodes .carousel-indicators li,
+.comment-reply,
+.blog-single blockquote,
+.blog-outer .tags li,
+.highlight h3,
+.features-border-top,
+.team .team-box,.bg-inverse{
+	border-color:#3498db;
+}
+.shortcodes .nav-tabs > li.active > a:focus,
+.shortcodes .nav-tabs > li.active > a{
+	border-top-color:#3498db;
+}
+.shortcodes .testimonial .testimonial-inner .testimonial-content,
+.shortcodes .testimonial .testimonial-inner .testimonial-content:hover,
+.shortcodes .testimonial .testimonial2-inner .testimonial-content,
+.shortcodes .testimonial .testimonial2-inner .testimonial-content:hover {
+	border-bottom-color:#3498db;
+}
