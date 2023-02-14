@@ -184,6 +184,7 @@ class Wp_Satset_Public {
 					* 
 				FROM data_batas_desa 
 				WHERE $where
+				ORDER BY provinsi, kab_kot, kecamatan, desa
 			", ARRAY_A);
 		}else if($options['type'] == 'kecamatan'){
 			if(!empty($kab)){
@@ -194,15 +195,18 @@ class Wp_Satset_Public {
 					* 
 				FROM data_batas_kecamatan 
 				WHERE $where
+				ORDER BY provinsi, kabkot, kecamatan
 			", ARRAY_A);
 		}
 		$new_data = array();
 		foreach($data as $val){
 			$coordinate = json_decode($val['polygon'], true);
 			if(!empty($coordinate)){
+				unset($val['polygon']);
 				$new_data[] = array(
 					'coor' => $coordinate,
 					'data' => $val,
+					'html' => json_encode($val),
 					'color' => $default_color
 				);
 			}
@@ -298,6 +302,7 @@ class Wp_Satset_Public {
 	        $data[] =  array(
 				'coor' => $coordinate,
 				'data' => $data_meta,
+				'html' => json_encode($data_meta),
 				'color' => $default_color
 			);
 
@@ -399,5 +404,49 @@ class Wp_Satset_Public {
 			$ret = "Kabupaten $kab<br>$ret";
 		}
 		return $ret;
+	}
+
+	function getSearchLocation($data = array()){
+		$text = '';
+		if(!empty($data['desa'])){
+			$text .= ' '.$data['desa'];
+		}
+		if(!empty($data['kecamatan'])){
+			if(
+				empty($data['desa'])
+				|| (
+					!empty($data['desa']) 
+					&& $data['kecamatan'] != $data['desa']
+				)
+			){
+				$text .= ' '.$data['kecamatan'];
+			}
+		}
+		if(!empty($data['kab_kot'])){
+			if(
+				empty($data['kecamatan'])
+				|| (
+					!empty($data['kecamatan']) 
+					&& $data['kab_kot'] != $data['kecamatan']
+				)
+			){
+				$text .= ' '.$data['kab_kot'];
+			}
+		}
+		if(!empty($data['kabkot'])){
+			if(
+				empty($data['kecamatan'])
+				|| (
+					!empty($data['kecamatan']) 
+					&& $data['kabkot'] != $data['kecamatan']
+				)
+			){
+				$text .= ' '.$data['kabkot'];
+			}
+		}
+		if(!empty($data['provinsi'])){
+			$text .= ' '.$data['provinsi'];
+		}
+		return $text;
 	}
 }

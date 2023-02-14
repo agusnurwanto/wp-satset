@@ -6,13 +6,14 @@ $maps_all = $this->get_polygon(array(
 
 $body =  '';
 foreach($maps_all as $desa){
+    $search = $this->getSearchLocation($desa['data']);
     $body .= "
         <tr>
             <td class='text-center'>".$desa['data']['id2012']."</td>
             <td class='text-center'>".$desa['data']['provinsi']."</td>
             <td class='text-center'>".$desa['data']['kabkot']."</td>
             <td class='text-center'>".$desa['data']['kecamatan']."</td>
-            <td class='text-center'></td>
+            <td class='text-center'><a style='margin-bottom: 5px;' onclick='cari_alamat(\"".$search."\"); return false;' href='#' class='btn btn-danger'>Map</a></td>
         </tr>
     ";
 }
