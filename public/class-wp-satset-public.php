@@ -238,20 +238,39 @@ class Wp_Satset_Public {
 	            continue;
 	        }
 
+	        $data_meta = $Geometry->getDataArray();
 			$data_map = $Geometry->getArray();
-			if(empty($data_map['rings'])){
+	        // print_r($data_meta);
+	        // print_r($data_map);
+	        $points = array();
+	        if(!empty($data_map['rings'])){
+	        	foreach($data_map['rings'] as $ring){
+	        		$points[] = $ring;
+	        	}
+	        }else if(!empty($data_map['parts'])){
+	        	foreach($data_map['parts'] as $parts){
+		        	foreach($parts['rings'] as $ring){
+		        		$points[] = $ring;
+		        	}
+		        }
+	        }
+
+			if(empty($points)){
 				continue;
 			}
 
 	        $data_meta = $Geometry->getDataArray();
 			$coordinate = array();
-			foreach($data_map['rings'][0]['points'] as $coor){
-				$pointSrc = new Point($coor['x'], $coor['y'], $projL93);
-				$pointDest = $proj4->transform($projWGS84, $pointSrc);
-				$coordinate[] = array(
-					'lat' => $pointDest->y,
-					'lng' => $pointDest->x
-				);
+			foreach($points as $i => $coor1){
+				$coordinate[$i] = array();
+				foreach($coor1['points'] as $coor){
+					$pointSrc = new Point($coor['x'], $coor['y'], $projL93);
+					$pointDest = $proj4->transform($projWGS84, $pointSrc);
+					$coordinate[$i][] = array(
+						'lat' => $pointDest->y,
+						'lng' => $pointDest->x
+					);
+				}
 			}
 
 			// print_r($data_meta); die();
