@@ -9,7 +9,7 @@ function cari_alamat(text) {
         if (status == 'OK') {
             console.log('results', results);
             map.setCenter(results[0].geometry.location);
-            map.setZoom(13);
+            map.setZoom(15);
             jQuery([document.documentElement, document.body]).animate({
                 scrollTop: jQuery("#map-canvas").offset().top
             }, 500);
@@ -22,7 +22,7 @@ function cari_alamat(text) {
 function setCenter(lng, ltd){
     var lokasi_aset = new google.maps.LatLng(lng, ltd);
     map.setCenter(lokasi_aset);
-    map.setZoom(13);
+    map.setZoom(15);
     jQuery([document.documentElement, document.body]).animate({
         scrollTop: jQuery("#map-canvas").offset().top
     }, 500);

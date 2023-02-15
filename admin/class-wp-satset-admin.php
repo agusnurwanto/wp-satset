@@ -152,6 +152,15 @@ class Wp_Satset_Admin {
 			'post_status' => 'publish'
 		));
 
+		$data_p3ke = $this->functions->generatePage(array(
+			'nama_page' => 'Data P3KE', 
+			'content' => '[data_p3ke]',
+        	'show_header' => 0,
+        	'update' => 1,
+        	'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
 		$petunjuk_penggunaan = $this->functions->generatePage(array(
 			'nama_page' => 'Petunjuk Penggunaan SATSET',
 			'content' => '[petunjuk_penggunaan_satset]',
@@ -188,6 +197,10 @@ class Wp_Satset_Admin {
 	            		<li><a target="_blank" href="'.$peta_satset['url'].'">'.$peta_satset['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$peta_batas_desa['url'].'">'.$peta_batas_desa['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$peta_batas_kecamatan['url'].'">'.$peta_batas_kecamatan['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$data_p3ke['url'].'">'.$data_p3ke['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$petunjuk_penggunaan['url'].'">'.$petunjuk_penggunaan['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$dokumentasi_sistem['url'].'">'.$dokumentasi_sistem['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$tanggapan_publik['url'].'">'.$tanggapan_publik['title'].'</a></li>
 	            	</ol>
 		        	' ),
 	            Field::make( 'text', 'crb_apikey_satset', 'API KEY' )
