@@ -161,6 +161,15 @@ class Wp_Satset_Admin {
 			'post_status' => 'publish'
 		));
 
+		$data_stunting = $this->functions->generatePage(array(
+			'nama_page' => 'Data Stunting', 
+			'content' => '[data_stunting]',
+        	'show_header' => 0,
+        	'update' => 1,
+        	'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
 		$petunjuk_penggunaan = $this->functions->generatePage(array(
 			'nama_page' => 'Petunjuk Penggunaan SATSET',
 			'content' => '[petunjuk_penggunaan_satset]',
@@ -198,6 +207,7 @@ class Wp_Satset_Admin {
 	            		<li><a target="_blank" href="'.$peta_batas_desa['url'].'">'.$peta_batas_desa['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$peta_batas_kecamatan['url'].'">'.$peta_batas_kecamatan['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_p3ke['url'].'">'.$data_p3ke['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$data_stunting['url'].'">'.$data_stunting['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$petunjuk_penggunaan['url'].'">'.$petunjuk_penggunaan['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$dokumentasi_sistem['url'].'">'.$dokumentasi_sistem['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$tanggapan_publik['url'].'">'.$tanggapan_publik['title'].'</a></li>
@@ -411,11 +421,29 @@ class Wp_Satset_Admin {
 		        		</style>
 		        	' ),
 		        Field::make( 'html', 'crb_p3ke_upload_html' )
-	            	->set_html( '<h3>Import EXCEL data P3KE</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePicked(event);"><br>Contoh format file excel bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_p3ke.xlsx">download di sini</a>. Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
+	            	->set_html( '<h3>Import EXCEL data P3KE</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePickedSatset(event);"><br>Contoh format file excel bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_p3ke.xlsx">download di sini</a>. Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
 		        Field::make( 'html', 'crb_p3ke_satset' )
 	            	->set_html( 'Data JSON : <textarea id="data-excel" class="cf-select__input"></textarea>' ),
 		        Field::make( 'html', 'crb_p3ke_save_button' )
 	            	->set_html( '<a onclick="import_excel_p3ke(); return false" href="javascript:void(0);" class="button button-primary">Import WP</a>' )
+	        ) );
+
+		Container::make( 'theme_options', __( 'Data Stunting' ) )
+			->set_page_parent( $basic_options_container )
+			->add_fields( array(
+		    	Field::make( 'html', 'crb_stunting_hide_sidebar' )
+		        	->set_html( '
+		        		<style>
+		        			.postbox-container { display: none; }
+		        			#poststuff #post-body.columns-2 { margin: 0 !important; }
+		        		</style>
+		        	' ),
+		        Field::make( 'html', 'crb_stunting_upload_html' )
+	            	->set_html( '<h3>Import EXCEL data stunting</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePickedSatset(event);"><br>Contoh format file excel bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_stunting.xlsx">download di sini</a>. Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
+		        Field::make( 'html', 'crb_stunting_satset' )
+	            	->set_html( 'Data JSON : <textarea id="data-excel" class="cf-select__input"></textarea>' ),
+		        Field::make( 'html', 'crb_stunting_save_button' )
+	            	->set_html( '<a onclick="import_excel_stunting(); return false" href="javascript:void(0);" class="button button-primary">Import WP</a>' )
 	        ) );
 	}
 
@@ -434,7 +462,7 @@ class Wp_Satset_Admin {
 			foreach ($_POST['data'] as $k => $data) {
 				$newData = array();
 				foreach($data as $kk => $vv){
-					$newData[trim($kk)] = $vv;
+					$newData[trim(preg_replace('/\s+/', ' ', $kk))] = trim(preg_replace('/\s+/', ' ', $vv));
 				}
 				$data_db = array(
 					'id_p3ke' => $newData['id_p3ke'],
@@ -495,6 +523,104 @@ class Wp_Satset_Admin {
 					$ret['data']['insert']++;
 				}else{
 					$wpdb->update("data_p3ke", $data_db, array(
+						"id" => $cek_id
+					));
+					$ret['data']['update']++;
+				}
+				if(!empty($wpdb->last_error)){
+					$ret['data']['error'][] = array($wpdb->last_error, $data_db);
+				};
+
+			}
+		} else {
+			$ret['status'] = 'error';
+			$ret['message'] = 'Format Salah!';
+		}
+		die(json_encode($ret));
+	}
+
+	function import_excel_stunting(){
+		global $wpdb;
+		$ret = array(
+			'status'	=> 'success',
+			'message'	=> 'Berhasil import excel!'
+		);
+		if (!empty($_POST)) {
+			$ret['data'] = array(
+				'insert' => 0, 
+				'update' => 0,
+				'error' => array()
+			);
+			foreach ($_POST['data'] as $k => $data) {
+				$newData = array();
+				foreach($data as $kk => $vv){
+					$newData[trim(preg_replace('/\s+/', ' ', $kk))] = trim(preg_replace('/\s+/', ' ', $vv));
+				}
+				$data_db = array(
+					'nik' => $newData['nik'],
+				    'nama' => $newData['nama'],
+				    'jenis_kelamin' => $newData['jenis_kelamin'],
+				    'tanggal_lahir' => $newData['tanggal_lahir'],
+				    'bb_lahir' => $newData['bb_lahir'],
+				    'tb_lahir' => $newData['tb_lahir'],
+				    'nama_ortu' => $newData['nama_ortu'],
+				    'provinsi' => $newData['provinsi'],
+				    'kabkot' => $newData['kabkot'],
+				    'kecamatan' => $newData['kecamatan'],
+				    'puskesmas' => $newData['puskesmas'],
+				    'desa' => $newData['desa'],
+				    'posyandu' => $newData['posyandu'],
+				    'rt' => $newData['rt'],
+				    'rw' => $newData['rw'],
+				    'alamat' => $newData['alamat'],
+				    'usia_saat_ukur' => $newData['usia_saat_ukur'],
+				    'tanggal_pengukuran' => $newData['tanggal_pengukuran'],
+				    'berat' => $newData['berat'],
+				    'tinggi' => $newData['tinggi'],
+				    'lingkar_lengan_atas' => $newData['lingkar_lengan_atas'],
+				    'bb_per_u' => $newData['bb_per_u'],
+				    'zs_bb_per_u' => $newData['zs_bb_per_u'],
+				    'tb_per_u' => $newData['tb_per_u'],
+				    'zs_tb_per_u' => $newData['zs_tb_per_u'],
+				    'bb_per_tb' => $newData['bb_per_tb'],
+				    'zs_bb_per_tb' => $newData['zs_bb_per_tb'],
+				    'naik_berat_badan' => $newData['naik_berat_badan'],
+				    'pmt_diterima_per_kg' => $newData['pmt_diterima_per_kg'],
+				    'jml_vit_a' => $newData['jml_vit_a'],
+				    'kpsp' => $newData['kpsp'],
+				    'kia' => $newData['kia'],
+				);
+				$wpdb->last_error = "";
+				if(empty($newData['nik'])){
+					$cek_id = $wpdb->get_var($wpdb->prepare("
+						SELECT 
+							id 
+						from data_stunting 
+						where nama=%s 
+							and provinsi=%s
+							and kabkot=%s
+							and kecamatan=%s
+							and desa=%s
+							and nik is null"
+						, $newData['nama'], $newData['provinsi'], $newData['kabkot'], $newData['kecamatan'], $newData['desa']));
+				}else{
+					$cek_id = $wpdb->get_var($wpdb->prepare("
+						SELECT 
+							id 
+						from data_stunting 
+						where nama=%s 
+							and provinsi=%s
+							and kabkot=%s
+							and kecamatan=%s
+							and desa=%s
+							and nik=%s"
+						, $newData['nama'], $newData['provinsi'], $newData['kabkot'], $newData['kecamatan'], $newData['desa'], $newData['nik']));
+				}
+				if(empty($cek_id)){
+					$wpdb->insert("data_stunting", $data_db);
+					$ret['data']['insert']++;
+				}else{
+					$wpdb->update("data_stunting", $data_db, array(
 						"id" => $cek_id
 					));
 					$ret['data']['update']++;

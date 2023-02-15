@@ -166,6 +166,7 @@ class Wp_Satset {
 
 		$this->loader->add_action('carbon_fields_register_fields', $plugin_admin, 'crb_attach_satset_options');
 		$this->loader->add_action('wp_ajax_import_excel_p3ke',  $plugin_admin, 'import_excel_p3ke');
+		$this->loader->add_action('wp_ajax_import_excel_stunting',  $plugin_admin, 'import_excel_stunting');
 
 	}
 
@@ -189,6 +190,7 @@ class Wp_Satset {
 		add_shortcode('peta_satset_kecamatan', array($plugin_public, 'peta_satset_kecamatan'));
 		add_shortcode('peta_satset', array($plugin_public, 'peta_satset'));
 		add_shortcode('data_p3ke', array($plugin_public, 'data_p3ke'));
+		add_shortcode('data_stunting', array($plugin_public, 'data_stunting'));
 
 	}
 
