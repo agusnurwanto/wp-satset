@@ -519,4 +519,8 @@ class Wp_Satset_Public {
 		", ARRAY_A);
 		return $data;
 	}
+
+	function number_format($number){
+		return number_format($number, 0,",",".");
+	}
 }

@@ -16,6 +16,7 @@ foreach($p3ke_all as $data){
 }
 // print_r($p3ke_all); die();
 
+$total_all = 0;
 $body =  '';
 foreach($maps_all as $i => $desa){
     $index = $desa['data']['provinsi'].'.'.$desa['data']['kab_kot'].'.'.$desa['data']['kecamatan'].'.'.$desa['data']['desa'];
@@ -78,6 +79,7 @@ foreach($maps_all as $i => $desa){
             <td class='text-center'><a style='margin-bottom: 5px;' onclick='cari_alamat(\"".$search."\"); return false;' href='#' class='btn btn-danger'>Map</a></td>
         </tr>
     ";
+    $total_all += $total_p3ke;
 }
 ?>
 <h1 class="text-center">Peta Sebaran P3KE (Pensasaran Percepatan Penghapusan Kemiskinan Ekstrem)<br><?php echo $this->getNamaDaerah(); ?></h1>
@@ -89,7 +91,7 @@ foreach($maps_all as $i => $desa){
         <li>Warna kuning berarti jumlah P3KE antara 51 sampai 150 keluarga</li>
         <li>Warna merah berarti jumlah P3KE diatas 150 keluarga</li>
     </ol>
-    <h2 class="text-center">Tabel Data</h1>
+    <h2 class="text-center">Tabel Data P3KE<br>Total <?php echo $this->number_format($total_all); ?> Keluarga</h1>
     <div style="width: 100%; overflow: auto; height: 100vh;">
         <table class="table table-bordered" id="table-data">
             <thead>

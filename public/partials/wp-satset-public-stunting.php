@@ -16,6 +16,7 @@ foreach($stunting_all as $data){
 }
 // print_r($stunting_all_desa); die();
 
+$total_all = 0;
 $body =  '';
 foreach($maps_all as $i => $desa){
     $index = $desa['data']['provinsi'].'.'.$desa['data']['kab_kot'].'.'.$desa['data']['kecamatan'].'.'.$desa['data']['desa'];
@@ -86,9 +87,10 @@ foreach($maps_all as $i => $desa){
             <td class='text-center'><a style='margin-bottom: 5px;' onclick='cari_alamat(\"".$search."\"); return false;' href='#' class='btn btn-danger'>Map</a></td>
         </tr>
     ";
+    $total_all += $total_stunting;
 }
 ?>
-<h1 class="text-center">Peta Batas Desa/Kelurahan<br><?php echo $this->getNamaDaerah(); ?></h1>
+<h1 class="text-center">Peta Sebaran Stunting<br><?php echo $this->getNamaDaerah(); ?></h1>
 <div style="width: 95%; margin: 0 auto; height: 90vh; padding-bottom: 75px;">
     <div id="map-canvas" style="width: 100%; height: 100%;"></div>
     <h3 style="margin-top: 20px;">Keterangan</h3>
@@ -97,7 +99,7 @@ foreach($maps_all as $i => $desa){
         <li>Warna kuning berarti jumlah stunting antara 6 sampai 20 anak</li>
         <li>Warna merah berarti jumlah stunting diatas 20 anak</li>
     </ol>
-    <h2 class="text-center">Tabel Data</h1>
+    <h2 class="text-center">Tabel Data Stunting<br>Total <?php echo $this->number_format($total_all); ?> Anak</h1>
     <div style="width: 100%; overflow: auto; height: 100vh;">
         <table class="table table-bordered" id="table-data">
             <thead>
