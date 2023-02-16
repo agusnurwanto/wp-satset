@@ -104,3 +104,26 @@ CREATE TABLE `data_stunting` (
     `kia` VARCHAR(100) DEFAULT NULL,
     PRIMARY KEY  (id)
 );
+
+CREATE TABLE `data_tbc` (
+    `id` int(11) NOT NULL auto_increment,
+    `provinsi` TEXT DEFAULT NULL,
+    `kabkot` TEXT DEFAULT NULL,
+    `kecamatan` TEXT DEFAULT NULL,
+    `desa` TEXT DEFAULT NULL,
+    `tanggal_register` TEXT DEFAULT NULL,
+    `no_reg_fasyankes` TEXT DEFAULT NULL,
+    `no_reg_kabkot` TEXT DEFAULT NULL,
+    `nik` TEXT DEFAULT NULL,
+    `nama` TEXT DEFAULT NULL,
+    `umur` INT(11) DEFAULT NULL,
+    `jenis_kelamin` VARCHAR(4) DEFAULT NULL,
+    `alamat` TEXT DEFAULT NULL,
+    `pindahan_dari_fasyankes` TEXT DEFAULT NULL,
+    `tindak_lanjut` TEXT DEFAULT NULL,
+    `tanggal_mulai_pengobatan` TEXT DEFAULT NULL,
+    `hasil_akhir_pengobatan` TEXT DEFAULT NULL,
+    `status_pengobatan` TEXT DEFAULT NULL,
+    `keterangan` TEXT DEFAULT NULL,
+    PRIMARY KEY  (id)
+);
