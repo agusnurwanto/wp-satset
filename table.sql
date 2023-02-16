@@ -127,3 +127,21 @@ CREATE TABLE `data_tbc` (
     `keterangan` TEXT DEFAULT NULL,
     PRIMARY KEY  (id)
 );
+
+CREATE TABLE `data_rtlh` (
+    `id` int(11) NOT NULL auto_increment,
+    `nik` TEXT DEFAULT NULL,
+    `nama` TEXT DEFAULT NULL,
+    `alamat` TEXT DEFAULT NULL,
+    `provinsi` TEXT DEFAULT NULL,
+    `kabkot` TEXT DEFAULT NULL,
+    `kecamatan` TEXT DEFAULT NULL,
+    `desa` TEXT DEFAULT NULL,
+    `rw` VARCHAR(5) DEFAULT NULL,
+    `rt` VARCHAR(5) DEFAULT NULL,
+    `nilai_bantuan` double DEFAULT NULL,
+    `lpj` TEXT DEFAULT NULL,
+    `tgl_lpj` TEXT DEFAULT NULL,
+    `sumber_dana` TEXT DEFAULT NULL,
+    PRIMARY KEY  (id)
+);

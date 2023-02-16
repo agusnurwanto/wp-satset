@@ -179,6 +179,15 @@ class Wp_Satset_Admin {
 			'post_status' => 'publish'
 		));
 
+		$data_rtlh = $this->functions->generatePage(array(
+			'nama_page' => 'Data RTLH', 
+			'content' => '[data_rtlh]',
+        	'show_header' => 0,
+        	'update' => 1,
+        	'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
 		$petunjuk_penggunaan = $this->functions->generatePage(array(
 			'nama_page' => 'Petunjuk Penggunaan SATSET',
 			'content' => '[petunjuk_penggunaan_satset]',
@@ -218,6 +227,7 @@ class Wp_Satset_Admin {
 	            		<li><a target="_blank" href="'.$data_p3ke['url'].'">'.$data_p3ke['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_stunting['url'].'">'.$data_stunting['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_tbc['url'].'">'.$data_tbc['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$data_rtlh['url'].'">'.$data_rtlh['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$petunjuk_penggunaan['url'].'">'.$petunjuk_penggunaan['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$dokumentasi_sistem['url'].'">'.$dokumentasi_sistem['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$tanggapan_publik['url'].'">'.$tanggapan_publik['title'].'</a></li>
@@ -472,6 +482,24 @@ class Wp_Satset_Admin {
 	            	->set_html( 'Data JSON : <textarea id="data-excel" class="cf-select__input"></textarea>' ),
 		        Field::make( 'html', 'crb_tbc_save_button' )
 	            	->set_html( '<a onclick="import_excel_tbc(); return false" href="javascript:void(0);" class="button button-primary">Import WP</a>' )
+	        ) );
+
+		Container::make( 'theme_options', __( 'Data RTLH' ) )
+			->set_page_parent( $basic_options_container )
+			->add_fields( array(
+		    	Field::make( 'html', 'crb_rtlh_hide_sidebar' )
+		        	->set_html( '
+		        		<style>
+		        			.postbox-container { display: none; }
+		        			#poststuff #post-body.columns-2 { margin: 0 !important; }
+		        		</style>
+		        	' ),
+		        Field::make( 'html', 'crb_rtlh_upload_html' )
+	            	->set_html( '<h3>Import EXCEL data rtlh</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePickedSatset(event);"><br>Contoh format file excel bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_rtlh.xlsx">download di sini</a>. Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
+		        Field::make( 'html', 'crb_rtlh_satset' )
+	            	->set_html( 'Data JSON : <textarea id="data-excel" class="cf-select__input"></textarea>' ),
+		        Field::make( 'html', 'crb_rtlh_save_button' )
+	            	->set_html( '<a onclick="import_excel_rtlh(); return false" href="javascript:void(0);" class="button button-primary">Import WP</a>' )
 	        ) );
 	}
 
@@ -753,6 +781,86 @@ class Wp_Satset_Admin {
 					$ret['data']['insert']++;
 				}else{
 					$wpdb->update("data_tbc", $data_db, array(
+						"id" => $cek_id
+					));
+					$ret['data']['update']++;
+				}
+				if(!empty($wpdb->last_error)){
+					$ret['data']['error'][] = array($wpdb->last_error, $data_db);
+				};
+
+			}
+		} else {
+			$ret['status'] = 'error';
+			$ret['message'] = 'Format Salah!';
+		}
+		die(json_encode($ret));
+	}
+
+	function import_excel_rtlh(){
+		global $wpdb;
+		$ret = array(
+			'status'	=> 'success',
+			'message'	=> 'Berhasil import excel!'
+		);
+		if (!empty($_POST)) {
+			$ret['data'] = array(
+				'insert' => 0, 
+				'update' => 0,
+				'error' => array()
+			);
+			foreach ($_POST['data'] as $k => $data) {
+				$newData = array();
+				foreach($data as $kk => $vv){
+					$newData[trim(preg_replace('/\s+/', ' ', $kk))] = trim(preg_replace('/\s+/', ' ', $vv));
+				}
+				$data_db = array(
+				    'provinsi' => $newData['provinsi'],
+				    'kabkot' => $newData['kabkot'],
+				    'kecamatan' => $newData['kecamatan'],
+				    'desa' => $newData['desa'],
+				    'nik' => $newData['nik'],
+				    'nama' => $newData['nama'],
+				    'alamat' => $newData['alamat'],
+				    'rw' => $newData['rw'],
+				    'rt' => $newData['rt'],
+				    'nilai_bantuan' => $newData['nilai_bantuan'],
+				    'lpj' => $newData['lpj'],
+				    'tgl_lpj' => $newData['tgl_lpj'],
+				    'sumber_dana' => $newData['sumber_dana'],
+				);
+				// print_r($data_db); die();
+				$wpdb->last_error = "";
+				if(empty($newData['nik'])){
+					$cek_id = $wpdb->get_var($wpdb->prepare("
+						SELECT 
+							id 
+						from data_rtlh 
+						where nama=%s 
+							and provinsi=%s
+							and kabkot=%s
+							and kecamatan=%s
+							and desa=%s
+							and nik is null"
+						, $newData['nama'], $newData['provinsi'], $newData['kabkot'], $newData['kecamatan'], $newData['desa']));
+				}else{
+					$cek_id = $wpdb->get_var($wpdb->prepare("
+						SELECT 
+							id 
+						from data_rtlh 
+						where nama=%s 
+							and provinsi=%s
+							and kabkot=%s
+							and kecamatan=%s
+							and desa=%s
+							and nik=%s"
+						, $newData['nama'], $newData['provinsi'], $newData['kabkot'], $newData['kecamatan'], $newData['desa'], $newData['nik']));
+				}
+				if(empty($cek_id)){
+					$wpdb->insert("data_rtlh", $data_db);
+					$ret['data']['insert']++;
+				}else{
+					$wpdb->update("data_rtlh", $data_db, array(
 						"id" => $cek_id
 					));
 					$ret['data']['update']++;

@@ -178,6 +178,14 @@ class Wp_Satset_Public {
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-tbc.php';
 	}
 
+	function data_rtlh(){
+		// untuk disable render shortcode di halaman edit page/post
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-rtlh.php';
+	}
+
 	function peta_satset(){
 		// untuk disable render shortcode di halaman edit page/post
 		if(!empty($_GET) && !empty($_GET['post'])){
@@ -540,6 +548,24 @@ class Wp_Satset_Public {
 			SELECT 
 				* 
 			FROM data_tbc 
+			WHERE $where
+			ORDER BY provinsi, kabkot, kecamatan
+		", ARRAY_A);
+		return $data;
+	}
+
+	function get_rtlh(){
+		global $wpdb;
+		$prov = get_option('_crb_prov_satset');
+		$where = " provinsi='$prov'";
+		$kab = get_option('_crb_kab_satset');
+		if(!empty($kab)){
+			$where .= " and kabkot='$kab'";
+		}
+		$data = $wpdb->get_results("
+			SELECT 
+				* 
+			FROM data_rtlh 
 			WHERE $where
 			ORDER BY provinsi, kabkot, kecamatan
 		", ARRAY_A);

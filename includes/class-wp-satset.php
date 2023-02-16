@@ -169,6 +169,7 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_import_excel_stunting',  $plugin_admin, 'import_excel_stunting');
 		$this->loader->add_action('wp_ajax_import_excel_stunting',  $plugin_admin, 'import_excel_stunting');
 		$this->loader->add_action('wp_ajax_import_excel_tbc',  $plugin_admin, 'import_excel_tbc');
+		$this->loader->add_action('wp_ajax_import_excel_rtlh',  $plugin_admin, 'import_excel_rtlh');
 
 	}
 
@@ -194,6 +195,7 @@ class Wp_Satset {
 		add_shortcode('data_p3ke', array($plugin_public, 'data_p3ke'));
 		add_shortcode('data_stunting', array($plugin_public, 'data_stunting'));
 		add_shortcode('data_tbc', array($plugin_public, 'data_tbc'));
+		add_shortcode('data_rtlh', array($plugin_public, 'data_rtlh'));
 
 	}
 
