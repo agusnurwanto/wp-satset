@@ -145,3 +145,24 @@ CREATE TABLE `data_rtlh` (
     `sumber_dana` TEXT DEFAULT NULL,
     PRIMARY KEY  (id)
 );
+
+CREATE TABLE `data_dtks` (
+    `id` int(11) NOT NULL auto_increment,
+    `NOKK` TEXT DEFAULT NULL,
+    `NIK` TEXT DEFAULT NULL,
+    `Nama` TEXT DEFAULT NULL,
+    `Alamat` TEXT DEFAULT NULL,
+    `FIRST_SK` TEXT DEFAULT NULL,
+    `padankan_at` TEXT DEFAULT NULL,
+    `BPNT` TEXT DEFAULT NULL,
+    `BST` TEXT DEFAULT NULL,
+    `PKH` TEXT DEFAULT NULL,
+    `PBI` TEXT DEFAULT NULL,
+    `BNPT_PPKM` TEXT DEFAULT NULL,
+    `BLT` TEXT DEFAULT NULL,
+    `BLT_BBM` TEXT DEFAULT NULL,
+    `RUTILAHU` TEXT DEFAULT NULL,
+    `keterangan_meninggal` TEXT DEFAULT NULL,
+    `keterangan_disabilitas` TEXT DEFAULT NULL,
+    PRIMARY KEY  (id)
+);

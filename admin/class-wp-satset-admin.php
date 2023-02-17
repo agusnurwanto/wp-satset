@@ -111,7 +111,6 @@ class Wp_Satset_Admin {
 			'nama_page' => 'Beranda / Homepage SATSET', 
 			'content' => '[satset_homepage]',
         	'show_header' => 0,
-        	'update' => 1,
         	'no_key' => 1,
 			'post_status' => 'publish'
 		));
@@ -119,8 +118,7 @@ class Wp_Satset_Admin {
 		$peta_satset = $this->functions->generatePage(array(
 			'nama_page' => 'Peta Data Terpadu', 
 			'content' => '[peta_satset]',
-        	'show_header' => 0,
-        	'update' => 1,
+        	'show_header' => 1,
         	'no_key' => 1,
 			'post_status' => 'publish'
 		));
@@ -128,8 +126,7 @@ class Wp_Satset_Admin {
 		$peta_batas_desa = $this->functions->generatePage(array(
 			'nama_page' => 'Peta Batas Desa', 
 			'content' => '[peta_satset_desa]',
-        	'show_header' => 0,
-        	'update' => 1,
+        	'show_header' => 1,
         	'no_key' => 1,
 			'post_status' => 'publish'
 		));
@@ -137,8 +134,7 @@ class Wp_Satset_Admin {
 		$peta_batas_kecamatan = $this->functions->generatePage(array(
 			'nama_page' => 'Peta Batas Kecamatan', 
 			'content' => '[peta_satset_kecamatan]',
-        	'show_header' => 0,
-        	'update' => 1,
+        	'show_header' => 1,
         	'no_key' => 1,
 			'post_status' => 'publish'
 		));
@@ -146,8 +142,7 @@ class Wp_Satset_Admin {
 		$conversi_peta_satset = $this->functions->generatePage(array(
 			'nama_page' => 'Conversi Data SHP ke GEOJSON', 
 			'content' => '[conversi_peta_satset]',
-        	'show_header' => 0,
-        	'update' => 1,
+        	'show_header' => 1,
         	'no_key' => 1,
 			'post_status' => 'publish'
 		));
@@ -155,8 +150,7 @@ class Wp_Satset_Admin {
 		$data_p3ke = $this->functions->generatePage(array(
 			'nama_page' => 'Data P3KE', 
 			'content' => '[data_p3ke]',
-        	'show_header' => 0,
-        	'update' => 1,
+        	'show_header' => 1,
         	'no_key' => 1,
 			'post_status' => 'publish'
 		));
@@ -164,8 +158,7 @@ class Wp_Satset_Admin {
 		$data_stunting = $this->functions->generatePage(array(
 			'nama_page' => 'Data Stunting', 
 			'content' => '[data_stunting]',
-        	'show_header' => 0,
-        	'update' => 1,
+        	'show_header' => 1,
         	'no_key' => 1,
 			'post_status' => 'publish'
 		));
@@ -173,8 +166,7 @@ class Wp_Satset_Admin {
 		$data_tbc = $this->functions->generatePage(array(
 			'nama_page' => 'Data TBC', 
 			'content' => '[data_tbc]',
-        	'show_header' => 0,
-        	'update' => 1,
+        	'show_header' => 1,
         	'no_key' => 1,
 			'post_status' => 'publish'
 		));
@@ -182,8 +174,15 @@ class Wp_Satset_Admin {
 		$data_rtlh = $this->functions->generatePage(array(
 			'nama_page' => 'Data RTLH', 
 			'content' => '[data_rtlh]',
-        	'show_header' => 0,
-        	'update' => 1,
+        	'show_header' => 1,
+        	'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
+		$data_dtks = $this->functions->generatePage(array(
+			'nama_page' => 'Data DTKS', 
+			'content' => '[data_dtks]',
+        	'show_header' => 1,
         	'no_key' => 1,
 			'post_status' => 'publish'
 		));
@@ -228,6 +227,7 @@ class Wp_Satset_Admin {
 	            		<li><a target="_blank" href="'.$data_stunting['url'].'">'.$data_stunting['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_tbc['url'].'">'.$data_tbc['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_rtlh['url'].'">'.$data_rtlh['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$data_dtks['url'].'">'.$data_dtks['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$petunjuk_penggunaan['url'].'">'.$petunjuk_penggunaan['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$dokumentasi_sistem['url'].'">'.$dokumentasi_sistem['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$tanggapan_publik['url'].'">'.$tanggapan_publik['title'].'</a></li>
@@ -500,6 +500,17 @@ class Wp_Satset_Admin {
 	            	->set_html( 'Data JSON : <textarea id="data-excel" class="cf-select__input"></textarea>' ),
 		        Field::make( 'html', 'crb_rtlh_save_button' )
 	            	->set_html( '<a onclick="import_excel_rtlh(); return false" href="javascript:void(0);" class="button button-primary">Import WP</a>' )
+	        ) );
+
+		Container::make( 'theme_options', __( 'Data DTKS' ) )
+			->set_page_parent( $basic_options_container )
+			->add_fields( array(
+		        Field::make( 'html', 'crb_dtks_satset_server' )
+	            	->set_html( 'Alamat server WP-SIKS' ),
+		        Field::make( 'html', 'crb_dtks_satset_api_key' )
+	            	->set_html( 'API KEY WP-SIKS' ),
+		        Field::make( 'html', 'crb_dtks_save_button' )
+	            	->set_html( '<a onclick="get_data_dtks(); return false" href="javascript:void(0);" class="button button-primary">Singkronisasi Data</a>' )
 	        ) );
 	}
 
@@ -869,6 +880,42 @@ class Wp_Satset_Admin {
 					$ret['data']['error'][] = array($wpdb->last_error, $data_db);
 				};
 
+			}
+		} else {
+			$ret['status'] = 'error';
+			$ret['message'] = 'Format Salah!';
+		}
+		die(json_encode($ret));
+	}
+
+	public function get_data_dtks(){
+		global $wpdb;
+		$ret = array(
+			'status'	=> 'success',
+			'message'	=> 'Berhasil import excel!'
+		);
+		if (!empty($_POST)) {
+			$url = get_option('_crb_dtks_satset_server');
+			$api_key = get_option('_crb_dtks_satset_api_key');
+			if(empty($url)){
+				$ret['status'] = 'error';
+				$ret['message'] = 'Url server WP-SIKS tidak boleh kosong!';
+			}else if(empty($api_key)){
+				$ret['status'] = 'error';
+				$ret['message'] = 'API KEY WP-SIKS tidak boleh kosong!';
+			}
+			if($ret['status'] != 'error'){
+				$dtks = $this->functions->curl_post(array(
+					'url' => $url,
+					'data' => array(
+						'action' => 'get_data_dtks',
+						'api_key' => $api_key
+					)
+				));
+				$dtks = json_decode($dtks);
+				foreach($dtks as $data){
+					// simpan data ke db
+				}
 			}
 		} else {
 			$ret['status'] = 'error';

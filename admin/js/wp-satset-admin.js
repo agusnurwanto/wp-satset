@@ -322,3 +322,20 @@ function import_excel_rtlh(){
         });
     }
 }
+
+function get_data_dtks(argument) {
+	jQuery('#wrap-loading').show();
+	relayAjax({
+        url: ajaxurl,
+        type: 'post',
+        data: {
+            action: 'get_data_dtks'
+        },
+        success: function(res){
+            jQuery('#wrap-loading').hide();
+        },
+        error: function(e){
+            console.log('Error import excel', e);
+        }
+    });
+}
