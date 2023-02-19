@@ -47,7 +47,7 @@ function filePickedSatset(oEvent) {
     reader.readAsBinaryString(oFile);
 }
 
-function relayAjax(options, retries=20, delay=5000, timeout=90000){
+function relayAjax(options, retries=20, delay=5000, timeout=9000000){
     options.timeout = timeout;
     options.cache = false;
     jQuery.ajax(options)
@@ -323,19 +323,169 @@ function import_excel_rtlh(){
     }
 }
 
-function get_data_dtks(argument) {
-	jQuery('#wrap-loading').show();
+function get_data_desa(argument) {
+	show_loading();
 	relayAjax({
         url: ajaxurl,
         type: 'post',
         data: {
-            action: 'get_data_dtks'
+            action: 'get_data_desa'
         },
+        dataType: 'json',
         success: function(res){
-            jQuery('#wrap-loading').hide();
+            console.log('res', res);
+            if(res.status == 'error'){
+            	alert(res.message);
+            }else{
+				var body = '';
+				for(var b in res.data){
+					var id_kec = res.data[b].kec.provno+res.data[b].kec.kabkotno+res.data[b].kec.kecno;
+					body += ''
+						+'<tr style="background: #ebbcbc;">'
+							+'<td style="text-align: center;"><input class="data-kecamatan" type="checkbox" value="'+id_kec+'"></td>'
+							+'<td colspan="2">'+res.data[b].kec.kecamatan+'</td>'
+						+'</tr>';
+					res.data[b].desa.map(function(bb, ii){
+						body += ''
+							+'<tr>'
+								+'<td style="text-align: center;"><input provinsi="'+bb.provinsi+'" kabkot="'+bb.kab_kot+'" type="checkbox" id_kec="'+id_kec+'" value="'+id_kec+bb.desano+'"></td>'
+								+'<td>'+bb.kecamatan+'</td>'
+								+'<td>'+bb.desa+'</td>'
+							+'</tr>';
+					});
+				};
+
+	            var modal_desa = ''
+				  	+'<table id="konfirmasi-desa" style="width: 100%;">'
+				      	+'<thead>'
+				        	+'<tr style="background: #8997bd;">'
+				          		+'<th class="text-white"><input type="checkbox" id="modal_cek_all"></th>'
+				          		+'<th class="text-white" width="300">Kecamatan</th>'
+				          		+'<th class="text-white">Desa</th>'
+				        	+'</tr>'
+				      	+'</thead>'
+				      	+'<tbody>'+body+'</tbody>'
+				  	+'</table>';
+	            jQuery('#pilih-desa').html(modal_desa);
+	        }
+            hide_loading()
         },
         error: function(e){
             console.log('Error import excel', e);
         }
     });
 }
+
+function get_data_dtks(argument) {
+	var selected = [];
+	jQuery('#konfirmasi-desa tbody tr input[type="checkbox"]').map(function(i, b){
+		var checkbox = jQuery(b);
+		if(checkbox.is(':checked')){
+			var id_kec = checkbox.attr('id_kec');
+			if(
+				id_kec != '' 
+				&& typeof id_kec != 'undefined'
+			){
+				var tr = checkbox.closest('tr');
+				selected.push({
+					provinsi: checkbox.attr('provinsi'),
+					kabkot: checkbox.attr('kabkot'),
+					kecamatan: tr.find('td').eq(1).text(),
+					desa_kelurahan: tr.find('td').eq(2).text(),
+					id_kec: id_kec,
+					id_desa: checkbox.val()
+				});
+			};
+		}
+	});
+	if(selected.length == 0){
+		alert("Pilih desa dulu!");
+	}else{
+		show_loading();
+		var last = selected.length-1;
+		selected.reduce(function(sequence, nextData){
+            return sequence.then(function(current_data){
+                return new Promise(function(resolve_reduce, reject_reduce){
+                	pesan_loading('Singkronisasi data '+JSON.stringify(current_data));
+					relayAjax({
+				        url: ajaxurl,
+				        type: 'post',
+				        data: {
+				            action: 'get_data_dtks',
+				            desa: current_data
+				        },
+				        success: function(res){
+				            resolve_reduce(nextData);
+				        },
+				        error: function(e){
+				            console.log('Error import excel', e);
+				        }
+				    });
+                })
+                .catch(function(e){
+                    console.log(e);
+                    return Promise.resolve(nextData);
+                });
+            })
+            .catch(function(e){
+                console.log(e);
+                return Promise.resolve(nextData);
+            });
+        }, Promise.resolve(selected[last]))
+        .then(function(){
+            hide_loading();
+            alert('Success singkronisasi data DTKS dari WP-SIKS!');
+        })
+        .catch(function(e){
+            console.log(e);
+            hide_loading();
+            alert('Error!');
+        });
+	}
+}
+
+function show_loading(){
+	jQuery('#wrap-loading').show();
+	jQuery('#persen-loading').html('');
+	jQuery('#persen-loading').attr('persen', '');
+	jQuery('#persen-loading').attr('total', '');
+}
+
+function hide_loading(){
+	jQuery('#wrap-loading').hide();
+	jQuery('#persen-loading').html('');
+	jQuery('#persen-loading').attr('persen', '');
+	jQuery('#persen-loading').attr('total', '');
+}
+
+function pesan_loading(pesan, loading=false){
+	if(loading){
+		pesan = 'LOADING...<br>'+pesan;
+	}
+	jQuery('#persen-loading').html(pesan);
+	console.log(pesan);
+}
+
+jQuery(document).ready(function(){
+	var loading = ''
+		+'<div id="wrap-loading">'
+	        +'<div class="lds-hourglass"></div>'
+	        +'<div id="persen-loading"></div>'
+	    +'</div>';
+	if(jQuery('#wrap-loading').length == 0){
+		jQuery('body').prepend(loading);
+	}
+
+	if(jQuery('#pilih-desa').length >= 1){
+		get_data_desa();
+	}
+	jQuery('body').on('click', '#modal_cek_all', function(){
+		var cek = jQuery(this).is(':checked');
+		jQuery('#konfirmasi-desa tbody tr input[type="checkbox"]').prop('checked', cek);
+	});
+	jQuery('body').on('click', '#konfirmasi-desa .data-kecamatan', function(){
+		var cek = jQuery(this).is(':checked');
+		var id_kec = jQuery(this).val();
+		jQuery('#konfirmasi-desa tbody tr input[type="checkbox"][id_kec="'+id_kec+'"]').prop('checked', cek);
+	});
+});

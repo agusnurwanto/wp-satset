@@ -505,12 +505,11 @@ class Wp_Satset_Admin {
 		Container::make( 'theme_options', __( 'Data DTKS' ) )
 			->set_page_parent( $basic_options_container )
 			->add_fields( array(
-		        Field::make( 'html', 'crb_dtks_satset_server' )
-	            	->set_html( 'Alamat server WP-SIKS' ),
-		        Field::make( 'html', 'crb_dtks_satset_api_key' )
-	            	->set_html( 'API KEY WP-SIKS' ),
+		        Field::make( 'text', 'crb_dtks_satset_server', 'Alamat server WP-SIKS' )
+		        	->set_default_value(site_url().'/wp-admin/admin-ajax.php'),
+		        Field::make( 'text', 'crb_dtks_satset_api_key', 'API KEY WP-SIKS' ),
 		        Field::make( 'html', 'crb_dtks_save_button' )
-	            	->set_html( '<a onclick="get_data_dtks(); return false" href="javascript:void(0);" class="button button-primary">Singkronisasi Data</a>' )
+	            	->set_html( '<div id="pilih-desa"></div><div style="text-align: center; margin: 10px;"><a onclick="get_data_dtks(); return false" href="javascript:void(0);" class="button button-primary">Singkronisasi Data</a></div>' )
 	        ) );
 	}
 
@@ -888,11 +887,57 @@ class Wp_Satset_Admin {
 		die(json_encode($ret));
 	}
 
+	function get_data_desa(){
+		global $wpdb;
+		$ret = array(
+			'status'	=> 'success',
+			'message'	=> 'Berhasil singkronisasi data DTKS dari WP-SIKS!'
+		);
+		if (!empty($_POST)) {
+			$prov = get_option('_crb_prov_satset');
+			$where = " provinsi='$prov'";
+			$kab = get_option('_crb_kab_satset');
+			if(!empty($kab)){
+				$where .= " and kab_kot='$kab'";
+			}
+			$data_desa = $wpdb->get_results("
+				SELECT 
+					provno,
+					kabkotno,
+					kecno,
+					desano,
+					provinsi,
+					kab_kot,
+					kecamatan,
+					desa 
+				FROM data_batas_desa 
+				WHERE $where
+					AND kecno is not null
+			", ARRAY_A);
+			$data_kec = array();
+
+			foreach($data_desa as $desa){
+				if(empty($data_kec[$desa['kecamatan']])){
+					$data_kec[$desa['kecamatan']] = array(
+						'kec' => $desa,
+						'desa' => array()
+					);
+				}
+				$data_kec[$desa['kecamatan']]['desa'][] = $desa;
+			}
+			$ret['data'] = $data_kec;
+		} else {
+			$ret['status'] = 'error';
+			$ret['message'] = 'Format Salah!';
+		}
+		die(json_encode($ret));
+	}
+
 	public function get_data_dtks(){
 		global $wpdb;
 		$ret = array(
 			'status'	=> 'success',
-			'message'	=> 'Berhasil import excel!'
+			'message'	=> 'Berhasil singkronisasi data DTKS dari WP-SIKS!'
 		);
 		if (!empty($_POST)) {
 			$url = get_option('_crb_dtks_satset_server');
@@ -905,16 +950,89 @@ class Wp_Satset_Admin {
 				$ret['message'] = 'API KEY WP-SIKS tidak boleh kosong!';
 			}
 			if($ret['status'] != 'error'){
-				$dtks = $this->functions->curl_post(array(
+				$id_desa = $_POST['desa'];
+				$ret_dtks = $this->functions->curl_post(array(
 					'url' => $url,
 					'data' => array(
 						'action' => 'get_data_dtks',
+						'kecamatan' => $_POST['desa']['kecamatan'],
+						'desa' => $_POST['desa']['desa_kelurahan'],
 						'api_key' => $api_key
 					)
 				));
-				$dtks = json_decode($dtks);
-				foreach($dtks as $data){
-					// simpan data ke db
+				$dtks = json_decode($ret_dtks, true);
+				if($dtks['status'] == 'success'){
+					foreach($dtks['data'] as $orang){
+						$cek_id = $wpdb->get_var($wpdb->prepare("
+							SELECT
+								id
+							FROM data_dtks_satset
+							WHERE id_desa = %s
+								AND Nama = %s
+								AND verifyid = %s
+						", $orang['id_desa'], $orang['Nama'], $orang['verifyid']));
+
+						$opsi = array(
+							'provinsi' => $_POST['desa']['provinsi'],
+							'kabkot' => $_POST['desa']['kabkot'],
+							'kecamatan' => strtoupper($orang['kecamatan']),
+							'desa' => strtoupper($orang['desa_kelurahan']),
+							'desa_kelurahan' => $orang['desa_kelurahan'],
+							'id_kec' => $orang['id_kec'],
+							'id_desa' => $orang['id_desa'],
+							'Alamat' => $orang['Alamat'],
+							'BLT' => $orang['BLT'],
+							'BLT_BBM' => $orang['BLT_BBM'],
+							'BNPT_PPKM' => $orang['BNPT_PPKM'],
+							'BPNT' => $orang['BPNT'],
+							'BST' => $orang['BST'],
+							'FIRST_SK' => $orang['FIRST_SK'],
+							'NIK' => $orang['NIK'],
+							'NOKK' => $orang['NOKK'],
+							'Nama' => $orang['Nama'],
+							'PBI' => $orang['PBI'],
+							'PKH' => $orang['PKH'],
+							'RUTILAHU' => $orang['RUTILAHU'],
+							'SEMBAKO_ADAPTIF' => $orang['SEMBAKO_ADAPTIF'],
+							'checkBtnHamil' => $orang['checkBtnHamil'],
+							'checkBtnVerifMeninggal' => $orang['checkBtnVerifMeninggal'],
+							'counter' => $orang['counter'],
+							'deleted_label' => $orang['deleted_label'],
+							'idsemesta' => $orang['idsemesta'],
+							'isAktifHamil' => $orang['isAktifHamil'],
+							'is_btn_dapodik' => $orang['is_btn_dapodik'],
+							'is_btn_hidupkan' => $orang['is_btn_hidupkan'],
+							'is_btn_padankan' => $orang['is_btn_padankan'],
+							'is_nonaktif' => $orang['is_nonaktif'],
+							'keterangan_disabilitas' => json_encode($orang['keterangan_disabilitas']),
+							'keterangan_meninggal' => $orang['keterangan_meninggal'],
+							'masih_hidup_label' => $orang['masih_hidup_label'],
+							'padankan_at' => $orang['padankan_at'],
+							'periode_blt' => $orang['periode_blt'],
+							'periode_blt_bbm' => $orang['periode_blt_bbm'],
+							'periode_bpnt' => $orang['periode_bpnt'],
+							'periode_bpnt_ppkm' => $orang['periode_bpnt_ppkm'],
+							'periode_bst' => $orang['periode_bst'],
+							'periode_pbi' => $orang['periode_pbi'],
+							'periode_pkh' => $orang['periode_pkh'],
+							'periode_rutilahu' => $orang['periode_rutilahu'],
+							'periode_sembako_adaptif' => $orang['periode_sembako_adaptif'],
+							'verifyid' => $orang['verifyid'],
+							'update_at' => date('Y-m-d H:i:s'),
+							'active' => 1
+						);
+						if(empty($cek_id)){
+							$wpdb->insert('data_dtks_satset', $opsi);
+						}else{
+							$wpdb->update('data_dtks_satset', $opsi, array(
+								'id' => $cek_id
+							));
+						}
+					}
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'data tidak ditemukan di WP-SIKS!';
+					$ret['data'] = $ret_dtks;
 				}
 			}
 		} else {

@@ -171,6 +171,7 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_import_excel_tbc',  $plugin_admin, 'import_excel_tbc');
 		$this->loader->add_action('wp_ajax_import_excel_rtlh',  $plugin_admin, 'import_excel_rtlh');
 		$this->loader->add_action('wp_ajax_get_data_dtks',  $plugin_admin, 'get_data_dtks');
+		$this->loader->add_action('wp_ajax_get_data_desa',  $plugin_admin, 'get_data_desa');
 
 	}
 
