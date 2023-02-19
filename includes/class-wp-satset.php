@@ -198,6 +198,7 @@ class Wp_Satset {
 		add_shortcode('data_stunting', array($plugin_public, 'data_stunting'));
 		add_shortcode('data_tbc', array($plugin_public, 'data_tbc'));
 		add_shortcode('data_rtlh', array($plugin_public, 'data_rtlh'));
+		add_shortcode('data_dtks', array($plugin_public, 'data_dtks'));
 
 	}
 

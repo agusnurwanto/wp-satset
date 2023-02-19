@@ -415,6 +415,7 @@ function get_data_dtks(argument) {
 				            desa: current_data
 				        },
 				        success: function(res){
+				        	console.log(res);
 				            resolve_reduce(nextData);
 				        },
 				        error: function(e){
