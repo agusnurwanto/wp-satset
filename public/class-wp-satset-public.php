@@ -590,10 +590,20 @@ class Wp_Satset_Public {
 		}
 		$data = $wpdb->get_results("
 			SELECT 
-				* 
+				provinsi, 
+				kabkot, 
+				kecamatan, 
+				desa,
+				BLT, 
+				BLT_BBM, 
+				BPNT, 
+				PKH, 
+				PBI,
+				COUNT(BLT) as jml
 			FROM data_dtks_satset 
 			WHERE $where
 				AND active=1
+			GROUP BY provinsi, kabkot, kecamatan, desa, BLT, BLT_BBM, BPNT, PKH, PBI
 			ORDER BY provinsi, kabkot, kecamatan
 		", ARRAY_A);
 		return $data;

@@ -24,57 +24,52 @@ foreach($maps_all as $i => $desa){
     $total_pkh = array();
     $total_pbi = array();
     if(!empty($dtks_all_desa[$index])){
-        $total_dtks = count($dtks_all_desa[$index]);
         foreach($dtks_all_desa[$index] as $orang){
-            if(empty($total_blt[$orang['BLT']])){
-                $total_blt[$orang['BLT']] = 0;
+            $total_dtks += $orang['jml'];
+            if($orang['BLT'] != 'TIDAK'){
+                if(empty($total_blt[$orang['BLT']])){
+                    $total_blt[$orang['BLT']] = 0;
+                }
+                $total_blt[$orang['BLT']] += $orang['jml'];
             }
-            $total_blt[$orang['BLT']]++;
-            if(empty($total_blt_bbm[$orang['BLT_BBM']])){
-                $total_blt_bbm[$orang['BLT_BBM']] = 0;
+            if($orang['BLT_BBM'] != 'TIDAK'){
+                if(empty($total_blt_bbm[$orang['BLT_BBM']])){
+                    $total_blt_bbm[$orang['BLT_BBM']] = 0;
+                }
+                $total_blt_bbm[$orang['BLT_BBM']] += $orang['jml'];
             }
-            $total_blt_bbm[$orang['BLT_BBM']]++;
-            if(empty($total_bpnt[$orang['BPNT']])){
-                $total_bpnt[$orang['BPNT']] = 0;
+            if($orang['BPNT'] != 'TIDAK'){
+                if(empty($total_bpnt[$orang['BPNT']])){
+                    $total_bpnt[$orang['BPNT']] = 0;
+                }
+                $total_bpnt[$orang['BPNT']] += $orang['jml'];
             }
-            $total_bpnt[$orang['BPNT']]++;
-            if(empty($total_pkh[$orang['PKH']])){
-                $total_pkh[$orang['PKH']] = 0;
+            if($orang['PKH'] != 'TIDAK'){
+                if(empty($total_pkh[$orang['PKH']])){
+                    $total_pkh[$orang['PKH']] = 0;
+                }
+                $total_pkh[$orang['PKH']] += $orang['jml'];
             }
-            $total_pkh[$orang['PKH']]++;
-            if(empty($total_pbi[$orang['PBI']])){
-                $total_pbi[$orang['PBI']] = 0;
+            if($orang['PBI'] != 'TIDAK'){
+                if(empty($total_pbi[$orang['PBI']])){
+                    $total_pbi[$orang['PBI']] = 0;
+                }
+                $total_pbi[$orang['PBI']] += $orang['jml'];
             }
-            $total_pbi[$orang['PBI']]++;
         }
         foreach($total_blt as $key => $data){
-            if($key == 'TIDAK'){
-                continue;
-            }
             $total_blt[$key] = $key.': '.$data;
         }
         foreach($total_blt_bbm as $key => $data){
-            if($key == 'TIDAK'){
-                continue;
-            }
             $total_blt_bbm[$key] = $key.': '.$data;
         }
         foreach($total_bpnt as $key => $data){
-            if($key == 'TIDAK'){
-                continue;
-            }
             $total_bpnt[$key] = $key.': '.$data;
         }
         foreach($total_pkh as $key => $data){
-            if($key == 'TIDAK'){
-                continue;
-            }
             $total_pkh[$key] = $key.': '.$data;
         }
         foreach($total_pbi as $key => $data){
-            if($key == 'TIDAK'){
-                continue;
-            }
             $total_pbi[$key] = $key.': '.$data;
         }
     }
@@ -94,11 +89,11 @@ foreach($maps_all as $i => $desa){
             <td class='text-center'>".$desa['data']['kecamatan']."</td>
             <td class='text-center'>".$desa['data']['desa']."</td>
             <td class='text-center'>".$total_dtks."</td>
-            <td>".implode('<br>', $total_blt)."</td>
-            <td>".implode('<br>', $total_blt_bbm)."</td>
-            <td>".implode('<br>', $total_bpnt)."</td>
-            <td>".implode('<br>', $total_pkh)."</td>
-            <td>".implode('<br>', $total_pbi)."</td>
+            <td>".implode('<hr>', $total_blt)."</td>
+            <td>".implode('<hr>', $total_blt_bbm)."</td>
+            <td>".implode('<hr>', $total_bpnt)."</td>
+            <td>".implode('<hr>', $total_pkh)."</td>
+            <td>".implode('<hr>', $total_pbi)."</td>
             <td class='text-center'><a style='margin-bottom: 5px;' onclick='cari_alamat(\"".$search."\"); return false;' href='#' class='btn btn-danger'>Map</a></td>
         </tr>
     ";
