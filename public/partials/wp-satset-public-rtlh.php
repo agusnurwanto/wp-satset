@@ -64,8 +64,8 @@ foreach($maps_all as $i => $desa){
 }
 ?>
 <h1 class="text-center">Peta Sebaran RTLH<br><?php echo $this->getNamaDaerah(); ?></h1>
-<div style="width: 95%; margin: 0 auto; height: 90vh; padding-bottom: 75px;">
-    <div id="map-canvas" style="width: 100%; height: 100%;"></div>
+<div style="width: 95%; margin: 0 auto; min-height: 90vh; padding-bottom: 75px;">
+    <div id="map-canvas" style="width: 100%; height: 400px;"></div>
     <h3 style="margin-top: 20px;">Keterangan</h3>
     <ol>
         <li>Warna hijau berarti jumlah RTLH antara 0 sampai 5 orang</li>
