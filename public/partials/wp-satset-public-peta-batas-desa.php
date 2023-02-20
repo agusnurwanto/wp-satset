@@ -19,8 +19,8 @@ foreach($maps_all as $desa){
 }
 ?>
 <h1 class="text-center">Peta Batas Desa/Kelurahan<br><?php echo $this->getNamaDaerah(); ?></h1>
-<div style="width: 95%; margin: 0 auto; height: 90vh; padding-bottom: 75px;">
-    <div id="map-canvas" style="width: 100%; height: 100%;"></div>
+<div style="width: 95%; margin: 0 auto; min-height: 90vh; padding-bottom: 75px;">
+    <div id="map-canvas" style="width: 100%; height: 400px;"></div>
     <h2 class="text-center">Tabel Data</h1>
     <table class="table table-bordered">
         <thead>
