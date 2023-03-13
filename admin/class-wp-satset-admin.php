@@ -211,7 +211,15 @@ class Wp_Satset_Admin {
 			'post_status' => 'publish'
 		));
 
-		$basic_options_container = Container::make( 'theme_options', __( 'SATSET Options' ) )
+		$cek_nik = $this->functions->generatePage(array(
+			'nama_page' => 'Cek NIK SATSET',
+			'content' => '[cek_nik_satset]',
+			'show_header' => 1,
+			'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
+		$basic_options_container = Container::make( 'theme_options', __( 'WP SATSET Options' ) )
 			->set_page_menu_position( 4 )
 	        ->add_fields( array(
 				Field::make( 'html', 'crb_satset_halaman_terkait' )
@@ -223,6 +231,7 @@ class Wp_Satset_Admin {
 	            		<li><a target="_blank" href="'.$peta_satset['url'].'">'.$peta_satset['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$peta_batas_desa['url'].'">'.$peta_batas_desa['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$peta_batas_kecamatan['url'].'">'.$peta_batas_kecamatan['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$cek_nik['url'].'">'.$cek_nik['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_p3ke['url'].'">'.$data_p3ke['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_stunting['url'].'">'.$data_stunting['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_tbc['url'].'">'.$data_tbc['title'].'</a></li>

@@ -193,6 +193,7 @@ class Wp_Satset {
 		add_shortcode('conversi_peta_satset', array($plugin_public, 'conversi_peta_satset'));
 		add_shortcode('peta_satset_desa', array($plugin_public, 'peta_satset_desa'));
 		add_shortcode('peta_satset_kecamatan', array($plugin_public, 'peta_satset_kecamatan'));
+		add_shortcode('cek_nik_satset', array($plugin_public, 'cek_nik_satset'));
 		add_shortcode('peta_satset', array($plugin_public, 'peta_satset'));
 		add_shortcode('data_p3ke', array($plugin_public, 'data_p3ke'));
 		add_shortcode('data_stunting', array($plugin_public, 'data_stunting'));
