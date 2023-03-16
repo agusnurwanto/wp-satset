@@ -620,4 +620,33 @@ class Wp_Satset_Public {
 	function number_format($number){
 		return number_format($number, 0,",",".");
 	}
+
+	public function cari_data_satset(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil get data!',
+			'data' => array()
+		);
+		if(strlen($_POST['nik']) >=3){
+			if (!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				$data = $wpdb->get_results($wpdb->prepare("
+					SELECT
+						*
+					FROM data_p3ke
+					WHERE nik like %s
+						OR kepala_keluarga like %s
+				", '%'.$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
+				$ret['data'] = $data;
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+
+		die(json_encode($ret));
+	}
 }

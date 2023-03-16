@@ -172,6 +172,7 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_import_excel_rtlh',  $plugin_admin, 'import_excel_rtlh');
 		$this->loader->add_action('wp_ajax_get_data_dtks',  $plugin_admin, 'get_data_dtks');
 		$this->loader->add_action('wp_ajax_get_data_desa',  $plugin_admin, 'get_data_desa');
+		
 
 	}
 
@@ -188,6 +189,8 @@ class Wp_Satset {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+
+		$this->loader->add_action('wp_ajax_cari_data_satset', $plugin_public, 'cari_data_satset');
 
 		add_shortcode('satset_homepage', array($plugin_public, 'satset_homepage'));
 		add_shortcode('conversi_peta_satset', array($plugin_public, 'conversi_peta_satset'));
