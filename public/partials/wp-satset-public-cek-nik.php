@@ -56,7 +56,7 @@
                                 html +='<td>'+value.kecamatan+'</td>';
                                 html +='<td>'+value.desa+'</td>';
                                 html +='<td>'+value.alamat+'</td>';
-                                html +='<td>'+value.Pekerjaan+'</td>';
+                                html +='<td>'+value.pekerjaan+'</td>';
                                 html +='<td>'+value.pendidikan+'</td>';
                                 html +='<td>'+value.rumah+'</td>';
                                 html +='<td>'+value.punya_tabungan+'</td>';
