@@ -41,7 +41,8 @@
                     alert(response.message);
                 }else{
                     let html = '';
-                    if(response.data.length > 0){
+                    if(response.data.dtks.length > 0){
+                        html +='<h4 class="text-center">Data P3KE</h4>';
                         response.data.map(function(value, index){
                             html +='<tr>';
                                 html +='<th scope="row">'+(index+1)+'</th>';
