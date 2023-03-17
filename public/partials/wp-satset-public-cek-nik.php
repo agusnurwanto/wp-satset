@@ -61,6 +61,7 @@
                                         +'<th class="text-center" style="width: 20px;">No</th>'
                                         +'<th class="text-center">NIK</th>'
                                         +'<th class="text-center">Kepala Keluarga</th>'
+                                        +'<th class="text-center">Jenis Kelamin</th>'
                                         +'<th class="text-center">Provinsi</th>'
                                         +'<th class="text-center">Kabupaten / Kota</th>'
                                         +'<th class="text-center">Kecamatan</th>'
