@@ -48,6 +48,7 @@
                                 html +='<td>'+value.id_p3ke+'</td>';
                                 html +='<td>'+value.kode_kemendagri+'</td>';
                                 html +='<td>'+value.nik+'</td>';
+                                html +='<td>'+value.padan_dukcapil+'</td>';
                                 html +='<td>'+value.kepala_keluarga+'</td>';
                                 html +='<td>'+value.jenis_kelamin+'</td>';
                                 html +='<td>'+value.tanggal_lahir+'</td>';
@@ -74,7 +75,6 @@
                                 html +='<td>'+value.penerima_pkh+'</td>';
                                 html +='<td>'+value.penerima_sembako+'</td>';
                                 html +='<td>'+value.resiko_stunting+'</td>';
-                                // html +='<td>'+value.padan_dukcapil+'</td>';
                             html +='</tr>';
                         })
                         var pesan = ''
@@ -85,6 +85,7 @@
                                         +'<th class="text-center">Id P3KE</th>'
                                         +'<th class="text-center">Kode Kemendagri</th>'
                                         +'<th class="text-center">NIK</th>'
+                                        +'<th class="text-center">Padan Dukcapil</th>'
                                         +'<th class="text-center">Kepala Keluarga</th>'
                                         +'<th class="text-center">Jenis Kelamin</th>'
                                         +'<th class="text-center">Tanggal Lahir</th>'
@@ -111,7 +112,6 @@
                                         +'<th class="text-center">Penerima Pkh</th>'
                                         +'<th class="text-center">Penerima Sembako</th>'
                                         +'<th class="text-center">Resiko Stunting</th>'
-                                        // +'<th class="text-center">Padan Dukcapil</th>'
                                     +'</tr>'
                                 +'</thead>'
                                 +'<tbody>'
