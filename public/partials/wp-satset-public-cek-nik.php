@@ -47,6 +47,7 @@
                                 html +='<th scope="row">'+(index+1)+'</th>';
                                 html +='<td>'+value.nik+'</td>';
                                 html +='<td>'+value.kepala_keluarga+'</td>';
+                                html +='<td>'+value.jenis_kelamin+'</td>';
                                 html +='<td>'+value.provinsi+'</td>';
                                 html +='<td>'+value.kabkot+'</td>';
                                 html +='<td>'+value.kecamatan+'</td>';
