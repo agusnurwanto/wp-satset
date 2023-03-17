@@ -61,6 +61,9 @@
                                         +'<th class="text-center" style="width: 20px;">No</th>'
                                         +'<th class="text-center">NIK</th>'
                                         +'<th class="text-center">Kepala Keluarga</th>'
+                                        +'<th class="text-center">Provinsi</th>'
+                                        +'<th class="text-center">Kabupaten / Kota</th>'
+                                        +'<th class="text-center">Kecamatan</th>'
                                         +'<th class="text-center">Desa</th>'
                                         +'<th class="text-center">Alamat</th>'
                                     +'</tr>'
@@ -69,7 +72,7 @@
                                     +html
                                 +'</tbody>'
                             +'</table>';
-                        jQuery('#data_body').html(html);
+                        jQuery('#pesan').html(pesan);
                     }else{
                         alert('Data tidak ditemukan!');
                     }
