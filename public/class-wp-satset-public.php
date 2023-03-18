@@ -637,7 +637,15 @@ class Wp_Satset_Public {
 					WHERE nik like %s
 						OR kepala_keluarga like %s
 				", '%'.$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
-				$ret['data'] = $data;
+				$data_stunting = $wpdb->get_results($wpdb->prepare("
+					SELECT
+						*
+					FROM data_stunting
+					WHERE nik like %s
+						OR kepala_keluarga like %s
+				", '%'.$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
+				$ret['data']['p3ke'] = $data;
+				$ret['data']['stunting'] = $data_stunting;
 			}else{
 				$ret['status']	= 'error';
 				$ret['message']	= 'Api key tidak ditemukan!';
