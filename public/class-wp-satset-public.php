@@ -633,7 +633,7 @@ class Wp_Satset_Public {
 				$data = $wpdb->get_results($wpdb->prepare("
 					SELECT
 						*
-					FROM data_p3ke
+					FROM data
 						OR kepala_keluarga like %s
 				", '%'.$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
 				$data_stunting = $wpdb->get_results($wpdb->prepare("
