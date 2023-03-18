@@ -41,9 +41,9 @@
                     alert(response.message);
                 }else{
                     let html = '';
-                    if(response.data.stunting.length > 0){
+                    if(response.data.length > 0){
                         html +='<h4 class="text-center">Data P3KE</h4>';
-                        response.data.stunting.map(function(value, index){
+                        response.data.map(function(value, index){
                             html +='<tr>';
                                 html +='<th scope="row">'+(index+1)+'</th>';
                                 html +='<td>'+value.id_p3ke+'</td>';
@@ -113,92 +113,6 @@
                                         +'<th class="text-center">Penerima Pkh</th>'
                                         +'<th class="text-center">Penerima Sembako</th>'
                                         +'<th class="text-center">Resiko Stunting</th>'
-                                    +'</tr>'
-                                +'</thead>'
-                                +'<tbody>'
-                                    +html
-                                +'</tbody>'
-                            +'</table>';
-                        jQuery('#pesan').html(pesan);
-                    }else{
-                        alert('Data tidak ditemukan!');
-                    }
-                if(response.data.stunting.length > 0){
-                        html +='<h4 class="text-center">Data Stunting</h4>';
-                        response.data.stunting.map(function(value, index){
-                            html +='<tr>';
-                                html +='<th scope="row">'+(index+1)+'</th>';
-                                html +='<td>'+value.nik+'</td>';
-                                html +='<td>'+value.nama+'</td>';
-                                html +='<td>'+value.jenis_kelamin+'</td>';
-                                html +='<td>'+value.tanggal_lahir+'</td>';
-                                html +='<td>'+value.bb_lahir+'</td>';
-                                html +='<td>'+value.tb_lahir+'</td>';
-                                html +='<td>'+value.nama_ortu+'</td>';
-                                html +='<td>'+value.provinsi+'</td>';
-                                html +='<td>'+value.kabkot+'</td>';
-                                html +='<td>'+value.kecamatan+'</td>';
-                                html +='<td>'+value.puskesmas+'</td>';
-                                html +='<td>'+value.desa+'</td>';
-                                html +='<td>'+value.posyandu+'</td>';
-                                html +='<td>'+value.rt+'</td>';
-                                html +='<td>'+value.rw+'</td>';
-                                html +='<td>'+value.alamat+'</td>';
-                                html +='<td>'+value.usia_saat_ukur+'</td>';
-                                html +='<td>'+value.tanggal_pengukuran+'</td>';
-                                html +='<td>'+value.berat+'</td>';
-                                html +='<td>'+value.tinggi+'</td>';
-                                html +='<td>'+value.lingkar_lengan_atas+'</td>';
-                                html +='<td>'+value.bb_per_u+'</td>';
-                                html +='<td>'+value.zs_bb_per_u+'</td>';
-                                html +='<td>'+value.tb_per_u+'</td>';
-                                html +='<td>'+value.zs_tb_per_u+'</td>';
-                                html +='<td>'+value.bb_per_tb+'</td>';
-                                html +='<td>'+value.zs_bb_per_tb+'</td>';
-                                html +='<td>'+value.naik_berat_badan+'</td>';
-                                html +='<td>'+value.pmt_diterima_per_kg+'</td>';
-                                html +='<td>'+value.jml_vit_a+'</td>';
-                                html +='<td>'+value.kpsp+'</td>';
-                                html +='<td>'+value.kia+'</td>';
-                            html +='</tr>';
-                        })
-                        var pesan = ''
-                            +'<table class="table table-bordered">'
-                                +'<thead>'
-                                    +'<tr>'
-                                        +'<th class="text-center" style="width: 20px;">No</th>'
-                                        +'<th class="text-center">NIK</th>'
-                                        +'<th class="text-center">Nama</th>'
-                                        +'<th class="text-center">Jenis Kelamin</th>'
-                                        +'<th class="text-center">Tanggal Lahir</th>'
-                                        +'<th class="text-center">Berat Badan Lahir</th>'
-                                        +'<th class="text-center">Tinggi Badan Lahir</th>'
-                                        +'<th class="text-center">Nama Orang Tua</th>'
-                                        +'<th class="text-center">Provinsi</th>'
-                                        +'<th class="text-center">Kabupaten / Kota</th>'
-                                        +'<th class="text-center">Kecamatan</th>'
-                                        +'<th class="text-center">Puskesmas</th>'
-                                        +'<th class="text-center">Desa</th>'
-                                        +'<th class="text-center">Posyandu</th>'
-                                        +'<th class="text-center">Rt</th>'
-                                        +'<th class="text-center">Rw</th>'
-                                        +'<th class="text-center">Alamat</th>'
-                                        +'<th class="text-center">Usia Saat Ukur</th>'
-                                        +'<th class="text-center">Tanggal Pengukuran</th>'
-                                        +'<th class="text-center">Berat</th>'
-                                        +'<th class="text-center">Tinggi</th>'
-                                        +'<th class="text-center">Lingkar Lengan Atas</th>'
-                                        +'<th class="text-center">bb per u</th>'
-                                        +'<th class="text-center">zs bb per u</th>'
-                                        +'<th class="text-center">tb per u</th>'
-                                        +'<th class="text-center">zs tb per u</th>'
-                                        +'<th class="text-center">bb per tb</th>'
-                                        +'<th class="text-center">zs bb per tb</th>'
-                                        +'<th class="text-center">Naik Berat Badan</th>'
-                                        +'<th class="text-center">PMT Diterima Per Kg</th>'
-                                        +'<th class="text-center">Jumlah Vitamin A</th>'
-                                        +'<th class="text-center">KPSP</th>'
-                                        +'<th class="text-center">KIA</th>'
                                     +'</tr>'
                                 +'</thead>'
                                 +'<tbody>'
