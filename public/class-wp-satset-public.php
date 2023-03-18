@@ -634,7 +634,6 @@ class Wp_Satset_Public {
 					SELECT
 						*
 					FROM data_p3ke
-					WHERE nik like %s
 						OR kepala_keluarga like %s
 				", '%'.$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
 				$data_stunting = $wpdb->get_results($wpdb->prepare("
