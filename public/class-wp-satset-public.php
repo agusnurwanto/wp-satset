@@ -641,9 +641,7 @@ class Wp_Satset_Public {
 					SELECT
 						*
 					FROM data_stunting
-					WHERE nik like %s
-						OR kepala_keluarga like %s
-				", '%'.$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
+				", '%' .$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
 				$ret['data']['p3ke'] = $data;
 				$ret['data']['stunting'] = $data_stunting;
 			}else{
