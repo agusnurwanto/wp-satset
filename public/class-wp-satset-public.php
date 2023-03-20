@@ -644,8 +644,24 @@ class Wp_Satset_Public {
 					WHERE nik like %s
 						OR nama like %s
 				", '%' .$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
+				$data_tbc = $wpdb->get_results($wpdb->prepare("
+					SELECT
+						*
+					FROM data_tbc
+					WHERE nik like %s
+						OR nama like %s
+				", '%' .$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
+				$data_rtlh = $wpdb->get_results($wpdb->prepare("
+					SELECT
+						*
+					FROM data_rtlh
+					WHERE nik like %s
+						OR nama like %s
+				", '%' .$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
 				$ret['data']['p3ke'] = $data;
 				$ret['data']['stunting'] = $data_stunting;
+				$ret['data']['tbc'] = $data_tbc;
+				$ret['data']['rtlh'] = $data_rtlh;
 			}else{
 				$ret['status']	= 'error';
 				$ret['message']	= 'Api key tidak ditemukan!';
