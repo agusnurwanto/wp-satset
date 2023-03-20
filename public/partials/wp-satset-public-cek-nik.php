@@ -217,7 +217,6 @@
                         response.data.tbc.map(function(value, index){
                             data_tbc +='<tr>';
                                 data_tbc +='<th scope="row">'+(index+1)+'</th>';
-                                data_tbc +='<td>'+value.no+'</td>';
                                 data_tbc +='<td>'+value.tanggal_register+'</td>';
                                 data_tbc +='<td>'+value.no_reg_fasyankes+'</td>';
                                 data_tbc +='<td>'+value.no_reg_kabkot+'</td>';
@@ -239,7 +238,6 @@
                                 +'<thead>'
                                     +'<tr>'
                                         +'<th class="text-center" style="width: 20px;">No</th>'
-                                        +'<th class="text-center">No</th>'
                                         +'<th class="text-center">Tanggal Register</th>'
                                         +'<th class="text-center">No Register Fasyankes</th>'
                                         +'<th class="text-center">No Register Kabupaten/ Kota</th>'
