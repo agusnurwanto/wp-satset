@@ -58,10 +58,12 @@ function initMap() {
     };
     // Membuat Map
     window.map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+    window.chartWindow = {};
+    window.chartRenderWindow = {};
     window.infoWindow = {};
     // Membuat Shape
     maps_all.map(function(data, i){
-        console.log(data.coor);
+        // console.log(data.coor);
         data.coor.map(function(coor, ii){
             var bidang1 = new google.maps.Polygon({
                 map: map,
@@ -72,7 +74,8 @@ function initMap() {
                 fillColor: data.color,
                 fillOpacity: 0.3
             });
-            var index = data.html;
+            var index = data.index;
+            chartWindow[index] = data.chart;
 
             // Menampilkan Informasi Data
             var contentString = data.html;
@@ -82,6 +85,50 @@ function initMap() {
             google.maps.event.addListener(bidang1, 'click', function(event) {
                 infoWindow[index].setPosition(event.latLng);
                 infoWindow[index].open(map);
+
+                var id = "chart-"+index;
+                if(!chartRenderWindow[id]){
+                    console.log('index, chartWindow[index]', index, chartWindow[index]);
+
+                    // menampilkan chart
+                    setTimeout(function(){
+                        chartRenderWindow[id] = new Chart(document.getElementById(id), {
+                            type: "pie",
+                            data: {
+                                labels: chartWindow[index].label,
+                                datasets: [
+                                    {
+                                        label: "",
+                                        data: chartWindow[index].data,
+                                        backgroundColor: chartWindow[index].color
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: "bottom",
+                                        labels: {
+                                            font: {
+                                                size: 16
+                                            }
+                                        }
+                                    },
+                                    tooltip: {
+                                        bodyFont: {
+                                            size: 16
+                                        },
+                                        backgroundColor: "rgba(0, 0, 0, 0.8)",
+                                        boxPadding: 5
+                                    },
+                                }
+                            }
+                        });
+                    }, 500);
+                }else{
+                    chartRenderWindow[id].update();
+                }
             });
         });
     })

@@ -218,6 +218,14 @@ class Wp_Satset_Admin {
 			'content' => '[cek_nik_satset]',
 			'show_header' => 1,
 			'no_key' => 1,
+			'post_status' => 'private'
+		));
+
+		$data_irisan = $this->functions->generatePage(array(
+			'nama_page' => 'Data Irisan',
+			'content' => '[data_irisan_satset]',
+			'show_header' => 1,
+			'no_key' => 1,
 			'post_status' => 'publish'
 		));
 
@@ -234,6 +242,7 @@ class Wp_Satset_Admin {
 	            		<li><a target="_blank" href="'.$peta_batas_desa['url'].'">'.$peta_batas_desa['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$peta_batas_kecamatan['url'].'">'.$peta_batas_kecamatan['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$cek_nik['url'].'">'.$cek_nik['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$data_irisan['url'].'">'.$data_irisan['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_p3ke['url'].'">'.$data_p3ke['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_stunting['url'].'">'.$data_stunting['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_tbc['url'].'">'.$data_tbc['title'].'</a></li>
