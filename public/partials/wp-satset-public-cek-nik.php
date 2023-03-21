@@ -161,7 +161,8 @@
                                 data_all +='<td>'+value.zs_bb_per_tb+'</td>';
                                 data_all +='<td>'+value.naik_berat_badan+'</td>';
                                 data_all +='<td>'+value.pmt_diterima_per_kg+'</td>';
-                                data_all +='<td>'+value.jml_vit_a+'</td>';
+                                data_all +='<td>'+(value.jml_vit_a != null ? value.jml_vit_a : "-")+'</td>';
+                                // data_all +='<td>'+value.jml_vit_a+'</td>';
                                 data_all +='<td>'+value.kpsp+'</td>';
                                 data_all +='<td>'+value.kia+'</td>';
                             data_all +='</tr>';
@@ -200,7 +201,7 @@
                                         +'<th class="text-center">zs bb per tb</th>'
                                         +'<th class="text-center">naik berat badan</th>'
                                         +'<th class="text-center">pmt diterima per kg</th>'
-                                        +'<th class="text-center">jml vit a</th>'
+                                        +'<th class="text-center">Jumlah Vitamin A</th>'
                                         +'<th class="text-center">kpsp</th>'
                                         +'<th class="text-center">kia</th>'
                                     +'</tr>'
@@ -225,12 +226,15 @@
                                 data_tbc +='<td>'+value.umur+'</td>';
                                 data_tbc +='<td>'+value.jenis_kelamin+'</td>';
                                 data_tbc +='<td>'+value.alamat+'</td>';
-                                data_tbc +='<td>'+value.pindahan_dari_fasyankes+'</td>';
+                                data_tbc +='<td>'+(value.pindahan_dari_fasyankes != null ? value.pindahan_dari_fasyankes : "-")+'</td>';
+                                // data_tbc +='<td>'+value.pindahan_dari_fasyankes+'</td>';
                                 data_tbc +='<td>'+value.tindak_lanjut+'</td>';
                                 data_tbc +='<td>'+value.tanggal_mulai_pengobatan+'</td>';
-                                data_tbc +='<td>'+value.hasil_akhir_pengobatan+'</td>';
+                                data_tbc +='<td>'+(value.hasil_akhir_pengobatan != null ? value.hasil_akhir_pengobatan : "-")+'</td>';
+                                // data_tbc +='<td>'+value.hasil_akhir_pengobatan+'</td>';
                                 data_tbc +='<td>'+value.status_pengobatan+'</td>';
-                                data_tbc +='<td>'+value.keterangan+'</td>';
+                                data_tbc +='<td>'+(value.keterangan != null ? value.keterangan : "-")+'</td>';
+                                // data_tbc +='<td>'+value.keterangan+'</td>';
                             data_tbc +='</tr>';
                         })
                         var pesan2 = ''
@@ -258,6 +262,8 @@
                                     +data_tbc
                                 +'</tbody>'
                             +'</table>';
+                            if (pindahan_dari_fasyankes = null) {
+                                    console.log("0")};
                         jQuery('#pesan2').html(pesan2);
                     }
                     let data_rtlh = '';
@@ -275,7 +281,8 @@
                                 data_rtlh +='<td>'+value.desa+'</td>';
                                 data_rtlh +='<td>'+value.rw+'</td>';
                                 data_rtlh +='<td>'+value.rt+'</td>';
-                                data_rtlh +='<td>'+value.nilai_bantuan+'</td>';
+                                data_rtlh +='<td>'+(value.nilai_bantuan != null ? value.nilai_bantuan : "-")+'</td>';
+                                // data_rtlh +='<td>'+value.nilai_bantuan+'</td>';
                                 data_rtlh +='<td>'+value.lpj+'</td>';
                                 data_rtlh +='<td>'+value.tgl_lpj+'</td>';
                                 data_rtlh +='<td>'+value.sumber_dana+'</td>';
