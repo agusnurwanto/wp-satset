@@ -20,6 +20,8 @@
 </div>
 <div style="padding: 10px; margin: auto; overflow: auto;" id="pesan3">
 </div>
+<div style="padding: 10px; margin: auto; overflow: auto;" id="pesan4">
+</div>
 <script>
     jQuery(document).ready(function(){
         jQuery("#cari").click(function(){
@@ -314,12 +316,129 @@
                             +'</table>';
                         jQuery('#pesan3').html(pesan3);
                     }
+                    if(response.data.dtks.length > 0){
+                        data_dtks +='<h4 class="text-center">Data DTKS</h4>';
+                        response.data.dtks.map(function(value, index){
+                            data_dtks +='<tr>';
+                                data_dtks +='<th scope="row">'+(index+1)+'</th>';
+                                data_dtks +='<td>'+value.provinsi+'</td>';
+                                data_dtks +='<td>'+value.kabkot+'</td>';
+                                data_dtks +='<td>'+value.kecamatan+'</td>';
+                                data_dtks +='<td>'+value.desa+'</td>';
+                                data_dtks +='<td>'+value.desa_kelurahan+'</td>';
+                                data_dtks +='<td>'+value.id_kec+'</td>';
+                                data_dtks +='<td>'+value.id_desa+'</td>';
+                                data_dtks +='<td>'+value.Alamat+'</td>';
+                                data_dtks +='<td>'+value.BLT+'</td>';
+                                data_dtks +='<td>'+value.BLT_BBM+'</td>';
+                                data_dtks +='<td>'+value.BNPT_PPKM+'</td>';
+                                data_dtks +='<td>'+value.BPNT+'</td>';
+                                data_dtks +='<td>'+value.BST+'</td>';
+                                data_dtks +='<td>'+value.FIRST_SK+'</td>';
+                                data_dtks +='<td>'+value.NIK+'</td>';
+                                data_dtks +='<td>'+value.NOKK+'</td>';
+                                data_dtks +='<td>'+value.Nama+'</td>';
+                                data_dtks +='<td>'+value.PBI+'</td>';
+                                data_dtks +='<td>'+value.PKH+'</td>';
+                                data_dtks +='<td>'+value.RUTILAHU+'</td>';
+                                data_dtks +='<td>'+value.SEMBAKO_ADAPTIF+'</td>';
+                                data_dtks +='<td>'+value.checkBtnHamil+'</td>';
+                                data_dtks +='<td>'+value.checkBtnVerifMeninggal+'</td>';
+                                data_dtks +='<td>'+value.counter+'</td>';
+                                data_dtks +='<td>'+value.deleted_label+'</td>';
+                                data_dtks +='<td>'+value.idsemesta+'</td>';
+                                data_dtks +='<td>'+value.isAktifHamil+'</td>';
+                                data_dtks +='<td>'+value.is_btn_dapodik+'</td>';
+                                data_dtks +='<td>'+value.is_btn_hidupkan+'</td>';
+                                data_dtks +='<td>'+value.is_btn_padankan+'</td>';
+                                data_dtks +='<td>'+value.is_nonaktif+'</td>';
+                                data_dtks +='<td>'+value.keterangan_disabilitas+'</td>';
+                                data_dtks +='<td>'+value.keterangan_meninggal+'</td>';
+                                data_dtks +='<td>'+value.masih_hidup_label+'</td>';
+                                data_dtks +='<td>'+value.padankan_at+'</td>';
+                                data_dtks +='<td>'+value.periode_blt+'</td>';
+                                data_dtks +='<td>'+value.periode_blt_bbm+'</td>';
+                                data_dtks +='<td>'+value.periode_bpnt+'</td>';
+                                data_dtks +='<td>'+value.periode_bpnt_ppkm+'</td>';
+                                data_dtks +='<td>'+value.periode_bst+'</td>';
+                                data_dtks +='<td>'+value.periode_pbi+'</td>';
+                                data_dtks +='<td>'+value.periode_pkh+'</td>';
+                                data_dtks +='<td>'+value.periode_rutilahu+'</td>';
+                                data_dtks +='<td>'+value.periode_sembako_adaptif+'</td>';
+                                data_dtks +='<td>'+value.verifyid+'</td>';
+                                data_dtks +='<td>'+value.active+'</td>';
+                                data_dtks +='<td>'+value.update_at+'</td>';
+                            data_dtks +='</tr>';
+                        })
+                        var pesan4 = ''
+                            +'<table class="table table-bordered">'
+                                +'<thead>'
+                                    +'<tr>'
+                                        +'<th class="text-center" style="width: 20px;">No</th>'
+                                        +'<th class="text-center">Id Kecamatan</th>'
+                                        +'<th class="text-center">Id Desa</th>'
+                                        +'<th class="text-center">NO KK</th>'
+                                        +'<th class="text-center">NIK</th>'
+                                        +'<th class="text-center">Nama</th>'
+                                        +'<th class="text-center">Provinsi</th>'
+                                      +'<th class="text-center">Kabupaten / Kota</th>'
+                                        +'<th class="text-center">kecamatan</th>'
+                                        +'<th class="text-center">Desa</th>'
+                                        +'<th class="text-center">Desa Kelurahan</th>'
+                                        +'<th class="text-center">Alamat</th>'
+                                        +'<th class="text-center">BLT</th>'
+                                        +'<th class="text-center">BLT BBM</th>'
+                                        +'<th class="text-center">BNPT PPKM</th>'
+                                        +'<th class="text-center">BPNT</th>'
+                                        +'<th class="text-center">BST</th>'
+                                        +'<th class="text-center">FIRST_SK</th>'
+                                        +'<th class="text-center">PBI</th>'
+                                        +'<th class="text-center">PKH</th>'
+                                        +'<th class="text-center">RUTILAHU</th>'
+                                        +'<th class="text-center">SEMBAKO ADAPTIF</th>'
+                                        +'<th class="text-center">checkBtnHamil</th>'
+                                        +'<th class="text-center">checkBtnVerifMeninggal</th>'
+                                        +'<th class="text-center">counter</th>'
+                                        +'<th class="text-center">Hapus Tabel</th>'
+                                        +'<th class="text-center">idsemesta</th>'
+                                        +'<th class="text-center">isAktifHamil</th>'
+                                        +'<th class="text-center">is_btn_dapodik</th>'
+                                        +'<th class="text-center">is_btn_hidupkan</th>'
+                                        +'<th class="text-center">is_btn_padankan</th>'
+                                        +'<th class="text-center">is_nonaktif</th>'
+                                        +'<th class="text-center">Keterangan Disabilitas</th>'
+                                        +'<th class="text-center">Keterangan Meninggal</th>'
+                                        +'<th class="text-center">Masih Hidup</th>'
+                                        +'<th class="text-center">padankan_at</th>'
+                                        +'<th class="text-center">Periode BLT</th>'
+                                        +'<th class="text-center">Periode BLT BBM</th>'
+                                        +'<th class="text-center">Periode BPNT</th>'
+                                        +'<th class="text-center">Periode BPNT PPKM</th>'
+                                        +'<th class="text-center">Periode BST</th>'
+                                        +'<th class="text-center">Periode PBI</th>'
+                                        +'<th class="text-center">Periode PKH</th>'
+                                        +'<th class="text-center">Periode Rutilahu</th>'
+                                        +'<th class="text-center">Periode Sembako Adaptif</th>'
+                                        +'<th class="text-center">verifyid</th>'
+                                        +'<th class="text-center">active</th>'
+                                        +'<th class="text-center">update_at</th>'
+                                    +'</tr>'
+                                +'</thead>'
+                                +'<tbody>'
+                                    +data_dtks
+                                +'</tbody>'
+                            +'</table>';
+                        jQuery('#pesan4').html(pesan4);
+                    }else{
+                        alert('Data tidak ditemukan!');
+                    }
                 }
                 if(
                     response.data.p3ke.length == 0
                     && response.data.rtlh.length == 0
                     && response.data.stunting.length == 0
                     && response.data.tbc.length == 0
+                    && response.data.dtks.length == 0
                 ){
                     alert('Data tidak ditemukan!');
                 }
