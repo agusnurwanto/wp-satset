@@ -234,6 +234,14 @@ class Wp_Satset_Public {
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-cek-nik.php';
 	}
 
+	function data_irisan_satset(){
+		// untuk disable render shortcode di halaman edit page/post
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-data-irisan.php';
+	}
+
 	function get_polygon($options = array( 'type' => 'desa' )){
 		global $wpdb;
 
@@ -610,6 +618,7 @@ class Wp_Satset_Public {
 				COUNT(BLT) as jml
 			FROM data_dtks_satset 
 			WHERE $where
+				AND is_nonaktif is null
 				AND active=1
 			GROUP BY provinsi, kabkot, kecamatan, desa, BLT, BLT_BBM, BPNT, PKH, PBI
 			ORDER BY provinsi, kabkot, kecamatan
