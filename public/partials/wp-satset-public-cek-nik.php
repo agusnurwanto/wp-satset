@@ -326,7 +326,7 @@
                 ){
                     alert('Data tidak ditemukan!');
                 }
-                jQuery('#wrap-loading').hide();
+                // jQuery('#wrap-loading').hide();
             }
         });
     }
