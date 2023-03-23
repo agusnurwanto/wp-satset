@@ -60,6 +60,8 @@ function initMap() {
     window.map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
     window.chartWindow = {};
     window.chartRenderWindow = {};
+    window.chartWindowDtks = {};
+    window.chartRenderWindowDtks = {};
     window.infoWindow = {};
 
     // Membuat Shape
@@ -77,6 +79,7 @@ function initMap() {
             });
             var index = data.index;
             chartWindow[index] = data.chart;
+            chartWindowDtks[index] = data.chart_dtks;
 
             // Menampilkan Informasi Data
             var contentString = data.html;
@@ -143,6 +146,64 @@ function initMap() {
                     }, 500);
                 }else{
                     chartRenderWindow[id].update();
+                }
+
+                var id_dtks = "chart-dtks-"+index;
+                if(!chartRenderWindowDtks[id_dtks]){
+                    console.log('index, chartWindow[index]', index, chartRenderWindowDtks[index]);
+
+                    // menampilkan chart
+                    setTimeout(function(){
+                        chartRenderWindowDtks[id_dtks] = new Chart(document.getElementById(id_dtks).getContext('2d'), {
+                            type: "pie",
+                            data: {
+                                labels: chartWindowDtks[index].label,
+                                datasets: [
+                                    {
+                                        label: "",
+                                        data: chartWindowDtks[index].data,
+                                        backgroundColor: chartWindowDtks[index].color
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                plugins: {
+                                    legend: {
+                                        position: "bottom",
+                                        labels: {
+                                            font: {
+                                                size: 16
+                                            }
+                                        }
+                                    },
+                                    tooltip: {
+                                        bodyFont: {
+                                            size: 16
+                                        },
+                                        backgroundColor: "rgba(0, 0, 0, 0.8)",
+                                        boxPadding: 5
+                                    },
+                                    datalabels: {
+                                        formatter: (value, ctx) => {
+                                            let sum = 0;
+                                            let dataArr = ctx.chart.data.datasets[0].data;
+                                            dataArr.map(data => {
+                                                sum += data;
+                                            });
+                                            let percentage = ((value / sum) * 100).toFixed(2)+"%";
+                                            console.log('percentage, dataArr',value, percentage, dataArr);
+                                            return percentage;
+                                        },
+                                        color: '#000',
+                                    }
+                                }
+                            },
+                            plugins: [ChartDataLabels]
+                        });
+                    }, 500);
+                }else{
+                    chartRenderWindowDtks[id_dtks].update();
                 }
             });
         });

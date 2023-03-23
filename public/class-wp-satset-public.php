@@ -618,11 +618,15 @@ class Wp_Satset_Public {
 				COUNT(BLT) as jml
 			FROM data_dtks_satset 
 			WHERE $where
-				AND is_nonaktif is null
+				AND (
+					is_nonaktif is null
+					OR is_nonaktif=''
+				)
 				AND active=1
 			GROUP BY provinsi, kabkot, kecamatan, desa, BLT, BLT_BBM, BPNT, PKH, PBI
 			ORDER BY provinsi, kabkot, kecamatan
 		", ARRAY_A);
+		// print_r($data); die($wpdb->last_query);
 		return $data;
 	}
 
@@ -675,7 +679,10 @@ class Wp_Satset_Public {
 							nik like %s
 							OR nama like %s
 						)
-						AND is_nonaktif is null
+						AND (
+							is_nonaktif is null
+							OR is_nonaktif=''
+						)
 						AND active=1
 				", '%' .$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
 				$ret['data']['p3ke'] = $data;
