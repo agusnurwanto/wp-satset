@@ -132,9 +132,9 @@ foreach($maps_all as $i => $desa){
         $maps_all[$i]['color'] = '#ff0000';
     }
     $chart = array(
-        'label' => array(array('BPNT'), array('BPUM'), array('BST'), array('PKH'), array('SEMBAKO'), array('STUNTING')),
-        'data' => array(array($bpnt), array($bpum), array($bst), array($pkh), array($sembako), array($resiko_stunting)),
-        'color' => array(array('#4deeea'), array('#74ee15'), array('#ffe700'), array('#f000ff'), array('#001eff'), array('#dd9944'))
+        'label' => array('BPNT', 'BPUM', 'BST', 'PKH', 'SEMBAKO', 'STUNTING'),
+        'data' => array($bpnt, $bpum, $bst, $pkh, $sembako, $resiko_stunting),
+        'color' => array('#4deeea', '#74ee15', '#ffe700', '#f000ff', '#001eff', '#dd9944')
     );
     $maps_all[$i]['chart'] = $chart;
     $maps_all[$i]['index'] = $i;
@@ -172,7 +172,7 @@ foreach($maps_all as $i => $desa){
 }
 ?>
 <h1 class="text-center">Peta Data Terpadu dan Terintegrasi<br><?php echo $this->getNamaDaerah(); ?></h1>
-<div style="width: 95%; margin: 0 auto; padding-bottom: 75px; overflow: auto;">
+<div style="width: 95%; margin: 0 auto; padding-bottom: 75px;">
     <div id="map-canvas" style="width: 100%; height: 90vh;"></div>
     <h3 style="margin-top: 20px;">Keterangan</h3>
     <ol>
@@ -216,3 +216,6 @@ foreach($maps_all as $i => $desa){
     });
 </script>
 <script async defer src="<?php echo $this->get_map_url(); ?>"></script>
+
+<!-- untuk edit datalabels chart.js -->
+<script src="<?php echo SATSET_PLUGIN_URL . '/public/js/chart-plugin-datalabels.min.js'; ?>"></script>

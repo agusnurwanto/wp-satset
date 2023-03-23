@@ -61,6 +61,7 @@ function initMap() {
     window.chartWindow = {};
     window.chartRenderWindow = {};
     window.infoWindow = {};
+
     // Membuat Shape
     maps_all.map(function(data, i){
         // console.log(data.coor);
@@ -92,7 +93,7 @@ function initMap() {
 
                     // menampilkan chart
                     setTimeout(function(){
-                        chartRenderWindow[id] = new Chart(document.getElementById(id), {
+                        chartRenderWindow[id] = new Chart(document.getElementById(id).getContext('2d'), {
                             type: "pie",
                             data: {
                                 labels: chartWindow[index].label,
@@ -122,8 +123,22 @@ function initMap() {
                                         backgroundColor: "rgba(0, 0, 0, 0.8)",
                                         boxPadding: 5
                                     },
+                                    datalabels: {
+                                        formatter: (value, ctx) => {
+                                            let sum = 0;
+                                            let dataArr = ctx.chart.data.datasets[0].data;
+                                            dataArr.map(data => {
+                                                sum += data;
+                                            });
+                                            let percentage = ((value / sum) * 100).toFixed(2)+"%";
+                                            console.log('percentage, dataArr',value, percentage, dataArr);
+                                            return percentage;
+                                        },
+                                        color: '#000',
+                                    }
                                 }
-                            }
+                            },
+                            plugins: [ChartDataLabels]
                         });
                     }, 500);
                 }else{

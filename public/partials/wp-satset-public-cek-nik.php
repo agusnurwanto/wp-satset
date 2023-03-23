@@ -1,6 +1,21 @@
+<style type="text/css">
+    .wrap-pesan{
+        padding: 10px; 
+        width: 100%; 
+        margin-top: 35px;
+    }
+    .isi-pesan {
+        overflow: auto;
+        max-height: 100vh; 
+        width: 100%; 
+    }
+    .isi-pesan h3{
+        margin-top: 35px;
+    }
+</style>
 <h1 class="text-center">Cek NIK (Nomor Induk Kependudukan)</h1><br>
 <h2 class="text-center"><?php echo get_option("_crb_prov_satset"); ?><br><?php echo get_option("_crb_kab_satset"); ?></h2>
-<form id="formid" style="width: 500px; margin: auto;" class="text-center">
+<form id="formid" onsubmit="return false;" style="width: 500px; margin: auto;" class="text-center">
     <div class="form-group">
         <label for="nik">Masukan NIK / Nama</label>
         <div class="input-group">
@@ -11,19 +26,26 @@
         </div>
     </div>
 </form>
-
-<div style="padding: 10px; margin: auto; overflow: auto;" id="pesan">
-</div>
-<div style="padding: 10px; margin: auto; overflow: auto;" id="pesan1">
-</div>
-<div style="padding: 10px; margin: auto; overflow: auto;" id="pesan2">
-</div>
-<div style="padding: 10px; margin: auto; overflow: auto;" id="pesan3">
+<div class="wrap-pesan">
+    <div id="pesan" class="isi-pesan">
+    </div>
+    <div id="pesan1" class="isi-pesan">
+    </div>
+    <div id="pesan2" class="isi-pesan">
+    </div>
+    <div id="pesan3" class="isi-pesan">
+    </div>
 </div>
 <script>
     jQuery(document).ready(function(){
         jQuery("#cari").click(function(){
             cari_data_satset(jQuery('#nik').val());
+        });
+        jQuery("#nik").keyup(function(event) {
+            event.preventDefault();
+            if (event.keyCode === 13) {
+                jQuery("#cari").click();
+            }
         });
     })
 
@@ -47,7 +69,7 @@
                 }else{
                     let html = '';
                     if(response.data.p3ke.length > 0){
-                        html +='<h4 class="text-center">Data P3KE</h4>';
+                        html +='<h3 class="text-center">Data P3KE</h3>';
                         response.data.p3ke.map(function(value, index){
                             html +='<tr>';
                                 html +='<th scope="row">'+(index+1)+'</th>';
@@ -128,7 +150,7 @@
                     }
                     let data_all = ''
                     if(response.data.stunting.length > 0){
-                        data_all +='<h4 class="text-center">Data Stunting</h4>';
+                        data_all +='<h3 class="text-center">Data Stunting</h3>';
                         response.data.stunting.map(function(value, index){
                             data_all +='<tr>';
                                 data_all +='<th scope="row">'+(index+1)+'</th>';
@@ -214,7 +236,7 @@
                     }
                     let data_tbc = '';
                     if(response.data.tbc.length > 0){
-                        data_tbc +='<h4 class="text-center">Data TBC</h4>';
+                        data_tbc +='<h3 class="text-center">Data TBC</h3>';
                         response.data.tbc.map(function(value, index){
                             data_tbc +='<tr>';
                                 data_tbc +='<th scope="row">'+(index+1)+'</th>';
@@ -268,7 +290,7 @@
                     }
                     let data_rtlh = '';
                     if(response.data.rtlh.length > 0){
-                        data_rtlh +='<h4 class="text-center">Data RTLH</h4>';
+                        data_rtlh +='<h3 class="text-center">Data RTLH</h3>';
                         response.data.rtlh.map(function(value, index){
                             data_rtlh +='<tr>';
                                 data_rtlh +='<th scope="row">'+(index+1)+'</th>';
