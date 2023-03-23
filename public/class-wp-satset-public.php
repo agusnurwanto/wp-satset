@@ -671,8 +671,12 @@ class Wp_Satset_Public {
 					SELECT
 						*
 					FROM data_dtks
-					WHERE nik like %s
-						OR nama like %s
+					WHERE (
+							nik like %s
+							OR nama like %s
+						)
+						AND is_nonaktif is null
+						AND active=1
 				", '%' .$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
 				$ret['data']['p3ke'] = $data;
 				$ret['data']['stunting'] = $data_stunting;
