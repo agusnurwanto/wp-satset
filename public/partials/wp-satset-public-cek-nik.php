@@ -21,7 +21,7 @@
         <div class="input-group">
             <input type="text" class="form-control" id="nik" placeholder="xxxxxxxxxxx">
             <div class="input-group-append">
-                <span class="btn btn-primary" type="button" id="cari" style="display: flex; align-items: center;">Cari Data</span>
+                <span class="btn btn-primary" type="button" onclick="return false" id="cari" style="display: flex; align-items: center;">Cari Data</span>
             </div>
         </div>
     </div>
@@ -35,6 +35,8 @@
     </div>
     <div id="pesan3" class="isi-pesan">
     </div>
+</div>
+<div style="padding: 10px; margin: auto; overflow: auto;" id="pesan4">
 </div>
 <script>
     jQuery(document).ready(function(){
@@ -342,10 +344,11 @@
                     && response.data.rtlh.length == 0
                     && response.data.stunting.length == 0
                     && response.data.tbc.length == 0
+                    && response.data.dtks.length == 0
                 ){
                     alert('Data tidak ditemukan!');
                 }
-                jQuery('#wrap-loading').hide();
+                // jQuery('#wrap-loading').hide();
             }
         });
     }
