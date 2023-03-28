@@ -242,6 +242,14 @@ class Wp_Satset_Public {
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-data-irisan.php';
 	}
 
+	function management_p3ke(){
+		// untuk disable render shortcode di halaman edit page/post
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-p3ke.php';
+	}
+
 	function get_polygon($options = array( 'type' => 'desa' )){
 		global $wpdb;
 
@@ -689,5 +697,14 @@ class Wp_Satset_Public {
 		}
 
 		die(json_encode($ret));
+	}
+public function submit_add_schedule(){
+		global $wpdb;
+		$user_id = um_user( 'ID' );
+		$user_meta = get_userdata($user_id);
+		$return = array(
+			'status' => 'success',
+			'data'	=> array()
+		);
 	}
 }

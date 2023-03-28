@@ -192,12 +192,18 @@ class Wp_Satset {
 
 		$this->loader->add_action('wp_ajax_cari_data_satset', $plugin_public, 'cari_data_satset');
 
+		$this->loader->add_action('wp_ajax_get data_p3ke1', $plugin_public, 'get_data_p3ke1');
+		$this->loader->add_action('wp_ajax_get_data_p3ke2', $plugin_public, 'get_data_p3ke2');
+		$this->loader->add_action('wp_ajax_get_data_p3ke3', $plugin_public, 'get_data_p3ke3');
+		$this->loader->add_action('wp_ajax_get_data_p3ke4', $plugin_public, 'get_data_p3ke4');
+
 		add_shortcode('satset_homepage', array($plugin_public, 'satset_homepage'));
 		add_shortcode('conversi_peta_satset', array($plugin_public, 'conversi_peta_satset'));
 		add_shortcode('peta_satset_desa', array($plugin_public, 'peta_satset_desa'));
 		add_shortcode('peta_satset_kecamatan', array($plugin_public, 'peta_satset_kecamatan'));
 		add_shortcode('data_irisan_satset', array($plugin_public, 'data_irisan_satset'));
 		add_shortcode('cek_nik_satset', array($plugin_public, 'cek_nik_satset'));
+		add_shortcode('management_p3ke', array($plugin_public, 'management_p3ke'));
 		add_shortcode('peta_satset', array($plugin_public, 'peta_satset'));
 		add_shortcode('data_p3ke', array($plugin_public, 'data_p3ke'));
 		add_shortcode('data_stunting', array($plugin_public, 'data_stunting'));
