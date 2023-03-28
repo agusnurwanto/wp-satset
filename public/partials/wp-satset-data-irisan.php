@@ -25,6 +25,7 @@ foreach($dtks_all as $data){
     }
     $dtks_all_desa[$index][] = $data;
 }
+// print_r($dtks_all); die();
 
 $total_all_dtks = 0;
 $total_all = 0;
@@ -72,6 +73,11 @@ foreach($maps_all as $i => $desa){
     $total_bpnt = array();
     $total_pkh = array();
     $total_pbi = array();
+    $total_blt_angka = 0;
+    $total_blt_bbm_angka = 0;
+    $total_bpnt_angka = 0;
+    $total_pkh_angka = 0;
+    $total_pbi_angka = 0;
     if(!empty($dtks_all_desa[$index])){
         foreach($dtks_all_desa[$index] as $orang){
             $total_dtks += $orang['jml'];
@@ -80,30 +86,35 @@ foreach($maps_all as $i => $desa){
                     $total_blt[$orang['BLT']] = 0;
                 }
                 $total_blt[$orang['BLT']] += $orang['jml'];
+                $total_blt_angka += $orang['jml'];
             }
             if($orang['BLT_BBM'] != 'TIDAK'){
                 if(empty($total_blt_bbm[$orang['BLT_BBM']])){
                     $total_blt_bbm[$orang['BLT_BBM']] = 0;
                 }
                 $total_blt_bbm[$orang['BLT_BBM']] += $orang['jml'];
+                $total_blt_bbm_angka += $orang['jml'];
             }
             if($orang['BPNT'] != 'TIDAK'){
                 if(empty($total_bpnt[$orang['BPNT']])){
                     $total_bpnt[$orang['BPNT']] = 0;
                 }
                 $total_bpnt[$orang['BPNT']] += $orang['jml'];
+                $total_bpnt_angka += $orang['jml'];
             }
             if($orang['PKH'] != 'TIDAK'){
                 if(empty($total_pkh[$orang['PKH']])){
                     $total_pkh[$orang['PKH']] = 0;
                 }
                 $total_pkh[$orang['PKH']] += $orang['jml'];
+                $total_pkh_angka += $orang['jml'];
             }
             if($orang['PBI'] != 'TIDAK'){
                 if(empty($total_pbi[$orang['PBI']])){
                     $total_pbi[$orang['PBI']] = 0;
                 }
                 $total_pbi[$orang['PBI']] += $orang['jml'];
+                $total_pbi_angka += $orang['jml'];
             }
         }
         foreach($total_blt as $key => $data){
@@ -132,19 +143,29 @@ foreach($maps_all as $i => $desa){
         $maps_all[$i]['color'] = '#ff0000';
     }
     $chart = array(
-        'label' => array(array('BPNT'), array('BPUM'), array('BST'), array('PKH'), array('SEMBAKO'), array('STUNTING')),
-        'data' => array(array($bpnt), array($bpum), array($bst), array($pkh), array($sembako), array($resiko_stunting)),
-        'color' => array(array('#4deeea'), array('#74ee15'), array('#ffe700'), array('#f000ff'), array('#001eff'), array('#dd9944'))
+        'label' => array('BPNT', 'BPUM', 'BST', 'PKH', 'SEMBAKO', 'STUNTING'),
+        'data' => array($bpnt, $bpum, $bst, $pkh, $sembako, $resiko_stunting),
+        'color' => array('#4deeea', '#74ee15', '#ffe700', '#f000ff', '#001eff', '#dd9944')
     );
     $maps_all[$i]['chart'] = $chart;
+    $chart_dtks = array(
+        'label' => array('BLT', 'BLT BBM', 'BPNT', 'PKH', 'PBI'),
+        'data' => array($total_blt_angka, $total_blt_bbm_angka, $total_bpnt_angka, $total_pkh_angka, $total_pbi_angka),
+        'color' => array('#4deeea', '#74ee15', '#ffe700', '#f000ff', '#001eff')
+    );
+    $maps_all[$i]['chart_dtks'] = $chart_dtks;
     $maps_all[$i]['index'] = $i;
     $maps_all[$i]['html'] = '
         <div class="container counting-inner">
             <div class="row counting-box title-row">
                 <div class="col-md-12 text-center animated">
                     <div style="max-width: 500px; margin:auto;">
-                        <h4>'.$desa['data']['desa'].' Kec. '.$desa['data']['kecamatan'].'<br>Jumlah P3KE '.$total_p3ke.' keluarga</h4>
+                        <h3>'.$desa['data']['desa'].' Kec. '.$desa['data']['kecamatan'].'</h3>
+                        <h4>Jumlah P3KE '.$total_p3ke.' keluarga</h4>
                         <canvas id="chart-'.$i.'"></canvas>
+                        <hr>
+                        <h4>Jumlah DTKS '.$total_dtks.' orang</h4>
+                        <canvas id="chart-dtks-'.$i.'"></canvas>
                     </div>
                 </div>
             </div>
@@ -166,13 +187,19 @@ foreach($maps_all as $i => $desa){
             <td class='text-center'>".$bst."</td>
             <td class='text-center'>".$pkh."</td>
             <td class='text-center'>".$sembako."</td>
+            <td class='text-center'>".$total_dtks."</td>
+            <td>".implode('<hr>', $total_blt)."</td>
+            <td>".implode('<hr>', $total_blt_bbm)."</td>
+            <td>".implode('<hr>', $total_bpnt)."</td>
+            <td>".implode('<hr>', $total_pkh)."</td>
+            <td>".implode('<hr>', $total_pbi)."</td>
             <td class='text-center'><a style='margin-bottom: 5px;' onclick='cari_alamat(\"".$search."\"); return false;' href='#' class='btn btn-danger'>Map</a></td>
         </tr>
     ";
 }
 ?>
 <h1 class="text-center">Peta Data Terpadu dan Terintegrasi<br><?php echo $this->getNamaDaerah(); ?></h1>
-<div style="width: 95%; margin: 0 auto; padding-bottom: 75px; overflow: auto;">
+<div style="width: 95%; margin: 0 auto; padding-bottom: 75px;">
     <div id="map-canvas" style="width: 100%; height: 90vh;"></div>
     <h3 style="margin-top: 20px;">Keterangan</h3>
     <ol>
@@ -182,14 +209,19 @@ foreach($maps_all as $i => $desa){
     </ol>
     <h2 class="text-center">Tabel Data Irisan<br>P3KE (<?php echo $this->number_format($total_all); ?> Keluarga)<br>DTKS (<?php echo $this->number_format($total_all_dtks); ?> Penerima)</h1>
     <div style="width: 100%; overflow: auto; height: 100vh;">
-        <table class="table table-bordered" id="table-data">
+        <table class="table table-bordered" id="table-data" style="width:3000px;">
             <thead>
                 <tr>
-                    <th class='text-center'>Kode Desa</th>
-                    <th class='text-center'>Provinsi</th>
-                    <th class='text-center'>Kabupaten/Kota</th>
-                    <th class='text-center'>Kecamatan</th>
-                    <th class='text-center'>Desa</th>
+                    <th class='text-center' rowspan="2">Kode Desa</th>
+                    <th class='text-center' rowspan="2">Provinsi</th>
+                    <th class='text-center' rowspan="2">Kabupaten/Kota</th>
+                    <th class='text-center' rowspan="2">Kecamatan</th>
+                    <th class='text-center' rowspan="2">Desa</th>
+                    <th class='text-center' colspan="8">P3KE</th>
+                    <th class='text-center' colspan="6">DTKS</th>
+                    <th class='text-center' rowspan="2">Aksi</th>
+                </tr>
+                <tr>
                     <th class='text-center'>Jumlah P3KE</th>
                     <th class='text-center'>Keterangan</th>
                     <th class='text-center'>Resiko Stunting</th>
@@ -198,7 +230,12 @@ foreach($maps_all as $i => $desa){
                     <th class='text-center'>Penerima BST</th>
                     <th class='text-center'>Penerima PKH</th>
                     <th class='text-center'>Penerima SEMBAKO</th>
-                    <th class='text-center'>Aksi</th>
+                    <th class='text-center'>Total DTKS</th>
+                    <th class='text-center'>BLT</th>
+                    <th class='text-center' style="width:300px;">BLT BBM</th>
+                    <th class='text-center' style="width:300px;">BPNT</th>
+                    <th class='text-center' style="width:300px;">PKH</th>
+                    <th class='text-center' style="width:300px;">PBI</th>
                 </tr>
             </thead>
             <tbody>
@@ -216,3 +253,6 @@ foreach($maps_all as $i => $desa){
     });
 </script>
 <script async defer src="<?php echo $this->get_map_url(); ?>"></script>
+
+<!-- untuk edit datalabels chart.js -->
+<script src="<?php echo SATSET_PLUGIN_URL . '/public/js/chart-plugin-datalabels.min.js'; ?>"></script>
