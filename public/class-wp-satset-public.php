@@ -88,6 +88,7 @@ class Wp_Satset_Public {
 		 * class.
 		 */
 
+    	wp_enqueue_style('dashicons');
 		wp_enqueue_style($this->plugin_name . 'bootstrap', plugin_dir_url(__FILE__) . 'css/bootstrap.min.css', array(), $this->version, 'all');
 		wp_enqueue_style($this->plugin_name . 'select2', plugin_dir_url(__FILE__) . 'css/select2.min.css', array(), $this->version, 'all');
 		wp_enqueue_style($this->plugin_name . 'datatables', plugin_dir_url(__FILE__) . 'css/jquery.dataTables.min.css', array(), $this->version, 'all');
@@ -698,6 +699,312 @@ class Wp_Satset_Public {
 
 		die(json_encode($ret));
 	}
+
+	public function get_data_p3ke_by_id(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil get data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				$ret['data'] = $wpdb->get_row($wpdb->prepare('
+					SELECT 
+						*
+					FROM data_p3ke
+					WHERE id=%d
+				', $_POST['id']), ARRAY_A);
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+
+		die(json_encode($ret));
+	}
+
+	public function hapus_data_p3ke_by_id(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil hapus data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				$ret['data'] = $wpdb->update('data_p3ke', array('active' => 0), array(
+					'id' => $_POST['id']
+				));
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+
+		die(json_encode($ret));
+	}
+
+	public function tambah_data_p3ke(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil simpan data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				if($ret['status'] != 'error' && !empty($_POST['id_p3ke'])){
+					$id_p3ke = $_POST['id_p3ke'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data id_p3ke tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kode_kemendagri'])){
+					$kode_kemendagri = $_POST['kode_kemendagri'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data kode_kemendagri tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['tambah_nik'])){
+					$tambah_nik = $_POST['tambah_nik'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data tambah_nik tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['tambah_padan_dukcapil'])){
+					$tambah_padan_dukcapil = $_POST['tambah_padan_dukcapil'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data tambah_padan_dukcapil tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kepala_keluarga'])){
+					$kepala_keluarga = $_POST['kepala_keluarga'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data kepala_keluarga tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['jenis_kelamin'])){
+					$jenis_kelamin = $_POST['jenis_kelamin'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data jenis_kelamin tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['tanggal_lahir'])){
+					$tanggal_lahir = $_POST['tanggal_lahir'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data tanggal_lahir tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['provinsi'])){
+					$provinsi = $_POST['provinsi'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data provinsi tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kabkot'])){
+					$kabkot = $_POST['kabkot'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data kabkot tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kecamatan'])){
+					$kecamatan = $_POST['kecamatan'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data kecamatan tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['desa'])){
+					$desa = $_POST['desa'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data desa tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['alamat'])){
+					$alamat = $_POST['alamat'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data alamat tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['rumah'])){
+					$rumah = $_POST['rumah'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data rumah tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['pekerjaan'])){
+					$pekerjaan = $_POST['pekerjaan'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data pekerjaan tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['pendidikan'])){
+					$pendidikan = $_POST['pendidikan'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data pendidikan tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['punya_tabungan'])){
+					$punya_tabungan = $_POST['punya_tabungan'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data punya_tabungan tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['jenis_desil'])){
+					$jenis_desil = $_POST['jenis_desil'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data jenis_desil tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['jenis_atap'])){
+					$jenis_atap = $_POST['jenis_atap'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data jenis_atap tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['jenis_dinding'])){
+					$jenis_dinding = $_POST['jenis_dinding'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data jenis_dinding tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['jenis_lantai'])){
+					$jenis_lantai = $_POST['jenis_lantai'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data jenis_lantai tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['sumber_penerangan'])){
+					$sumber_penerangan = $_POST['sumber_penerangan'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data sumber_penerangan tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['bahan_bakar_memasak'])){
+					$bahan_bakar_memasak = $_POST['bahan_bakar_memasak'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data bahan_bakar_memasak tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['sumber_air_minum'])){
+					$sumber_air_minum = $_POST['sumber_air_minum'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data sumber_air_minum tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['fasilitas_bab'])){
+					$fasilitas_bab = $_POST['fasilitas_bab'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data fasilitas_bab tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['penerima_bpnt'])){
+					$penerima_bpnt = $_POST['penerima_bpnt'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data penerima_bpnt tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['penerima_bpum'])){
+					$penerima_bpum = $_POST['penerima_bpum'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data penerima_bpum tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['penerima_bst'])){
+					$penerima_bst = $_POST['penerima_bst'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data penerima_bst tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['penerima_pkh'])){
+					$penerima_pkh = $_POST['penerima_pkh'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data penerima_pkh tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['penerima_sembako'])){
+					$penerima_sembako = $_POST['penerima_sembako'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data penerima_sembako tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['resiko_stunting'])){
+					$resiko_stunting = $_POST['resiko_stunting'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data resiko_stunting tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error'){
+					$data = array(
+						'id_p3ke' => $id_p3ke,
+						'kode_kemendagri' => $kode_kemendagri,
+						'tambah_nik' => $tambah_nik,
+						'tambah_padan_dukcapil' => $tambah_padan_dukcapil,
+						'kepala_keluarga' => $kepala_keluarga,
+						'jenis_kelamin' => $jenis_kelamin,
+						'tanggal_lahir' => $tanggal_lahir,
+						'provinsi' => $provinsi,
+						'kabkot' => $kabkot,
+						'kecamatan' => $kecamatan,
+						'desa' => $desa,
+						'alamat' => $alamat,
+						'rumah' => $rumah,
+						'pekerjaan' => $pekerjaan,
+						'pendidikan' => $pendidikan,
+						'punya_tabungan' => $punya_tabungan,
+						'jenis_desil' => $jenis_desil,
+						'jenis_atap' => $jenis_atap,
+						'jenis_dinding' => $jenis_dinding,
+						'jenis_lantai' => $jenis_lantai,
+						'sumber_penerangan' => $sumber_penerangan,
+						'bahan_bakar_memasak' => $bahan_bakar_memasak,
+						'sumber_air_minum' => $sumber_air_minum,
+						'fasilitas_bab' => $fasilitas_bab,
+						'penerima_bpnt' => $penerima_bpnt,
+						'penerima_bpum' => $penerima_bpum,
+						'penerima_bst' => $penerima_bst,
+						'penerima_pkh' => $penerima_pkh,
+						'penerima_sembako' => $penerima_sembako,
+						'resiko_stunting' => $resiko_stunting
+					);
+					if(!empty($_POST['id_data'])){
+						$wpdb->update('data_p3ke', $data, array(
+							'id' => $_POST['id_data']
+						));
+						$ret['message'] = 'Berhasil update data!';
+					}else{
+						$cek_id = $wpdb->get_var($wpdb->prepare('
+							SELECT
+								id
+							FROM data_p3ke
+							WHERE id_p3ke=%s
+						', $id_p3ke));
+						if(empty($cek_id)){
+							$wpdb->insert('data_p3ke', $data);
+						}else{
+							$ret['status'] = 'error';
+							$ret['message'] = 'Gagal disimpan. Data P3KE dengan id_p3ke="'.$id_p3ke.'" sudah ada!';
+						}
+					}
+				}
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+
+		die(json_encode($ret));
+	}
+
 	public function get_datatable_p3ke(){
 		global $wpdb;
 		$ret = array(
@@ -778,8 +1085,8 @@ class Wp_Satset_Public {
 				$queryRecords = $wpdb->get_results($sqlRec, ARRAY_A);
 
 				foreach($queryRecords as $recKey => $recVal){
-					$btn = '<a class="btn btn-sm btn-warning" onclick="edit_data(\''.$recVal['id'].'\'); return false;" href="#" title="Edit Data">Edit</a>';
-					$btn .= '<a class="btn btn-sm btn-danger" onclick="hapus_data(\''.$recVal['id'].'\'); return false;" href="#" title="Edit Data">Hapus</a>';
+					$btn = '<a class="btn btn-sm btn-warning" onclick="edit_data(\''.$recVal['id'].'\'); return false;" href="#" title="Edit Data"><i class="dashicons dashicons-edit"></i></a>';
+					$btn .= '<a class="btn btn-sm btn-danger" onclick="hapus_data(\''.$recVal['id'].'\'); return false;" href="#" title="Edit Data"><i class="dashicons dashicons-trash"></i></a>';
 					$queryRecords[$recKey]['aksi'] = $btn;
 				}
 

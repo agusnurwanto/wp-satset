@@ -17,6 +17,8 @@ CREATE TABLE `data_batas_desa` (
     `desano` VARCHAR(10) DEFAULT NULL,
     `id2012` TEXT DEFAULT NULL,
     `polygon` LONGTEXT DEFAULT NULL,
+    `active` tinyint(4) DEFAULT 1,
+    `update_at` datetime DEFAULT current_timestamp,
     PRIMARY KEY  (id)
 );
 
@@ -30,6 +32,8 @@ CREATE TABLE `data_batas_kecamatan` (
     `kecamatan` TEXT DEFAULT NULL,
     `id2012` TEXT DEFAULT NULL,
     `polygon` LONGTEXT DEFAULT NULL,
+    `active` tinyint(4) DEFAULT 1,
+    `update_at` datetime DEFAULT current_timestamp,
     PRIMARY KEY  (id)
 );
 
@@ -65,6 +69,8 @@ CREATE TABLE `data_p3ke` (
     `penerima_pkh` VARCHAR(30) DEFAULT NULL,
     `penerima_sembako` VARCHAR(30) DEFAULT NULL,
     `resiko_stunting` VARCHAR(30) DEFAULT NULL,
+    `active` tinyint(4) DEFAULT 1,
+    `update_at` datetime DEFAULT current_timestamp,
     PRIMARY KEY  (id)
 );
 
@@ -102,6 +108,8 @@ CREATE TABLE `data_stunting` (
     `jml_vit_a` VARCHAR(100) DEFAULT NULL,
     `kpsp` VARCHAR(100) DEFAULT NULL,
     `kia` VARCHAR(100) DEFAULT NULL,
+    `active` tinyint(4) DEFAULT 1,
+    `update_at` datetime DEFAULT current_timestamp,
     PRIMARY KEY  (id)
 );
 
@@ -125,6 +133,8 @@ CREATE TABLE `data_tbc` (
     `hasil_akhir_pengobatan` TEXT DEFAULT NULL,
     `status_pengobatan` TEXT DEFAULT NULL,
     `keterangan` TEXT DEFAULT NULL,
+    `active` tinyint(4) DEFAULT 1,
+    `update_at` datetime DEFAULT current_timestamp,
     PRIMARY KEY  (id)
 );
 
@@ -143,6 +153,8 @@ CREATE TABLE `data_rtlh` (
     `lpj` TEXT DEFAULT NULL,
     `tgl_lpj` TEXT DEFAULT NULL,
     `sumber_dana` TEXT DEFAULT NULL,
+    `active` tinyint(4) DEFAULT 1,
+    `update_at` datetime DEFAULT current_timestamp,
     PRIMARY KEY  (id)
 );
 
@@ -193,8 +205,8 @@ CREATE TABLE `data_dtks_satset` (
     `periode_rutilahu` TEXT DEFAULT NULL,
     `periode_sembako_adaptif` TEXT DEFAULT NULL,
     `verifyid` TEXT DEFAULT NULL,
-    `active` tinyint(4) DEFAULT NULL,
-    `update_at` datetime NOT NULL,
+    `active` tinyint(4) DEFAULT 1,
+    `update_at` datetime DEFAULT current_timestamp,
     PRIMARY KEY  (id),
     INDEX(`id_desa`)
 );
