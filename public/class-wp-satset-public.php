@@ -626,15 +626,11 @@ class Wp_Satset_Public {
 				COUNT(BLT) as jml
 			FROM data_dtks_satset 
 			WHERE $where
-				AND (
-					is_nonaktif is null
-					OR is_nonaktif=''
-				)
+				AND is_nonaktif is null
 				AND active=1
 			GROUP BY provinsi, kabkot, kecamatan, desa, BLT, BLT_BBM, BPNT, PKH, PBI
 			ORDER BY provinsi, kabkot, kecamatan
 		", ARRAY_A);
-		// print_r($data); die($wpdb->last_query);
 		return $data;
 	}
 
@@ -683,15 +679,8 @@ class Wp_Satset_Public {
 					SELECT
 						*
 					FROM data_dtks
-					WHERE (
-							nik like %s
-							OR nama like %s
-						)
-						AND (
-							is_nonaktif is null
-							OR is_nonaktif=''
-						)
-						AND active=1
+					WHERE nik like %s
+						OR nama like %s
 				", '%' .$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
 				$ret['data']['p3ke'] = $data;
 				$ret['data']['stunting'] = $data_stunting;
@@ -709,7 +698,25 @@ class Wp_Satset_Public {
 
 		die(json_encode($ret));
 	}
-public function submit_add_schedule(){
+	// public function get_data_p3ke1(){
+	// 	global $wpdb;
+	// $ret = array(
+	// 		'status' => 'success',
+	// 		'message' => 'Berhasil get data!',
+	// 		'data' => array()
+				
+	// die(json_encode($ret)
+	// 	);
+	// }
+		public function get_data_p3ke1(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil get data!',
+			'data'	=> array()
+		);
+	}
+	public function submit_add_schedule(){
 		global $wpdb;
 		$user_id = um_user( 'ID' );
 		$user_meta = get_userdata($user_id);
