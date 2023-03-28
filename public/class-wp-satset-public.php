@@ -971,7 +971,9 @@ class Wp_Satset_Public {
 						'penerima_bst' => $penerima_bst,
 						'penerima_pkh' => $penerima_pkh,
 						'penerima_sembako' => $penerima_sembako,
-						'resiko_stunting' => $resiko_stunting
+						'resiko_stunting' => $resiko_stunting,
+						'active' => 1,
+						'update_at' => current_time('mysql')
 					);
 					if(!empty($_POST['id_data'])){
 						$wpdb->update('data_p3ke', $data, array(
@@ -979,17 +981,24 @@ class Wp_Satset_Public {
 						));
 						$ret['message'] = 'Berhasil update data!';
 					}else{
-						$cek_id = $wpdb->get_var($wpdb->prepare('
+						$cek_id = $wpdb->get_row($wpdb->prepare('
 							SELECT
-								id
+								id,
+								active
 							FROM data_p3ke
 							WHERE id_p3ke=%s
-						', $id_p3ke));
+						', $id_p3ke), ARRAY_A);
 						if(empty($cek_id)){
 							$wpdb->insert('data_p3ke', $data);
 						}else{
-							$ret['status'] = 'error';
-							$ret['message'] = 'Gagal disimpan. Data P3KE dengan id_p3ke="'.$id_p3ke.'" sudah ada!';
+							if($cek_id['active'] == 0){
+								$wpdb->update('data_p3ke', $data, array(
+									'id' => $cek_id['id']
+								));
+							}else{
+								$ret['status'] = 'error';
+								$ret['message'] = 'Gagal disimpan. Data P3KE dengan id_p3ke="'.$id_p3ke.'" sudah ada!';
+							}
 						}
 					}
 				}
