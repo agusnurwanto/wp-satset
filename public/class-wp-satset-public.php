@@ -242,7 +242,7 @@ class Wp_Satset_Public {
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-data-irisan.php';
 	}
 
-	function management_p3ke(){
+	function management_data_p3ke_satset(){
 		// untuk disable render shortcode di halaman edit page/post
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
@@ -698,31 +698,111 @@ class Wp_Satset_Public {
 
 		die(json_encode($ret));
 	}
-	// public function get_data_p3ke1(){
-	// 	global $wpdb;
-	// $ret = array(
-	// 		'status' => 'success',
-	// 		'message' => 'Berhasil get data!',
-	// 		'data' => array()
-				
-	// die(json_encode($ret)
-	// 	);
-	// }
-		public function get_data_p3ke1(){
+	public function get_datatable_p3ke(){
 		global $wpdb;
 		$ret = array(
 			'status' => 'success',
 			'message' => 'Berhasil get data!',
 			'data'	=> array()
 		);
-	}
-	public function submit_add_schedule(){
-		global $wpdb;
-		$user_id = um_user( 'ID' );
-		$user_meta = get_userdata($user_id);
-		$return = array(
-			'status' => 'success',
-			'data'	=> array()
-		);
+
+		if(!empty($_POST)){
+			if (!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				$user_id = um_user( 'ID' );
+				$user_meta = get_userdata($user_id);
+				$params = $columns = $totalRecords = $data = array();
+				$params = $_REQUEST;
+				$columns = array( 
+					0 => 'id_p3ke',
+				    1 => 'provinsi',
+				    2 => 'kabkot',
+				    3 => 'kecamatan',
+				    4 => 'desa',
+				    5 => 'kode_kemendagri',
+				    6 => 'jenis_desil',
+				    7 => 'alamat',
+				    8 => 'kepala_keluarga',
+				    9 => 'nik',
+				    10 => 'padan_dukcapil',
+				    11 => 'jenis_kelamin',
+				    12 => 'tanggal_lahir',
+				    13 => 'pekerjaan',
+				    14 => 'pendidikan',
+				    15 => 'rumah',
+				    16 => 'punya_tabungan',
+				    17 => 'jenis_atap',
+				    18 => 'jenis_dinding',
+				    19 => 'jenis_lantai',
+				    20 => 'sumber_penerangan',
+				    21 => 'bahan_bakar_memasak',
+				    22 => 'sumber_air_minum',
+				    23 => 'fasilitas_bab',
+				    24 => 'penerima_bpnt',
+				    25 => 'penerima_bpum',
+				    26 => 'penerima_bst',
+				    27 => 'penerima_pkh',
+				    28 => 'penerima_sembako',
+				    29 => 'resiko_stunting',
+				    30 => 'id'
+				);
+				$where = $sqlTot = $sqlRec = "";
+
+				// check search value exist
+				if( !empty($params['search']['value']) ) {
+					$where .=" AND ( id_p3ke LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");    
+					$where .=" OR nik LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
+					$where .=" OR kepala_keluarga LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
+					$where .=" OR alamat LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
+					$where .=" OR rumah LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%")." )";
+				}
+
+				// getting total number records without any search
+				$sql_tot = "SELECT count(id) as jml FROM `data_p3ke`";
+				$sql = "SELECT ".implode(', ', $columns)." FROM `data_p3ke`";
+				$where_first = " WHERE 1=1";
+				$sqlTot .= $sql_tot.$where_first;
+				$sqlRec .= $sql.$where_first;
+				if(isset($where) && $where != '') {
+					$sqlTot .= $where;
+					$sqlRec .= $where;
+				}
+
+				$limit = '';
+				if($params['length'] != -1){
+					$limit = "  LIMIT ".$wpdb->prepare('%d', $params['start'])." ,".$wpdb->prepare('%d', $params['length']);
+				}
+			 	$sqlRec .=  " ORDER BY ". $columns[$params['order'][0]['column']]."   ".$params['order'][0]['dir'].$limit;
+
+				$queryTot = $wpdb->get_results($sqlTot, ARRAY_A);
+				$totalRecords = $queryTot[0]['jml'];
+				$queryRecords = $wpdb->get_results($sqlRec, ARRAY_A);
+
+				foreach($queryRecords as $recKey => $recVal){
+					$btn = '<a class="btn btn-sm btn-warning" onclick="edit_data(\''.$recVal['id'].'\'); return false;" href="#" title="Edit Data">Edit</a>';
+					$btn .= '<a class="btn btn-sm btn-danger" onclick="hapus_data(\''.$recVal['id'].'\'); return false;" href="#" title="Edit Data">Hapus</a>';
+					$queryRecords[$recKey]['aksi'] = $btn;
+				}
+
+				$json_data = array(
+					"draw"            => intval( $params['draw'] ),   
+					"recordsTotal"    => intval( $totalRecords ),  
+					"recordsFiltered" => intval($totalRecords),
+					"data"            => $queryRecords
+				);
+
+				die(json_encode($json_data));
+			}else{
+				$return = array(
+					'status' => 'error',
+					'message'	=> 'Api Key tidak sesuai!'
+				);
+			}
+		}else{
+			$return = array(
+				'status' => 'error',
+				'message'	=> 'Format tidak sesuai!'
+			);
+		}
+		die(json_encode($return));
 	}
 }

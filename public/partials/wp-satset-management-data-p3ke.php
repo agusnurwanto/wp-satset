@@ -16,26 +16,25 @@
 		</div>
         <div class="wrap-table">
 		<table id="management_data_table" cellpadding="2" cellspacing="0" style="font-family:\'Open Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif; border-collapse: collapse; width:100%; overflow-wrap: break-word;" class="table table-bordered">
-			<thead id="data_management_p3ke">
+			<thead>
 				<tr>
-                    <th class="text-center" style="width: 20px;">No</th>
                     <th class="text-center">Id P3KE</th>
-                    <th class="text-center">Kode Kemendagri</th>
-                    <th class="text-center">NIK</th>
-                    <th class="text-center">Padan Dukcapil</th>
-                    <th class="text-center">Kepala Keluarga</th>
-                    <th class="text-center">Jenis Kelamin</th>
-                    <th class="text-center">Tanggal Lahir</th>
                     <th class="text-center">Provinsi</th>
                     <th class="text-center">Kabupaten / Kota</th>
                     <th class="text-center">Kecamatan</th>
                     <th class="text-center">Desa</th>
+                    <th class="text-center">Kode Kemendagri</th>
+                    <th class="text-center">Jenis Desil</th>
                     <th class="text-center">Alamat</th>
+                    <th class="text-center">Kepala Keluarga</th>
+                    <th class="text-center">NIK</th>
+                    <th class="text-center">Padan Dukcapil</th>
+                    <th class="text-center">Jenis Kelamin</th>
+                    <th class="text-center">Tanggal Lahir</th>
                     <th class="text-center">Pekerjaan</th>
                     <th class="text-center">Pendidikan</th>
                     <th class="text-center">Rumah</th>
                     <th class="text-center">Punya Tabungan</th>
-                    <th class="text-center">Jenis Desil</th>
                     <th class="text-center">Jenis Atap</th>
                     <th class="text-center">Jenis Dinding</th>
                     <th class="text-center">Jenis Lantai</th>
@@ -52,7 +51,7 @@
 					<th class="text-center" style="width: 150px;">Aksi</th>
 				</tr>
 			</thead>
-			<tbody id="data_management_p3ke">
+			<tbody>
 			</tbody>
 		</table>
         </div>
@@ -204,64 +203,214 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.3.1/js/buttons.html5.min.js"></script>
 <script>    
-    jQuery(document).ready(function(){
+jQuery(document).ready(function(){
+    get_data_p3ke();
+});
 
-        // get_data_p3ke1();
-
-    });
-
-// get tambah_data
-function get_tambah_data(){
-        jQuery("#wrap-loading").show();
-        globalThis.penambahanDataP3KE = jQuery('#data_management_p3ke').DataTable({
+function get_data_p3ke(){
+    jQuery("#wrap-loading").show();
+    if(typeof dataP3KE == 'undefined'){
+        window.dataP3KE = jQuery('#management_data_table').DataTable({
             "processing": true,
             "serverSide": true,
             "ajax": {
                 url: '<?php echo admin_url('admin-ajax.php'); ?>',
-            dataType: 'json',
-            data:{
-                'action': 'get_data_p3ke1',
-                'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
-            }
+                type: 'post',
+                dataType: 'json',
+                data:{
+                    'action': 'get_datatable_p3ke',
+                    'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
+                }
             },
+            lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
+            order: [[0, 'asc']],
             "initComplete":function( settings, json){
                 jQuery("#wrap-loading").hide();
             },
             "columns": [
-                { 
-                    "data": "nik",
+                {
+                    "data": 'id_p3ke',
                     className: "text-center"
                 },
-                { 
-                    "data": "padan_dukcapil_p3ke",
+                {
+                    "data": 'provinsi',
+                    className: "text-center"
+                },
+                {
+                    "data": 'kabkot',
+                    className: "text-center"
+                },
+                {
+                    "data": 'kecamatan',
+                    className: "text-center"
+                },
+                {
+                    "data": 'desa',
+                    className: "text-center"
+                },
+                {
+                    "data": 'kode_kemendagri',
+                    className: "text-center"
+                },
+                {
+                    "data": 'jenis_desil',
+                    className: "text-center"
+                },
+                {
+                    "data": 'alamat',
+                    className: "text-center"
+                },
+                {
+                    "data": 'kepala_keluarga',
+                    className: "text-center"
+                },
+                {
+                    "data": 'nik',
+                    className: "text-center"
+                },
+                {
+                    "data": 'padan_dukcapil',
+                    className: "text-center"
+                },
+                {
+                    "data": 'jenis_kelamin',
+                    className: "text-center"
+                },
+                {
+                    "data": 'tanggal_lahir',
+                    className: "text-center"
+                },
+                {
+                    "data": 'pekerjaan',
+                    className: "text-center"
+                },
+                {
+                    "data": 'pendidikan',
+                    className: "text-center"
+                },
+                {
+                    "data": 'rumah',
+                    className: "text-center"
+                },
+                {
+                    "data": 'punya_tabungan',
+                    className: "text-center"
+                },
+                {
+                    "data": 'jenis_atap',
+                    className: "text-center"
+                },
+                {
+                    "data": 'jenis_dinding',
+                    className: "text-center"
+                },
+                {
+                    "data": 'jenis_lantai',
+                    className: "text-center"
+                },
+                {
+                    "data": 'sumber_penerangan',
+                    className: "text-center"
+                },
+                {
+                    "data": 'bahan_bakar_memasak',
+                    className: "text-center"
+                },
+                {
+                    "data": 'sumber_air_minum',
+                    className: "text-center"
+                },
+                {
+                    "data": 'fasilitas_bab',
+                    className: "text-center"
+                },
+                {
+                    "data": 'penerima_bpnt',
+                    className: "text-center"
+                },
+                {
+                    "data": 'penerima_bpum',
+                    className: "text-center"
+                },
+                {
+                    "data": 'penerima_bst',
+                    className: "text-center"
+                },
+                {
+                    "data": 'penerima_pkh',
+                    className: "text-center"
+                },
+                {
+                    "data": 'penerima_sembako',
+                    className: "text-center"
+                },
+                {
+                    "data": 'resiko_stunting',
+                    className: "text-center"
+                },
+                {
+                    "data": 'aksi',
                     className: "text-center"
                 }
             ]
         });
+    }else{
+        dataP3KE.update();
     }
+}
+
+// get tambah_data
+function get_tambah_data(){
+    jQuery("#wrap-loading").show();
+    globalThis.penambahanDataP3KE = jQuery('#management_data_table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            url: '<?php echo admin_url('admin-ajax.php'); ?>',
+        dataType: 'json',
+        data:{
+            'action': 'get_data_p3ke1',
+            'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
+        }
+        },
+        "initComplete":function( settings, json){
+            jQuery("#wrap-loading").hide();
+        },
+        "columns": [
+            { 
+                "data": "nik",
+                className: "text-center"
+            },
+            { 
+                "data": "padan_dukcapil_p3ke",
+                className: "text-center"
+            }
+        ]
+    });
+}
 
 //show tambah data
 function tambah_data(){
-        jQuery("#modalTambahDataP3KE .modal-title").html("Penambahan Data P3KE");
-        jQuery("#modalTambahDataP3KE .submitBtn")
-            .attr("onclick", 'submitTambahDataFormP3KE()')
-            .attr("disabled", false)
-            .text("Simpan");
-        jQuery('#modalTambahDataP3KE').modal('show');
-        jQuery('#wrap-loading').show();
-        jQuery.ajax({
-            method: 'post',
-            url: '<?php echo admin_url('admin-ajax.php'); ?>',
-            dataType: 'json',
-            data:{
-                'action': 'get_data_p3ke1',
-                'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
-            }
+    jQuery("#modalTambahDataP3KE .modal-title").html("Penambahan Data P3KE");
+    jQuery("#modalTambahDataP3KE .submitBtn")
+        .attr("onclick", 'submitTambahDataFormP3KE()')
+        .attr("disabled", false)
+        .text("Simpan");
+    jQuery('#modalTambahDataP3KE').modal('show');
+    jQuery('#wrap-loading').show();
+    jQuery.ajax({
+        method: 'post',
+        url: '<?php echo admin_url('admin-ajax.php'); ?>',
+        dataType: 'json',
+        data:{
+            'action': 'get_data_p3ke1',
+            'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
+        }
 
-        });
-        jQuery('#wrap-loading').hide();
+    });
+    jQuery('#wrap-loading').hide();
+}
 
-    }
 //show submit tambah data
 // function submitTambahDataFormP3KE(){
 //         jQuery("#wrap-loading").show()
