@@ -250,6 +250,13 @@ class Wp_Satset_Public {
 		}
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-p3ke.php';
 	}
+	function management_data_stunting_satset(){
+		// untuk disable render shortcode di halaman edit page/post
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-stunting.php';
+	}
 
 	function get_polygon($options = array( 'type' => 'desa' )){
 		global $wpdb;
@@ -1014,7 +1021,7 @@ class Wp_Satset_Public {
 		die(json_encode($ret));
 	}
 
-	public function get_datatable_p3ke(){
+	public function get_datatable_stunting(){
 		global $wpdb;
 		$ret = array(
 			'status' => 'success',
@@ -1029,7 +1036,7 @@ class Wp_Satset_Public {
 				$params = $columns = $totalRecords = $data = array();
 				$params = $_REQUEST;
 				$columns = array( 
-					0 => 'id_p3ke',
+					0 => 'id_stunting',
 				    1 => 'provinsi',
 				    2 => 'kabkot',
 				    3 => 'kecamatan',
@@ -1065,7 +1072,7 @@ class Wp_Satset_Public {
 
 				// check search value exist
 				if( !empty($params['search']['value']) ) {
-					$where .=" AND ( id_p3ke LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");    
+					$where .=" AND ( id_stunting LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");    
 					$where .=" OR nik LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
 					$where .=" OR kepala_keluarga LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
 					$where .=" OR alamat LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
@@ -1073,8 +1080,8 @@ class Wp_Satset_Public {
 				}
 
 				// getting total number records without any search
-				$sql_tot = "SELECT count(id) as jml FROM `data_p3ke`";
-				$sql = "SELECT ".implode(', ', $columns)." FROM `data_p3ke`";
+				$sql_tot = "SELECT count(id) as jml FROM `data_stunting`";
+				$sql = "SELECT ".implode(', ', $columns)." FROM `data_stunting`";
 				$where_first = " WHERE 1=1";
 				$sqlTot .= $sql_tot.$where_first;
 				$sqlRec .= $sql.$where_first;
@@ -1120,5 +1127,163 @@ class Wp_Satset_Public {
 			);
 		}
 		die(json_encode($return));
+	}public function get_data_stunting_by_id(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil get data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				$ret['data'] = $wpdb->get_row($wpdb->prepare('
+					SELECT 
+						*
+					FROM data_stunting
+					WHERE id=%d
+				', $_POST['id']), ARRAY_A);
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+
+		die(json_encode($ret));
 	}
+
+	public function hapus_data_stunting_by_id(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil hapus data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				$ret['data'] = $wpdb->update('data_stunting', array('active' => 0), array(
+					'id' => $_POST['id']
+				));
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+
+		die(json_encode($ret));
+	}
+	// public function get_datatable_stunting(){
+	// 	global $wpdb;
+	// 	$ret = array(
+	// 		'status' => 'success',
+	// 		'message' => 'Berhasil get data!',
+	// 		'data'	=> array()
+	// 	);
+
+	// 	if(!empty($_POST)){
+	// 		if (!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+	// 			$user_id = um_user( 'ID' );
+	// 			$user_meta = get_userdata($user_id);
+	// 			$params = $columns = $totalRecords = $data = array();
+	// 			$params = $_REQUEST;
+	// 			$columns = array( 
+	// 				0 => 'id_stunting',
+	// 			    1 => 'nik',
+	// 			    2 => 'nama',
+	// 			    3 => 'jenis_kelamin',
+	// 			    4 => 'tanggal_lahir',
+	// 			    5 => 'provinsi',
+	// 			    6 => 'kabkot',
+	// 			    7 => 'kecamatan',
+	// 			    8 => 'desa',
+	// 			    9 => 'berat_badan_lahir',
+	// 			    10 => 'tinggi_badan_lahir',
+	// 			    11 => 'rt',
+	// 			    12 => 'rw',
+	// 			    13 => 'alamat',
+	// 			    14 => 'puskesmas',
+	// 			    15 => 'posyandu',
+	// 			    16 => 'usia_saat_ukur',
+	// 			    17 => 'tanggal_pengukuran',
+	// 			    18 => 'berat',
+	// 			    19 => 'tinggi',
+	// 			    20 => 'lingkar_lengan_atas',
+	// 			    21 => 'bb_per_u',
+	// 			    22 => 'tb_per_u',
+	// 			    23 => 'zs_bb_per_u',
+	// 			    24 => 'zs_tb_per_u',
+	// 			    25 => 'bb_per_tb',
+	// 			    26 => 'zs_bb_per_tb',
+	// 			    27 => 'naik_berat_badan',
+	// 			    28 => 'pmt_diterima_per_kg',
+	// 			    29 => 'jumlah_vitamin_a',
+	// 			    30 => 'kpsp',
+	// 			    31 => 'kia',
+	// 			    32 => 'id'
+	// 			);
+	// 			$where = $sqlTot = $sqlRec = "";
+
+	// 			// check search value exist
+	// 			if( !empty($params['search']['value']) ) {
+	// 				$where .=" AND ( id_stunting LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");    
+	// 				$where .=" OR nik LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
+	// 				$where .=" OR nama LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
+	// 				$where .=" OR alamat LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
+	// 				$where .=" OR rumah LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%")." )";
+	// 			}
+
+	// 			// getting total number records without any search
+	// 			$sql_tot = "SELECT count(id) as jml FROM `data_stunting`";
+	// 			$sql = "SELECT ".implode(', ', $columns)." FROM `data_stunting`";
+	// 			$where_first = " WHERE 1=1";
+	// 			$sqlTot .= $sql_tot.$where_first;
+	// 			$sqlRec .= $sql.$where_first;
+	// 			if(isset($where) && $where != '') {
+	// 				$sqlTot .= $where;
+	// 				$sqlRec .= $where;
+	// 			}
+
+	// 			$limit = '';
+	// 			if($params['length'] != -1){
+	// 				$limit = "  LIMIT ".$wpdb->prepare('%d', $params['start'])." ,".$wpdb->prepare('%d', $params['length']);
+	// 			}
+	// 		 	$sqlRec .=  " ORDER BY ". $columns[$params['order'][0]['column']]."   ".$params['order'][0]['dir'].$limit;
+
+	// 			$queryTot = $wpdb->get_results($sqlTot, ARRAY_A);
+	// 			$totalRecords = $queryTot[0]['jml'];
+	// 			$queryRecords = $wpdb->get_results($sqlRec, ARRAY_A);
+
+	// 			foreach($queryRecords as $recKey => $recVal){
+	// 				$btn = '<a class="btn btn-sm btn-warning" onclick="edit_data(\''.$recVal['id'].'\'); return false;" href="#" title="Edit Data"><i class="dashicons dashicons-edit"></i></a>';
+	// 				$btn .= '<a class="btn btn-sm btn-danger" onclick="hapus_data(\''.$recVal['id'].'\'); return false;" href="#" title="Edit Data"><i class="dashicons dashicons-trash"></i></a>';
+	// 				$queryRecords[$recKey]['aksi'] = $btn;
+	// 			}
+
+	// 			$json_data = array(
+	// 				"draw"            => intval( $params['draw'] ),   
+	// 				"recordsTotal"    => intval( $totalRecords ),  
+	// 				"recordsFiltered" => intval($totalRecords),
+	// 				"data"            => $queryRecords
+	// 			);
+
+	// 			die(json_encode($json_data));
+	// 		}else{
+	// 			$return = array(
+	// 				'status' => 'error',
+	// 				'message'	=> 'Api Key tidak sesuai!'
+	// 			);
+	// 		}
+	// 	}else{
+	// 		$return = array(
+	// 			'status' => 'error',
+	// 			'message'	=> 'Format tidak sesuai!'
+	// 		);
+	// 	}
+	// 	die(json_encode($return));
+	// }
 }
