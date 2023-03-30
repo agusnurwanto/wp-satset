@@ -194,9 +194,12 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_get_datatable_stunting', $plugin_public, 'get_datatable_stunting');
 		$this->loader->add_action('wp_ajax_get_data_p3ke_by_id', $plugin_public, 'get_data_p3ke_by_id');
 		$this->loader->add_action('wp_ajax_tambah_data_p3ke', $plugin_public, 'tambah_data_p3ke');
-		$this->loader->add_action('wp_ajax_hapus_data_p3ke_by_id', $plugin_public, 'hapus_data_p3ke_by_id');
+		$this->loader->add_action('wp_ajax_hapus_data_stunting_by_id', $plugin_public, 'hapus_data_stunting_by_id');
 		$this->loader->add_action('wp_ajax_get_data_stunting_by_id', $plugin_public, 'get_data_stunting_by_id');
 		$this->loader->add_action('wp_ajax_tambah_data_stunting', $plugin_public, 'tambah_data_stunting');
+		$this->loader->add_action('wp_ajax_hapus_data_tbc_by_id', $plugin_public, 'hapus_data_tbc_by_id');
+		$this->loader->add_action('wp_ajax_get_data_tbc_by_id', $plugin_public, 'get_data_tbc_by_id');
+		$this->loader->add_action('wp_ajax_tambah_data_tbc', $plugin_public, 'tambah_data_tbc');
 
 		add_shortcode('satset_homepage', array($plugin_public, 'satset_homepage'));
 		add_shortcode('conversi_peta_satset', array($plugin_public, 'conversi_peta_satset'));
@@ -206,6 +209,7 @@ class Wp_Satset {
 		add_shortcode('cek_nik_satset', array($plugin_public, 'cek_nik_satset'));
 		add_shortcode('management_data_p3ke_satset', array($plugin_public, 'management_data_p3ke_satset'));
 		add_shortcode('management_data_stunting_satset', array($plugin_public, 'management_data_stunting_satset'));
+		add_shortcode('management_data_tbc_satset', array($plugin_public, 'management_data_tbc_satset'));
 		add_shortcode('peta_satset', array($plugin_public, 'peta_satset'));
 		add_shortcode('data_p3ke', array($plugin_public, 'data_p3ke'));
 		add_shortcode('data_stunting', array($plugin_public, 'data_stunting'));
