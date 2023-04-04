@@ -172,14 +172,15 @@
                                 data_all +='<td>'+value.puskesmas+'</td>';
                                 data_all +='<td>'+value.desa+'</td>';
                                 data_all +='<td>'+value.posyandu+'</td>';
-                                data_all +='<td>'+value.rt+'</td>';
-                                data_all +='<td>'+value.rw+'</td>';
+                                data_all +='<td>'+(value.rt != null ? value.rt : "-")+'</td>';
+                                data_all +='<td>'+(value.rw != null ? value.rw: "-")+'</td>';
                                 data_all +='<td>'+value.alamat+'</td>';
                                 data_all +='<td>'+value.usia_saat_ukur+'</td>';
                                 data_all +='<td>'+value.tanggal_pengukuran+'</td>';
                                 data_all +='<td>'+value.berat+'</td>';
                                 data_all +='<td>'+value.tinggi+'</td>';
-                                data_all +='<td>'+value.lingkar_lengan_atas+'</td>';
+                                data_all +='<td>'+(value.lingkar_lengan_atas != null ? value.lingkar_lengan_atas : "-")+'</td>';
+                                // data_all +='<td>'+value.lingkar_lengan_atas+'</td>';
                                 data_all +='<td>'+value.bb_per_u+'</td>';
                                 data_all +='<td>'+value.zs_bb_per_u+'</td>';
                                 data_all +='<td>'+value.tb_per_u+'</td>';
