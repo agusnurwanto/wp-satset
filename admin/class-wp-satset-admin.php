@@ -250,6 +250,13 @@ class Wp_Satset_Admin {
 			'no_key' => 1,
 			'post_status' => 'private'
 		));
+		$management_data_rtlh = $this->functions->generatePage(array(
+			'nama_page' => 'Management Data RTLH',
+			'content' => '[management_data_rtlh_satset]',
+			'show_header' => 1,
+			'no_key' => 1,
+			'post_status' => 'private'
+		));
 
 		$basic_options_container = Container::make( 'theme_options', __( 'WP SATSET Options' ) )
 			->set_page_menu_position( 4 )
@@ -556,6 +563,13 @@ class Wp_Satset_Admin {
 		        			.postbox-container { display: none; }
 		        			#poststuff #post-body.columns-2 { margin: 0 !important; }
 		        		</style>
+		        	' ),
+		        Field::make( 'html', 'crb_satset_halaman_terkait_rtlh' )
+		        	->set_html( '
+					<h5>HALAMAN TERKAIT</h5>
+	            	<ol>
+	            		<li><a target="_blank" href="'.$management_data_rtlh['url'].'">'.$management_data_rtlh['title'].'</a></li>
+	            	</ol>
 		        	' ),
 		        Field::make( 'html', 'crb_rtlh_upload_html' )
 	            	->set_html( '<h3>Import EXCEL data rtlh</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePickedSatset(event);"><br>Contoh format file excel bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_rtlh.xlsx">download di sini</a>. Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),

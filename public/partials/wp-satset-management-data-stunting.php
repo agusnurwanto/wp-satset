@@ -11,7 +11,7 @@
 		<input type="hidden" value="<?php echo get_option( '_crb_api_key_extension' ); ?>" id="api_key">
 	<h1 class="text-center" style="margin:3rem;">Manajemen Data Stunting</h1>
 		<div style="margin-bottom: 25px;">
-			<button class="btn btn-primary" onclick="tambah_data_tbc();"><i class="dashicons dashicons-plus"></i> Tambah Data TBC</button>
+			<button class="btn btn-primary" onclick="tambah_data_stunting();"><i class="dashicons dashicons-plus"></i> Tambah Data Stunting</button>
 		</div>
         <div class="wrap-table">
 		<table id="management_data_table" cellpadding="2" cellspacing="0" style="font-family:\'Open Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif; border-collapse: collapse; width:100%; overflow-wrap: break-word;" class="table table-bordered">
@@ -379,7 +379,7 @@ function hapus_data(_id){
             url: '<?php echo admin_url('admin-ajax.php'); ?>',
             dataType: 'json',
             data:{
-                'action': 'hapus_data_p3ke_by_id',
+                'action': 'hapus_data_stunting_by_id',
                 'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
                 'id': _id
             },
@@ -411,8 +411,7 @@ function edit_data(_id){
                 jQuery('#id_data').val(res.data.id);
                 jQuery('#nik').val(res.data.nik);
                 jQuery('#nama').val(res.data.nama);
-                jQuery('#nama_orang_tua').val(res.data.nik);
-                jQuery('#tambah_padan_dukcapil').val(res.data.padan_dukcapil);
+                jQuery('#nama_orang_tua').val(res.data.nama_orang_tua);
                 jQuery('#tinggi_badan_lahir').val(res.data.tinggi_badan_lahir);
                 jQuery('#jenis_kelamin').val(res.data.jenis_kelamin);
                 jQuery('#tanggal_lahir').val(res.data.tanggal_lahir);
@@ -457,7 +456,6 @@ function tambah_data_stunting(){
     jQuery('#nik').val('');
     jQuery('#nama').val('');
     jQuery('#nama_orang_tua').val('');
-    jQuery('#tambah_padan_dukcapil').val('');
     jQuery('#tinggi_badan_lahir').val('');
     jQuery('#jenis_kelamin').val('');
     jQuery('#tanggal_lahir').val('');
