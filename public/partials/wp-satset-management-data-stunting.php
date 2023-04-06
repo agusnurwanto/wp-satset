@@ -87,16 +87,16 @@
                     <input type="text" id='tanggal_lahir' name="tanggal_lahir" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='berat_badan_lahir' style='display:inline-block'>Berat Badan saat Lahir</label>
-                    <input type="text" id='berat_badan_lahir' name="berat_badan_lahir" class="form-control" placeholder=''/>
+                    <label for='bb_lahir' style='display:inline-block'>Berat Badan saat Lahir</label>
+                    <input type="text" id='bb_lahir' name="bb_lahir" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='tinggi_badan_lahir' style='display:inline-block'>Tinggi Badan saat Lahir</label>
-                    <input type="text" id='tinggi_badan_lahir' name="tinggi_badan_lahir" class="form-control" placeholder=''/>
+                    <label for='tb_lahir' style='display:inline-block'>Tinggi Badan saat Lahir</label>
+                    <input type="text" id='tb_lahir' name="tb_lahir" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='nama_orang_tua' style='display:inline-block'>Nama Orang Tua</label>
-                    <input type='text' id='nama_orang_tua' name="nama_orang_tua" class="form-control" placeholder=''>
+                    <label for='nama_ortu' style='display:inline-block'>Nama Orang Tua</label>
+                    <input type='text' id='nama_ortu' name="nama_ortu" class="form-control" placeholder=''>
                 </div>
                 <div class="form-group">
                     <label for='provinsi' style='display:inline-block'>Provinsi</label>
@@ -135,8 +135,8 @@
                     <input type="text" id='alamat' name="alamat" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='usia_saat_diukur' style='display:inline-block'>Usia saat Diukur</label>
-                    <input type="text" id='usia_saat_diukur' name="usia_saat_diukur" class="form-control" placeholder=''/>
+                    <label for='usia_saat_ukur' style='display:inline-block'>Usia saat Diukur</label>
+                    <input type="text" id='usia_saat_ukur' name="usia_saat_ukur" class="form-control" placeholder=''/>
                 </div> 
                 <div class="form-group">
                     <label for='tanggal_pengukuran' style='display:inline-block'>Tanggal Pengukuran</label>
@@ -187,8 +187,8 @@
                     <input type="text" id='pmt_diterima_per_kg' name="pmt_diterima_per_kg" class="form-control" placeholder=''/>
                 </div> 
                 <div class="form-group">
-                    <label for='jumlah_vitamin_a' style='display:inline-block'>Jumlah Vitamin A</label>
-                    <input type="text" id='jumlah_vitamin_a' name="jumlah_vitamin_a" class="form-control" placeholder=''/>
+                    <label for='jml_vit_a' style='display:inline-block'>Jumlah Vitamin A</label>
+                    <input type="text" id='jml_vit_a' name="jml_vit_a" class="form-control" placeholder=''/>
                 </div> 
                 <div class="form-group">
                     <label for='kpsp' style='display:inline-block'>KPSP</label>
@@ -250,15 +250,15 @@ function get_data_stunting(){
                     className: "text-center"
                 },
                 {
-                    "data": 'berat_badan_lahir',
+                    "data": 'bb_lahir',
                     className: "text-center"
                 },
                 {
-                    "data": 'tinggi_badan_lahir',
+                    "data": 'tb_lahir',
                     className: "text-center"
                 },
                 {
-                    "data": 'nama_orang_tua',
+                    "data": 'nama_ortu',
                     className: "text-center"
                 },
                 {
@@ -298,7 +298,7 @@ function get_data_stunting(){
                     className: "text-center"
                 },
                 {
-                    "data": 'usia_saat_diukur',
+                    "data": 'usia_saat_ukur',
                     className: "text-center"
                 },
                 {
@@ -349,7 +349,7 @@ function get_data_stunting(){
                     "data": 'pmt_diterima_per_kg',
                     className: "text-center"
                 },{
-                    "data": 'jumlah_vitamin_a',
+                    "data": 'jml_vit_a',
                     className: "text-center"
                 },
                 {
@@ -366,9 +366,10 @@ function get_data_stunting(){
                 }
             ]
         });
-    }else{
-        dataStunting.update();
-    }
+     }
+// else{
+    //     dataStunting.update();
+    // }
 }
 
 function hapus_data(_id){
@@ -411,8 +412,8 @@ function edit_data(_id){
                 jQuery('#id_data').val(res.data.id);
                 jQuery('#nik').val(res.data.nik);
                 jQuery('#nama').val(res.data.nama);
-                jQuery('#nama_orang_tua').val(res.data.nama_orang_tua);
-                jQuery('#tinggi_badan_lahir').val(res.data.tinggi_badan_lahir);
+                jQuery('#nama_ortu').val(res.data.nama_ortu);
+                jQuery('#tb_lahir').val(res.data.tb_lahir);
                 jQuery('#jenis_kelamin').val(res.data.jenis_kelamin);
                 jQuery('#tanggal_lahir').val(res.data.tanggal_lahir);
                 jQuery('#provinsi').val(res.data.provinsi);
@@ -424,8 +425,8 @@ function edit_data(_id){
                 jQuery('#puskesmas').val(res.data.puskesmas);
                 jQuery('#posyandu').val(res.data.posyandu);
                 jQuery('#rw').val(res.data.rw);
-                jQuery('#berat_badan_lahir').val(res.data.berat_badan_lahir);
-                jQuery('#usia_saat_diukur').val(res.data.usia_saat_diukur);
+                jQuery('#bb_lahir').val(res.data.bb_lahir);
+                jQuery('#usia_saat_ukur').val(res.data.usia_saat_ukur);
                 jQuery('#tanggal_pengukuran').val(res.data.tanggal_pengukuran);
                 jQuery('#berat').val(res.data.berat);
                 jQuery('#tinggi').val(res.data.tinggi);
@@ -438,7 +439,7 @@ function edit_data(_id){
                 jQuery('#zs_bb_per_tb').val(res.data.zs_bb_per_tb);
                 jQuery('#naik_berat_badan').val(res.data.naik_berat_badan);
                 jQuery('#pmt_diterima_per_kg').val(res.data.pmt_diterima_per_kg);
-                jQuery('#jumlah_vitamin_a').val(res.data.jumlah_vitamin_a);
+                jQuery('#jml_vit_a').val(res.data.jml_vit_a);
                 jQuery('#kpsp').val(res.data.kpsp);
                 jQuery('#kia').val(res.data.kia);
                 jQuery('#modalTambahDataStunting').modal('show');
@@ -455,8 +456,8 @@ function tambah_data_stunting(){
     jQuery('#id_data').val('');
     jQuery('#nik').val('');
     jQuery('#nama').val('');
-    jQuery('#nama_orang_tua').val('');
-    jQuery('#tinggi_badan_lahir').val('');
+    jQuery('#nama_ortu').val('');
+    jQuery('#tb_lahir').val('');
     jQuery('#jenis_kelamin').val('');
     jQuery('#tanggal_lahir').val('');
     jQuery('#provinsi').val('');
@@ -468,8 +469,8 @@ function tambah_data_stunting(){
     jQuery('#puskesmas').val('');
     jQuery('#posyandu').val('');
     jQuery('#rw').val('');
-    jQuery('#berat_badan_lahir').val('');
-    jQuery('#usia_saat_diukur').val('');
+    jQuery('#bb_lahir').val('');
+    jQuery('#usia_saat_ukur').val('');
     jQuery('#tanggal_pengukuran').val('');
     jQuery('#berat').val('');
     jQuery('#tinggi').val('');
@@ -482,7 +483,7 @@ function tambah_data_stunting(){
     jQuery('#zs_bb_per_tb').val('');
     jQuery('#naik_berat_badan').val('');
     jQuery('#pmt_diterima_per_kg').val('');
-    jQuery('#jumlah_vitamin_a').val('');
+    jQuery('#jml_vit_a').val('');
     jQuery('#kpsp').val('');
     jQuery('#kia').val('');
     jQuery('#modalTambahDataStunting').modal('show');
@@ -498,13 +499,13 @@ function submitTambahDataFormStunting(){
     if(nama == ''){
         return alert('Data nama tidak boleh kosong!');
     }
-    var nama_orang_tua = jQuery('#nama_orang_tua').val();
-    if(nama_orang_tua == ''){
-        return alert('Data nama_orang_tua tidak boleh kosong!');
+    var nama_ortu = jQuery('#nama_ortu').val();
+    if(nama_ortu == ''){
+        return alert('Data nama_ortu tidak boleh kosong!');
     }
-    var tinggi_badan_lahir = jQuery('#tinggi_badan_lahir').val();
-    if(tinggi_badan_lahir == ''){
-        return alert('Data tinggi_badan_lahir tidak boleh kosong!');
+    var tb_lahir = jQuery('#tb_lahir').val();
+    if(tb_lahir == ''){
+        return alert('Data tb_lahir tidak boleh kosong!');
     }
     var jenis_kelamin = jQuery('#jenis_kelamin').val();
     if(jenis_kelamin == ''){
@@ -550,13 +551,13 @@ function submitTambahDataFormStunting(){
     if(rw == ''){
         return alert('Data rw tidak boleh kosong!');
     }
-    var berat_badan_lahir = jQuery('#berat_badan_lahir').val();
-    if(berat_badan_lahir == ''){
-        return alert('Data berat_badan_lahir tidak boleh kosong!');
+    var bb_lahir = jQuery('#bb_lahir').val();
+    if(bb_lahir == ''){
+        return alert('Data bb_lahir tidak boleh kosong!');
     }
-    var usia_saat_diukur = jQuery('#usia_saat_diukur').val();
-    if(usia_saat_diukur == ''){
-        return alert('Data usia_saat_diukur tidak boleh kosong!');
+    var usia_saat_ukur = jQuery('#usia_saat_ukur').val();
+    if(usia_saat_ukur == ''){
+        return alert('Data usia_saat_ukur tidak boleh kosong!');
     }
     var tanggal_pengukuran = jQuery('#tanggal_pengukuran').val();
     if(tanggal_pengukuran == ''){
@@ -606,9 +607,9 @@ function submitTambahDataFormStunting(){
     if(pmt_diterima_per_kg == ''){
         return alert('Data pmt_diterima_per_kg tidak boleh kosong!');
     }
-    var jumlah_vitamin_a = jQuery('#jumlah_vitamin_a').val();
-    if(jumlah_vitamin_a == ''){
-        return alert('Data jumlah_vitamin_a tidak boleh kosong!');
+    var jml_vit_a = jQuery('#jml_vit_a').val();
+    if(jml_vit_a == ''){
+        return alert('Data jml_vit_a tidak boleh kosong!');
     }
     var kpsp = jQuery('#kpsp').val();
     if(kpsp == ''){
@@ -629,8 +630,8 @@ function submitTambahDataFormStunting(){
             'id_data': id_data,
             'nik': nik,
             'nama': nama,
-            'nama_orang_tua': nama_orang_tua,
-            'tinggi_badan_lahir': tinggi_badan_lahir,
+            'nama_ortu': nama_ortu,
+            'tb_lahir': tb_lahir,
             'jenis_kelamin': jenis_kelamin,
             'tanggal_lahir': tanggal_lahir,
             'provinsi': provinsi,
@@ -642,8 +643,8 @@ function submitTambahDataFormStunting(){
             'rw': rw,
             'puskesmas': puskesmas,
             'posyandu': posyandu,
-            'berat_badan_lahir': berat_badan_lahir,
-            'usia_saat_diukur': usia_saat_diukur,
+            'bb_lahir': bb_lahir,
+            'usia_saat_ukur': usia_saat_ukur,
             'tanggal_pengukuran': tanggal_pengukuran,
             'berat': berat,
             'tinggi': tinggi,
@@ -656,7 +657,7 @@ function submitTambahDataFormStunting(){
             'zs_bb_per_tb': zs_bb_per_tb,
             'naik_berat_badan': naik_berat_badan,
             'pmt_diterima_per_kg': pmt_diterima_per_kg,
-            'jumlah_vitamin_a': jumlah_vitamin_a,
+            'jml_vit_a': jml_vit_a,
             'kpsp': kpsp,
             'kia': kia,
         },

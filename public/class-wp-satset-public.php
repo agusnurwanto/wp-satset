@@ -1203,23 +1203,17 @@ public function tambah_data_stunting(){
 		);
 		if(!empty($_POST)){
 			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
-				if($ret['status'] != 'error' && !empty($_POST['id_stunting'])){
-					$id_stunting = $_POST['id_stunting'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data id_stunting tidak boleh kosong!';
-				}
 				if($ret['status'] != 'error' && !empty($_POST['nik'])){
 					$nik = $_POST['nik'];
 				}else{
 					$ret['status'] = 'error';
-					$ret['message'] = 'Data nik tidak boleh kosong!';
+					$ret['message'] = 'Data NIK tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['nama'])){
 					$nama = $_POST['nama'];
 				}else{
 					$ret['status'] = 'error';
-					$ret['message'] = 'Data nama tidak boleh kosong!';
+					$ret['message'] = 'Data Nama tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['jenis_kelamin'])){
 					$jenis_kelamin = $_POST['jenis_kelamin'];
@@ -1239,16 +1233,14 @@ public function tambah_data_stunting(){
 					$ret['status'] = 'error';
 					$ret['message'] = 'Data bb_lahir tidak boleh kosong!';
 				}
-				if($ret['status'] = 'error' && !empty($_POST['tb_lahir'])){
+				if($ret['status'] != 'error' && !empty($_POST['tb_lahir'])){
 					$tb_lahir = $_POST['tb_lahir'];
-
 				}else{
 					$ret['status'] = 'error';
 					$ret['message'] = 'Data tb_lahir tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['nama_ortu'])){
 					$nama_ortu = $_POST['nama_ortu'];
-
 				}else{
 					$ret['status'] = 'error';
 					$ret['message'] = 'Data nama_ortu tidak boleh kosong!';
@@ -1307,11 +1299,11 @@ public function tambah_data_stunting(){
 					$ret['status'] = 'error';
 					$ret['message'] = 'Data alamat tidak boleh kosong!';
 				}
-				if($ret['status'] != 'error' && !empty($_POST['usia_saat_diukur'])){
-					$usia_saat_diukur = $_POST['usia_saat_diukur'];
+				if($ret['status'] != 'error' && !empty($_POST['usia_saat_ukur'])){
+					$usia_saat_ukur = $_POST['usia_saat_ukur'];
 				}else{
 					$ret['status'] = 'error';
-					$ret['message'] = 'Data usia_saat_diukur tidak boleh kosong!';
+					$ret['message'] = 'Data usia_saat_ukur tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['tanggal_pengukuran'])){
 					$tanggal_pengukuran = $_POST['tanggal_pengukuran'];
@@ -1403,6 +1395,7 @@ public function tambah_data_stunting(){
 					$ret['status'] = 'error';
 					$ret['message'] = 'Data kia tidak boleh kosong!';
 				}
+
 				if($ret['status'] != 'error'){
 					$data = array(
 						'id_stunting' => $id_stunting,
@@ -1422,7 +1415,7 @@ public function tambah_data_stunting(){
 						'rt' => $rt,
 						'rw' => $rw,
 						'alamat' => $alamat,
-						'usia_saat_diukur' => $usia_saat_diukur,
+						'usia_saat_ukur' => $usia_saat_ukur,
 						'tanggal_pengukuran' => $tanggal_pengukuran,
 						'berat' => $berat,
 						'tinggi' => $tinggi,
@@ -1495,39 +1488,39 @@ public function get_datatable_stunting(){
 				$params = $columns = $totalRecords = $data = array();
 				$params = $_REQUEST;
 				$columns = array( 
-				   0 => 'id_stunting',
-				   1 => 'nik',
-				   2 => 'nama',
-				   3 => 'jenis_kelamin',
-				   4 => 'tanggal_lahir',
-				   5 => 'provinsi',
-				   6 => 'kabkot',
-				   7 => 'kecamatan',
-				   8 => 'desa',
-				   9 => 'berat_badan_lahir',
-				   10 => 'tinggi_badan_lahir',
-				   11 => 'rt',
-				   12 => 'rw',
-				   13 => 'alamat',
-				   14 => 'puskesmas',
-				   15 => 'posyandu',
-				   16 => 'usia_saat_ukur',
-				   17 => 'tanggal_pengukuran',
-				   18 => 'berat',
-				   19 => 'tinggi',
-				   20 => 'lingkar_lengan_atas',
-				   21 => 'bb_per_u',
-				   22 => 'tb_per_u',
-				   23 => 'zs_bb_per_u',
-				   24 => 'zs_tb_per_u',
-				   25 => 'bb_per_tb',
-				   26 => 'zs_bb_per_tb',
-				   27 => 'naik_berat_badan',
-				   28 => 'pmt_diterima_per_kg',
-				   29 => 'jumlah_vitamin_a',
-				   30 => 'kpsp',
-				   31 => 'kia',
-				   32 => 'id'
+				  0 => 'nik',
+				  1 => 'nama',
+				  2 => 'jenis_kelamin',
+				  3 => 'tanggal_lahir',
+				  4 => 'provinsi',
+				  5 => 'kabkot',
+				  6 => 'kecamatan',
+				  7 => 'desa',
+				  8 => 'bb_lahir',
+				  9 => 'tb_lahir',
+				 10	=> 'nama_ortu',
+				 11 => 'rt',
+				 12 => 'rw',
+				 13 => 'alamat',
+				 14 => 'puskesmas',
+				 15 => 'posyandu',
+				 16 => 'usia_saat_ukur',
+				 17 => 'tanggal_pengukuran',
+				 18 => 'berat',
+				 19 => 'tinggi',
+				 20 => 'lingkar_lengan_atas',
+				 21 => 'bb_per_u',
+				 22 => 'tb_per_u',
+				 23 => 'zs_bb_per_u',
+				 24 => 'zs_tb_per_u',
+				 25 => 'bb_per_tb',
+				 26 => 'zs_bb_per_tb',
+				 27 => 'naik_berat_badan',
+				 28 => 'pmt_diterima_per_kg',
+				 29 => 'jml_vit_a',
+				 30 => 'kpsp',
+				 31	=> 'kia',
+				 32 => 'id'
 				);
 				$where = $sqlTot = $sqlRec = "";
 
@@ -1537,7 +1530,6 @@ public function get_datatable_stunting(){
 					$where .=" OR nik LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
 					$where .=" OR nama LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
 					$where .=" OR alamat LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
-					$where .=" OR rumah LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%")." )";
 				}
 
 				// getting total number records without any search
@@ -1571,7 +1563,8 @@ public function get_datatable_stunting(){
 					"draw"            => intval( $params['draw'] ),   
 					"recordsTotal"    => intval( $totalRecords ),  
 					"recordsFiltered" => intval($totalRecords),
-					"data"            => $queryRecords
+					"data"            => $queryRecords,
+					"sql"            => $sqlRec
 				);
 
 				die(json_encode($json_data));

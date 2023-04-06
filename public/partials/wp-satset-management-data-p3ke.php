@@ -349,9 +349,10 @@ function get_data_p3ke(){
                 }
             ]
         });
-    }else{
-        dataP3KE.update();
     }
+// else{
+    //     dataP3KE.update();
+    // }
 }
 
 function hapus_data(_id){
