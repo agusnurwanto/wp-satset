@@ -700,7 +700,7 @@ public function cari_data_satset(){
 				$data_dtks = $wpdb->get_results($wpdb->prepare("
 					SELECT
 						*
-					FROM data_dtks
+					FROM data_dtks_satset
 					WHERE nik like %s
 						OR nama like %s
 				", '%' .$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
