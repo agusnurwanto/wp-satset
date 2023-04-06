@@ -11,7 +11,7 @@
         <input type="hidden" value="<?php echo get_option( '_crb_api_key_extension' ); ?>" id="api_key">
     <h1 class="text-center" style="margin:3rem;">Manajemen Data RTLH</h1>
         <div style="margin-bottom: 25px;">
-            <button class="btn btn-primary" onclick="tambah_data_tbc();"><i class="dashicons dashicons-plus"></i> Tambah Data TBC</button>
+            <button class="btn btn-primary" onclick="tambah_data_rtlh();"><i class="dashicons dashicons-plus"></i> Tambah Data RTLH</button>
         </div>
         <div class="wrap-table">
         <table id="management_data_table" cellpadding="2" cellspacing="0" style="font-family:\'Open Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif; border-collapse: collapse; width:100%; overflow-wrap: break-word;" class="table table-bordered">
@@ -96,8 +96,8 @@
                     <input type="text" id='lpj' name="lpj" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='tanggal_lpj' style='display:inline-block'>Berat Badan saat Lahir</label>
-                    <input type="text" id='tanggal_lpj' name="tanggal_lpj" class="form-control" placeholder=''/>
+                    <label for='tgl_lpj' style='display:inline-block'>Berat Badan saat Lahir</label>
+                    <input type="text" id='tgl_lpj' name="tgl_lpj" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
                     <label for='sumber_dana' style='display:inline-block'>Tinggi Badan saat Lahir</label>
@@ -183,7 +183,7 @@ function get_data_rtlh(){
                     className: "text-center"
                 },
                 {
-                    "data": 'tanggal_lpj',
+                    "data": 'tgl_lpj',
                     className: "text-center"
                 },
                 {
@@ -192,9 +192,10 @@ function get_data_rtlh(){
                 }
             ]
         });
-    }else{
-        datartlh.update();
     }
+    // else{
+    //     datartlh.update();
+    // }
 }
 
 function hapus_data(_id){
@@ -246,7 +247,7 @@ function edit_data(_id){
                 jQuery('#rw').val(res.data.rw);
                 jQuery('#nilai_bantuan').val(res.data.nilai_bantuan);
                 jQuery('#lpj').val(res.data.lpj);
-                jQuery('#tanggal_lpj').val(res.data.tanggal_lpj);
+                jQuery('#tgl_lpj').val(res.data.tgl_lpj);
                 jQuery('#sumber_dana').val(res.data.sumber_dana);
                 jQuery('#modalTambahDataRTLH').modal('show');
             }else{
@@ -268,12 +269,10 @@ function tambah_data_rtlh(){
     jQuery('#kecamatan').val('');
     jQuery('#desa').val('');
     jQuery('#rt').val('');
-    jQuery('#puskesmas').val('');
-    jQuery('#posyandu').val('');
     jQuery('#rw').val('');
     jQuery('#nilai_bantuan').val('');
     jQuery('#lpj').val('');
-    jQuery('#tanggal_lpj').val('');
+    jQuery('#tgl_lpj').val('');
     jQuery('#sumber_dana').val('');
     jQuery('#modalTambahDataRTLH').modal('show');
 }
@@ -324,9 +323,9 @@ function submitTambahDataFormRTLH(){
     if(lpj == ''){
         return alert('Data lpj tidak boleh kosong!');
     }
-    var tanggal_lpj = jQuery('#tanggal_lpj').val();
-    if(tanggal_lpj == ''){
-        return alert('Data tanggal_lpj tidak boleh kosong!');
+    var tgl_lpj = jQuery('#tgl_lpj').val();
+    if(tgl_lpj == ''){
+        return alert('Data tgl_lpj tidak boleh kosong!');
     }
     var sumber_dana = jQuery('#sumber_dana').val();
     if(sumber_dana == ''){
@@ -351,11 +350,9 @@ function submitTambahDataFormRTLH(){
             'desa': desa,
             'rt': rt,
             'rw': rw,
-            'puskesmas': puskesmas,
-            'posyandu': posyandu,
             'nilai_bantuan': nilai_bantuan,
             'lpj': lpj,
-            'tanggal_lpj': tanggal_lpj,
+            'tgl_lpj': tgl_lpj,
             'sumber_dana': sumber_dana,
         },
         success: function(res){

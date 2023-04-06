@@ -57,8 +57,8 @@
                     <input type="text" id='tanggal_register' name="tanggal_register" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='no_reg_kabupaten' style='display:inline-block'>Nomer Register Kabupaten</label>
-                    <input type="text" id='no_reg_kabupaten' name="no_reg_kabupaten" class="form-control" placeholder=''/>
+                    <label for='no_reg_kabkot' style='display:inline-block'>Nomer Register Kabupaten</label>
+                    <input type="text" id='no_reg_kabkot' name="no_reg_kabkot" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
                     <label for='no_reg_fasyankes' style='display:inline-block'>No Register Fasyankes</label>
@@ -156,7 +156,7 @@ function get_data_tbc(){
                     className: "text-center"
                 },
                 {
-                    "data": 'no_reg_kabupaten',
+                    "data": 'no_reg_kabkot',
                     className: "text-center"
                 },
                 {
@@ -198,9 +198,10 @@ function get_data_tbc(){
                 }
             ]
         });
-    }else{
-        dataTBC.update();
     }
+    // else{
+    //     dataTBC.update();
+    // }
 }
 
 function hapus_data(_id){
@@ -252,7 +253,7 @@ function edit_data(_id){
                 jQuery('#status_pengobatan').val(res.data.status_pengobatan);
                 jQuery('#keterangan').val(res.data.keterangan);
                 jQuery('#alamat').val(res.data.alamat);
-                jQuery('#no_reg_kabupaten').val(res.data.no_reg_kabupaten);
+                jQuery('#no_reg_kabkot').val(res.data.no_reg_kabkot);
                 jQuery('#hasil_akhir_pengobatan').val(res.data.hasil_akhir_pengobatan);
                 jQuery('#modalTambahDataTBC').modal('show');
             }else{
@@ -278,7 +279,7 @@ function tambah_data_tbc(){
     jQuery('#keterangan').val('');
     jQuery('#alamat').val('');
     jQuery('#hasil_akhir_pengobatan').val('');
-    jQuery('#no_reg_kabupaten').val('');
+    jQuery('#no_reg_kabkot').val('');
     jQuery('#modalTambahDataTBC').modal('show');
 }
 
@@ -332,9 +333,9 @@ function submitTambahDataFormTBC(){
     if(hasil_akhir_pengobatan == ''){
         return alert('Data hasil_akhir_pengobatan tidak boleh kosong!');
     }
-    var no_reg_kabupaten = jQuery('#no_reg_kabupaten').val();
-    if(no_reg_kabupaten == ''){
-        return alert('Data no_reg_kabupaten tidak boleh kosong!');
+    var no_reg_kabkot = jQuery('#no_reg_kabkot').val();
+    if(no_reg_kabkot == ''){
+        return alert('Data no_reg_kabkot tidak boleh kosong!');
     }
     jQuery('#wrap-loading').show();
     jQuery.ajax({
@@ -357,7 +358,7 @@ function submitTambahDataFormTBC(){
             'keterangan': keterangan,
             'alamat': alamat,
             'hasil_akhir_pengobatan': hasil_akhir_pengobatan,
-            'no_reg_kabupaten': no_reg_kabupaten,
+            'no_reg_kabkot': no_reg_kabkot,
         },
         success: function(res){
             alert(res.message);

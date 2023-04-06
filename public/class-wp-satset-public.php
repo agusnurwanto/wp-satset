@@ -1643,12 +1643,6 @@ public function tambah_data_tbc(){
 		);
 		if(!empty($_POST)){
 			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
-				if($ret['status'] != 'error' && !empty($_POST['id_tbc'])){
-					$id_tbc = $_POST['id_tbc'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data Id tidak boleh kosong!';
-				}
 				if($ret['status'] != 'error' && !empty($_POST['tanggal_register'])){
 					$tanggal_register = $_POST['tanggal_register'];
 				}else{
@@ -1735,7 +1729,6 @@ public function tambah_data_tbc(){
 				}
 				if($ret['status'] != 'error'){
 					$data = array(
-						'id_tbc' => $id_tbc,
 						'tanggal_register' => $tanggal_register,
 						'no_reg_fasyankes' => $no_reg_fasyankes,
 						'no_reg_kabkot' => $no_reg_kabkot,
@@ -1807,22 +1800,21 @@ public function get_datatable_tbc(){
 	 			$params = $columns = $totalRecords = $data = array();
 	 			$params = $_REQUEST;
 	 			$columns = array( 
-					0 =>'id_tbc',
-					1 =>'tanggal_register',
-					2 =>'no_reg_fasyankes',
-					3 =>'no_reg_kabkot',
-					4 =>'nik',
-					5 =>'nama',
-					6 =>'umur',
-					7 =>'jenis_kelamin',
-					8 =>'alamat',
-					9 =>'pindahan_dari_fasyankes',
-				   10 =>'tindak_lanjut',
-				   11 =>'tanggal_mulai_pengobatan',
-				   12 =>'hasil_akhir_pengobatan',
-				   13 =>'status_pengobatan',
-				   14 =>'keterangan',
-				   15 =>'id',
+	 				0 =>'tanggal_register',
+					1 =>'no_reg_fasyankes',
+					2 =>'no_reg_kabkot',
+					3 =>'nik',
+					4 =>'nama',
+					5 =>'umur',
+					6 =>'jenis_kelamin',
+					7 =>'alamat',
+					8 =>'pindahan_dari_fasyankes',
+				    9 =>'tindak_lanjut',
+				   10 =>'tanggal_mulai_pengobatan',
+				   11 =>'hasil_akhir_pengobatan',
+				   12 =>'status_pengobatan',
+				   13 =>'keterangan',
+				   14 =>'id',
 	 			);
 
 	 			$where = $sqlTot = $sqlRec = "";
@@ -1867,7 +1859,8 @@ public function get_datatable_tbc(){
 					"draw"            => intval( $params['draw'] ),   
 					"recordsTotal"    => intval( $totalRecords ),  
 					"recordsFiltered" => intval($totalRecords),
-					"data"            => $queryRecords
+					"data"            => $queryRecords,
+					"sql"             => $sqlRec
 				);
 
 				die(json_encode($json_data));
@@ -1946,12 +1939,6 @@ public function tambah_data_rtlh(){
 		);
 		if(!empty($_POST)){
 			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
-				if($ret['status'] != 'error' && !empty($_POST['id_rtlh'])){
-					$id_rtlh = $_POST['id_rtlh'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data Id tidak boleh kosong!';
-				}
 				if($ret['status'] != 'error' && !empty($_POST['nik'])){
 					$nik = $_POST['nik'];
 				}else{
@@ -2018,11 +2005,11 @@ public function tambah_data_rtlh(){
 					$ret['status'] = 'error';
 					$ret['message'] = 'Data lpj tidak boleh kosong!';
 				}
-				if($ret['status'] != 'error' && !empty($_POST['tanggal_lpj'])){
-					$tanggal_lpj = $_POST['tanggal_lpj'];
+				if($ret['status'] != 'error' && !empty($_POST['tgl_lpj'])){
+					$tgl_lpj = $_POST['tgl_lpj'];
 				}else{
 					$ret['status'] = 'error';
-					$ret['message'] = 'Data tanggal_lpj tidak boleh kosong!';
+					$ret['message'] = 'Data tgl_lpj tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['sumber_dana'])){
 					$sumber_dana = $_POST['sumber_dana'];
@@ -2032,7 +2019,6 @@ public function tambah_data_rtlh(){
 				}
 				if($ret['status'] != 'error'){
 					$data = array(
-						'id_rtlh' => $id_rtlh,
 						'nik' => $nik,
 						'nama' => $nama,
 						'alamat' => $alamat,
@@ -2044,7 +2030,7 @@ public function tambah_data_rtlh(){
 						'rw' => $rw,
 						'nilai_bantuan' => $nilai_bantuan,
 						'lpj' => $lpj,
-						'tanggal_lpj' => $tanggal_lpj,
+						'tgl_lpj' => $tgl_lpj,
 						'sumber_dana' => $sumber_dana,
 						'active' => 1,
 						'update_at' => current_time('mysql')
@@ -2103,21 +2089,20 @@ public function get_datatable_rtlh(){
 	 			$params = $columns = $totalRecords = $data = array();
 	 			$params = $_REQUEST;
 	 			$columns = array( 
-	 			   0 => 'id_rtlh',
-	 			   1 => 'nik',
-	 			   2 => 'nama',
-	 			   3 => 'alamat',
-	 			   4 => 'provinsi',
-	 			   5 => 'kabkot',
-	 			   6 => 'kecamatan',
-	 			   7 => 'rt',
-	 			   8 => 'rw',
-	 			   9 => 'desa',
-	 			   10 => 'nilai_bantuan',
-	 			   11 => 'lpj',
-	 			   12 => 'tanggal_lpj',
-	 			   13 => 'sumber_dana',
-	 			   14 => 'id'
+	 			  0 => 'nik',
+	 			  1 => 'nama',
+	 			  2 => 'alamat',
+	 			  3 => 'provinsi',
+	 			  4 => 'kabkot',
+	 			  5 => 'kecamatan',
+	 			  6 => 'rt',
+	 			  7 => 'rw',
+	 			  8 => 'desa',
+	 			  9 => 'nilai_bantuan',
+	 			  10 => 'lpj',
+	 			  11 => 'tgl_lpj',
+	 			  12 => 'sumber_dana',
+	 			  13 => 'id'
 	 			);
 	 			$where = $sqlTot = $sqlRec = "";
 
@@ -2161,7 +2146,8 @@ public function get_datatable_rtlh(){
 					"draw"            => intval( $params['draw'] ),   
 					"recordsTotal"    => intval( $totalRecords ),  
 					"recordsFiltered" => intval($totalRecords),
-					"data"            => $queryRecords
+					"data"            => $queryRecords,
+					"sql"             => $sqlRec
 				);
 
 				die(json_encode($json_data));
