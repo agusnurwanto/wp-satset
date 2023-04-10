@@ -140,18 +140,6 @@ function get_data_tbc(){
             },
             "columns": [
                 {
-                    "data": 'nik',
-                    className: "text-center"
-                },
-                {
-                    "data": 'nama',
-                    className: "text-center"
-                },
-                {
-                    "data": 'jenis_kelamin',
-                    className: "text-center"
-                },
-                {
                     "data": 'tanggal_register',
                     className: "text-center"
                 },
@@ -161,6 +149,26 @@ function get_data_tbc(){
                 },
                 {
                     "data": 'no_reg_fasyankes',
+                    className: "text-center"
+                },
+                {
+                    "data": 'nik',
+                    className: "text-center"
+                },
+                {
+                    "data": 'nama',
+                    className: "text-center"
+                },
+                {
+                    "data": 'umur',
+                    className: "text-center"
+                },
+                {
+                    "data": 'jenis_kelamin',
+                    className: "text-center"
+                },
+                {
+                    "data": 'alamat',
                     className: "text-center"
                 },
                 {
@@ -176,19 +184,15 @@ function get_data_tbc(){
                     className: "text-center"
                 },
                 {
+                    "data": 'hasil_akhir_pengobatan',
+                    className: "text-center"
+                },
+                {
                     "data": 'status_pengobatan',
                     className: "text-center"
                 },
                 {
                     "data": 'keterangan',
-                    className: "text-center"
-                },
-                {
-                    "data": 'alamat',
-                    className: "text-center"
-                },
-                {
-                    "data": 'hasil_akhir_pengobatan',
                     className: "text-center"
                 },
                 
@@ -242,19 +246,20 @@ function edit_data(_id){
         success: function(res){
             if(res.status == 'success'){
                 jQuery('#id_data').val(res.data.id);
+                jQuery('#tanggal_register').val(res.data.tanggal_register);
+                jQuery('#no_reg_kabkot').val(res.data.no_reg_kabkot);
+                jQuery('#no_reg_fasyankes').val(res.data.no_reg_fasyankes);
                 jQuery('#nik').val(res.data.nik);
                 jQuery('#nama').val(res.data.nama);
-                jQuery('#pindahan_dari_fasyankes').val(res.data.nik);
-                jQuery('#no_reg_fasyankes').val(res.data.no_reg_fasyankes);
+                jQuery('#umur').val(res.data.umur);
                 jQuery('#jenis_kelamin').val(res.data.jenis_kelamin);
-                jQuery('#tanggal_register').val(res.data.tanggal_register);
+                jQuery('#alamat').val(res.data.alamat);
+                jQuery('#pindahan_dari_fasyankes').val(res.data.nik);
                 jQuery('#tindak_lanjut').val(res.data.tindak_lanjut);
                 jQuery('#tanggal_mulai_pengobatan').val(res.data.tanggal_mulai_pengobatan);
+                jQuery('#hasil_akhir_pengobatan').val(res.data.hasil_akhir_pengobatan);
                 jQuery('#status_pengobatan').val(res.data.status_pengobatan);
                 jQuery('#keterangan').val(res.data.keterangan);
-                jQuery('#alamat').val(res.data.alamat);
-                jQuery('#no_reg_kabkot').val(res.data.no_reg_kabkot);
-                jQuery('#hasil_akhir_pengobatan').val(res.data.hasil_akhir_pengobatan);
                 jQuery('#modalTambahDataTBC').modal('show');
             }else{
                 alert(res.message);
@@ -267,24 +272,37 @@ function edit_data(_id){
 //show tambah data
 function tambah_data_tbc(){
     jQuery('#id_data').val('');
+    jQuery('#tanggal_register').val('');
+    jQuery('#no_reg_kabkot').val('');
+    jQuery('#no_reg_fasyankes').val('');
     jQuery('#nik').val('');
     jQuery('#nama').val('');
-    jQuery('#pindahan_dari_fasyankes').val('');
-    jQuery('#no_reg_fasyankes').val('');
+    jQuery('#umur').val('');
     jQuery('#jenis_kelamin').val('');
-    jQuery('#tanggal_register').val('');
+    jQuery('#alamat').val('');
+    jQuery('#pindahan_dari_fasyankes').val('');
     jQuery('#tindak_lanjut').val('');
     jQuery('#tanggal_mulai_pengobatan').val('');
+    jQuery('#hasil_akhir_pengobatan').val('');
     jQuery('#status_pengobatan').val('');
     jQuery('#keterangan').val('');
-    jQuery('#alamat').val('');
-    jQuery('#hasil_akhir_pengobatan').val('');
-    jQuery('#no_reg_kabkot').val('');
     jQuery('#modalTambahDataTBC').modal('show');
 }
 
 function submitTambahDataFormTBC(){
     var id_data = jQuery('#id_data').val();
+    var tanggal_register = jQuery('#tanggal_register').val();
+    if(tanggal_register == ''){
+        return alert('Data tanggal_register tidak boleh kosong!');
+    }
+    var no_reg_kabkot = jQuery('#no_reg_kabkot').val();
+    if(no_reg_kabkot == ''){
+        return alert('Data no_reg_kabkot tidak boleh kosong!');
+    }
+    var no_reg_fasyankes = jQuery('#no_reg_fasyankes').val();
+    if(no_reg_fasyankes == ''){
+        return alert('Data no_reg_fasyankes tidak boleh kosong!');
+    }
     var nik = jQuery('#nik').val();
     if(nik == ''){
         return alert('Data nik tidak boleh kosong!');
@@ -293,21 +311,21 @@ function submitTambahDataFormTBC(){
     if(nama == ''){
         return alert('Data nama tidak boleh kosong!');
     }
-    var pindahan_dari_fasyankes = jQuery('#pindahan_dari_fasyankes').val();
-    if(pindahan_dari_fasyankes == ''){
-        return alert('Data pindahan_dari_fasyankes tidak boleh kosong!');
-    }
-    var no_reg_fasyankes = jQuery('#no_reg_fasyankes').val();
-    if(no_reg_fasyankes == ''){
-        return alert('Data no_reg_fasyankes tidak boleh kosong!');
+    var umur = jQuery('#umur').val();
+    if(umur == ''){
+        return alert('Data umur tidak boleh kosong!');
     }
     var jenis_kelamin = jQuery('#jenis_kelamin').val();
     if(jenis_kelamin == ''){
         return alert('Data jenis_kelamin tidak boleh kosong!');
     }
-    var tanggal_register = jQuery('#tanggal_register').val();
-    if(tanggal_register == ''){
-        return alert('Data tanggal_register tidak boleh kosong!');
+    var alamat = jQuery('#alamat').val();
+    if(alamat == ''){
+        return alert('Data alamat tidak boleh kosong!');
+    }
+    var pindahan_dari_fasyankes = jQuery('#pindahan_dari_fasyankes').val();
+    if(pindahan_dari_fasyankes == ''){
+        return alert('Data pindahan_dari_fasyankes tidak boleh kosong!');
     }
     var tindak_lanjut = jQuery('#tindak_lanjut').val();
     if(tindak_lanjut == ''){
@@ -317,26 +335,18 @@ function submitTambahDataFormTBC(){
     if(tanggal_mulai_pengobatan == ''){
         return alert('Data tanggal_mulai_pengobatan tidak boleh kosong!');
     }
-    var status_pengobatan = jQuery('#status_pengobatan').val();
-    if(status_pengobatan == ''){
-        return alert('Data status_pengobatan tidak boleh kosong!');
-    }
-    var keterangan = jQuery('#keterangan').val();
-    if(keterangan == ''){
-        return alert('Data keterangan tidak boleh kosong!');
-    }
-    var alamat = jQuery('#alamat').val();
-    if(alamat == ''){
-        return alert('Data alamat tidak boleh kosong!');
-    }
     var hasil_akhir_pengobatan = jQuery('#hasil_akhir_pengobatan').val();
     if(hasil_akhir_pengobatan == ''){
         return alert('Data hasil_akhir_pengobatan tidak boleh kosong!');
     }
-    var no_reg_kabkot = jQuery('#no_reg_kabkot').val();
-    if(no_reg_kabkot == ''){
-        return alert('Data no_reg_kabkot tidak boleh kosong!');
+    var status_pengobatan = jQuery('#status_pengobatan').val();
+    if(status_pengobatan == ''){
+        return alert('Data status_pengobatan tidak boleh kosong!');
     }
+    // var keterangan = jQuery('#keterangan').val();
+    // if(keterangan == ''){
+    //     return alert('Data keterangan tidak boleh kosong!');
+    // }
     jQuery('#wrap-loading').show();
     jQuery.ajax({
         method: 'post',

@@ -17,10 +17,9 @@
         <table id="management_data_table" cellpadding="2" cellspacing="0" style="font-family:\'Open Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif; border-collapse: collapse; width:100%; overflow-wrap: break-word;" class="table table-bordered">
             <thead>
                 <tr>
-                    <th class="text-center">NIK</th>
                     <th class="text-center">Nama</th>
+                    <th class="text-center">NIK</th>
                     <th class="text-center">Alamat</th>
-                    <th class="text-center">Tanggal Lahir</th>
                     <th class="text-center">Provinsi</th>
                     <th class="text-center">Kabupaten / Kota</th>
                     <th class="text-center">Kecamatan</th>
@@ -53,13 +52,13 @@
             <div class="modal-body">
                 <input type='hidden' id='id_data' name="id_data" placeholder=''>
                 <div class="form-group">
-                    <label for='nik' style='display:inline-block'>NIK</label>
-                    <input type='text' id='nik' name="nik" class="form-control" placeholder=''>
-                </div> 
-                <div class="form-group">
                     <label for='nama' style='display:inline-block'>Nama</label>
                     <input type='text' id='nama' name="nama" class="form-control" placeholder=''>
                 </div>
+                <div class="form-group">
+                    <label for='nik' style='display:inline-block'>NIK</label>
+                    <input type='text' id='nik' name="nik" class="form-control" placeholder=''>
+                </div> 
                 <div class="form-group">
                     <label for='alamat' style='display:inline-block'>Alamat</label>
                     <input type="text" id='alamat' name="alamat" class="form-control" placeholder=''/>
@@ -81,26 +80,26 @@
                     <input type="text" id='desa' name="desa" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='rt' style='display:inline-block'>RT</label>
-                    <input type="text" id='rt' name="rt" class="form-control" placeholder=''/>
-                </div>
-                <div class="form-group">
                     <label for='rw' style='display:inline-block'>RW</label>
                     <input type="text" id='rw' name="rw" class="form-control" placeholder=''/>
                 <div class="form-group">
-                    <label for='nilai_bantuan' style='display:inline-block'>Jenis Kelamin</label>
+                <div class="form-group">
+                    <label for='rt' style='display:inline-block'>RT</label>
+                    <input type="text" id='rt' name="rt" class="form-control" placeholder=''/>
+                </div>
+                    <label for='nilai_bantuan' style='display:inline-block'>Nilai Bantuan</label>
                     <input type="text" id='nilai_bantuan' name="nilai_bantuan" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='lpj' style='display:inline-block'>Tanggal Lahir</label>
+                    <label for='lpj' style='display:inline-block'>LPJ</label>
                     <input type="text" id='lpj' name="lpj" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='tgl_lpj' style='display:inline-block'>Berat Badan saat Lahir</label>
+                    <label for='tgl_lpj' style='display:inline-block'>Tanggal LPJ</label>
                     <input type="text" id='tgl_lpj' name="tgl_lpj" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='sumber_dana' style='display:inline-block'>Tinggi Badan saat Lahir</label>
+                    <label for='sumber_dana' style='display:inline-block'>Sumber Dana</label>
                     <input type="text" id='sumber_dana' name="sumber_dana" class="form-control" placeholder=''/>
                 </div> 
             </div> 
@@ -139,11 +138,11 @@ function get_data_rtlh(){
             },
             "columns": [
                 {
-                    "data": 'nik',
+                    "data": 'nama',
                     className: "text-center"
                 },
                 {
-                    "data": 'nama',
+                    "data": 'nik',
                     className: "text-center"
                 },
                 {
@@ -167,11 +166,11 @@ function get_data_rtlh(){
                     className: "text-center"
                 },
                 {
-                    "data": 'rt',
+                    "data": 'rw',
                     className: "text-center"
                 },
                 {
-                    "data": 'rw',
+                    "data": 'rt',
                     className: "text-center"
                 },
                 {
@@ -188,6 +187,10 @@ function get_data_rtlh(){
                 },
                 {
                     "data": 'sumber_dana',
+                    className: "text-center"
+                },
+                {
+                    "data": 'aksi',
                     className: "text-center"
                 }
             ]
@@ -236,15 +239,15 @@ function edit_data(_id){
         success: function(res){
             if(res.status == 'success'){
                 jQuery('#id_data').val(res.data.id);
-                jQuery('#nik').val(res.data.nik);
                 jQuery('#nama').val(res.data.nama);
+                jQuery('#nik').val(res.data.nik);
                 jQuery('#alamat').val(res.data.alamat);
                 jQuery('#provinsi').val(res.data.provinsi);
                 jQuery('#kabkot').val(res.data.kabkot);
                 jQuery('#kecamatan').val(res.data.kecamatan);
                 jQuery('#desa').val(res.data.desa);
-                jQuery('#rt').val(res.data.rt);
                 jQuery('#rw').val(res.data.rw);
+                jQuery('#rt').val(res.data.rt);
                 jQuery('#nilai_bantuan').val(res.data.nilai_bantuan);
                 jQuery('#lpj').val(res.data.lpj);
                 jQuery('#tgl_lpj').val(res.data.tgl_lpj);
