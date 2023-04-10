@@ -254,7 +254,7 @@ function edit_data(_id){
                 jQuery('#umur').val(res.data.umur);
                 jQuery('#jenis_kelamin').val(res.data.jenis_kelamin);
                 jQuery('#alamat').val(res.data.alamat);
-                jQuery('#pindahan_dari_fasyankes').val(res.data.nik);
+                jQuery('#pindahan_dari_fasyankes').val(res.data.pindahan_dari_fasyankes);
                 jQuery('#tindak_lanjut').val(res.data.tindak_lanjut);
                 jQuery('#tanggal_mulai_pengobatan').val(res.data.tanggal_mulai_pengobatan);
                 jQuery('#hasil_akhir_pengobatan').val(res.data.hasil_akhir_pengobatan);
@@ -343,10 +343,10 @@ function submitTambahDataFormTBC(){
     if(status_pengobatan == ''){
         return alert('Data status_pengobatan tidak boleh kosong!');
     }
-    // var keterangan = jQuery('#keterangan').val();
-    // if(keterangan == ''){
-    //     return alert('Data keterangan tidak boleh kosong!');
-    // }
+    var keterangan = jQuery('#keterangan').val();
+    if(keterangan == ''){
+        return alert('Data keterangan tidak boleh kosong!');
+    }
     jQuery('#wrap-loading').show();
     jQuery.ajax({
         method: 'post',
@@ -356,19 +356,20 @@ function submitTambahDataFormTBC(){
             'action': 'tambah_data_tbc',
             'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
             'id_data': id_data,
+            'tanggal_register': tanggal_register,
+            'no_reg_kabkot': no_reg_kabkot,
+            'no_reg_fasyankes': no_reg_fasyankes,
             'nik': nik,
             'nama': nama,
-            'pindahan_dari_fasyankes': pindahan_dari_fasyankes,
-            'no_reg_fasyankes': no_reg_fasyankes,
+            'umur': umur,
             'jenis_kelamin': jenis_kelamin,
-            'tanggal_register': tanggal_register,
+            'alamat': alamat,
+            'pindahan_dari_fasyankes': pindahan_dari_fasyankes,
             'tindak_lanjut': tindak_lanjut,
             'tanggal_mulai_pengobatan': tanggal_mulai_pengobatan,
+            'hasil_akhir_pengobatan': hasil_akhir_pengobatan,
             'status_pengobatan': status_pengobatan,
             'keterangan': keterangan,
-            'alamat': alamat,
-            'hasil_akhir_pengobatan': hasil_akhir_pengobatan,
-            'no_reg_kabkot': no_reg_kabkot,
         },
         success: function(res){
             alert(res.message);

@@ -1583,6 +1583,7 @@ public function get_datatable_stunting(){
 		die(json_encode($return));
 	}	
 
+
 public function get_data_tbc_by_id(){
 		global $wpdb;
 		$ret = array(
@@ -1643,95 +1644,95 @@ public function tambah_data_tbc(){
 		);
 		if(!empty($_POST)){
 			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
-				if($ret['status'] != 'error' && !empty($_POST['tanggal_register'])){
-					$tanggal_register = $_POST['tanggal_register'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data tanggal_register tidak boleh kosong!';
-				}
-				if($ret['status'] != 'error' && !empty($_POST['no_reg_fasyankes'])){
-					$no_reg_fasyankes = $_POST['no_reg_fasyankes'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data no_reg_fasyankes tidak boleh kosong!';
-				}
-				if($ret['status'] != 'error' && !empty($_POST['no_reg_kabkot'])){
-					$no_reg_kabkot = $_POST['no_reg_kabkot'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data no_reg_kabkot tidak boleh kosong!';
-				}
-				if($ret['status'] != 'error' && !empty($_POST['nik'])){
-					$nik = $_POST['nik'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data nik tidak boleh kosong!';
-				}
-				if($ret['status'] != 'error' && !empty($_POST['nama'])){
-					$nama = $_POST['nama'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data nama tidak boleh kosong!';
-				}
-				if($ret['status'] != 'error' && !empty($_POST['umur'])){
-					$umur = $_POST['umur'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data umur tidak boleh kosong!';
-				}
-				if($ret['status'] != 'error' && !empty($_POST['jenis_kelamin'])){
-					$jenis_kelamin = $_POST['jenis_kelamin'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data jenis_kelamin tidak boleh kosong!';
-				}
-				if($ret['status'] != 'error' && !empty($_POST['alamat'])){
-					$alamat = $_POST['alamat'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data alamat tidak boleh kosong!';
-				}
-				if($ret['status'] != 'error' && !empty($_POST['pindahan_dari_fasyankes'])){
-					$pindahan_dari_fasyankes = $_POST['pindahan_dari_fasyankes'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data pindahan_dari_fasyankes tidak boleh kosong!';
-				}
-				if($ret['status'] != 'error' && !empty($_POST['tindak_lanjut'])){
-					$tindak_lanjut = $_POST['tindak_lanjut'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data tindak_lanjut tidak boleh kosong!';
-				}
-				if($ret['status'] != 'error' && !empty($_POST['tanggal_mulai_pengobatan'])){
-					$tanggal_mulai_pengobatan = $_POST['tanggal_mulai_pengobatan'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data tanggal_mulai_pengobatan tidak boleh kosong!';
-				}
-				if($ret['status'] != 'error' && !empty($_POST['hasil_akhir_pengobatan'])){
-					$hasil_akhir_pengobatan = $_POST['hasil_akhir_pengobatan'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data hasil_akhir_pengobatan tidak boleh kosong!';
-				}
-				if($ret['status'] != 'error' && !empty($_POST['status_pengobatan'])){
-					$status_pengobatan = $_POST['status_pengobatan'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data status_pengobatan tidak boleh kosong!';
-				}
-				if($ret['status'] != 'error' && !empty($_POST['keterangan'])){
-					$keterangan = $_POST['keterangan'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data keterangan tidak boleh kosong!';
-				}
+				// if($ret['status'] != 'error' && !empty($_POST['tanggal_register'])){
+				// 	$tanggal_register = $_POST['tanggal_register'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data tanggal_register tidak boleh kosong!';
+				// }
+				// if($ret['status'] != 'error' && !empty($_POST['no_reg_kabkot'])){
+				// 	$no_reg_kabkot = $_POST['no_reg_kabkot'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data no_reg_kabkot tidak boleh kosong!';
+				// }
+				// if($ret['status'] != 'error' && !empty($_POST['no_reg_fasyankes'])){
+				// 	$no_reg_fasyankes = $_POST['no_reg_fasyankes'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data no_reg_fasyankes tidak boleh kosong!';
+				// }
+				// if($ret['status'] != 'error' && !empty($_POST['nik'])){
+				// 	$nik = $_POST['nik'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data nik tidak boleh kosong!';
+				// }
+				// if($ret['status'] != 'error' && !empty($_POST['nama'])){
+				// 	$nama = $_POST['nama'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data nama tidak boleh kosong!';
+				// }
+				// if($ret['status'] != 'error' && !empty($_POST['umur'])){
+				// 	$umur = $_POST['umur'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data umur tidak boleh kosong!';
+				// }
+				// if($ret['status'] != 'error' && !empty($_POST['jenis_kelamin'])){
+				// 	$jenis_kelamin = $_POST['jenis_kelamin'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data jenis_kelamin tidak boleh kosong!';
+				// }
+				// if($ret['status'] != 'error' && !empty($_POST['alamat'])){
+				// 	$alamat = $_POST['alamat'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data alamat tidak boleh kosong!';
+				// }
+				// if($ret['status'] != 'error' && !empty($_POST['pindahan_dari_fasyankes'])){
+				// 	$pindahan_dari_fasyankes = $_POST['pindahan_dari_fasyankes'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data pindahan_dari_fasyankes tidak boleh kosong!';
+				// }
+				// if($ret['status'] != 'error' && !empty($_POST['tindak_lanjut'])){
+				// 	$tindak_lanjut = $_POST['tindak_lanjut'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data tindak_lanjut tidak boleh kosong!';
+				// }
+				// if($ret['status'] != 'error' && !empty($_POST['tanggal_mulai_pengobatan'])){
+				// 	$tanggal_mulai_pengobatan = $_POST['tanggal_mulai_pengobatan'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data tanggal_mulai_pengobatan tidak boleh kosong!';
+				// }
+				// if($ret['status'] != 'error' && !empty($_POST['hasil_akhir_pengobatan'])){
+				// 	$hasil_akhir_pengobatan = $_POST['hasil_akhir_pengobatan'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data hasil_akhir_pengobatan tidak boleh kosong!';
+				// }
+				// if($ret['status'] != 'error' && !empty($_POST['status_pengobatan'])){
+				// 	$status_pengobatan = $_POST['status_pengobatan'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data status_pengobatan tidak boleh kosong!';
+				// }
+				// if($ret['status'] != 'error' && !empty($_POST['keterangan'])){
+				// 	$keterangan = $_POST['keterangan'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data keterangan tidak boleh kosong!';
+				// }
 				if($ret['status'] != 'error'){
 					$data = array(
 						'tanggal_register' => $tanggal_register,
-						'no_reg_fasyankes' => $no_reg_fasyankes,
 						'no_reg_kabkot' => $no_reg_kabkot,
+						'no_reg_fasyankes' => $no_reg_fasyankes,
 						'nik' => $nik,
 						'nama' => $nama,
 						'umur' => $umur,
@@ -1760,7 +1761,7 @@ public function tambah_data_tbc(){
 							WHERE id_tbc=%s
 						', $id_tbc), ARRAY_A);
 						if(empty($cek_id)){
-							$wpdb->insestatus_pengobatan('data_tbc', $data);
+							$wpdb->insert('data_tbc', $data);
 						}else{
 							if($cek_id['active'] == 0){
 								$wpdb->update('data_tbc', $data, array(
@@ -1800,23 +1801,22 @@ public function get_datatable_tbc(){
 	 			$params = $columns = $totalRecords = $data = array();
 	 			$params = $_REQUEST;
 	 			$columns = array( 
-	 				0 =>'tanggal_register',
-					1 =>'no_reg_fasyankes',
-					2 =>'no_reg_kabkot',
-					3 =>'nik',
-					4 =>'nama',
-					5 =>'umur',
-					6 =>'jenis_kelamin',
-					7 =>'alamat',
-					8 =>'pindahan_dari_fasyankes',
-				    9 =>'tindak_lanjut',
-				   10 =>'tanggal_mulai_pengobatan',
-				   11 =>'hasil_akhir_pengobatan',
-				   12 =>'status_pengobatan',
-				   13 =>'keterangan',
-				   14 =>'id',
+	 			 0 => 'tanggal_register',
+	 			 1 => 'no_reg_kabkot',
+	 			 2 => 'no_reg_fasyankes',
+	 			 3 => 'nik',
+	 			 4 => 'nama',
+	 			 5 => 'umur',
+	 			 6 => 'jenis_kelamin',
+	 			 7 => 'alamat',
+	 			 8 => 'pindahan_dari_fasyankes',
+	 			 9 => 'tindak_lanjut',
+	 			 10 => 'tanggal_mulai_pengobatan',
+	 			 11 => 'hasil_akhir_pengobatan',
+	 			 12 => 'status_pengobatan',
+	 			 13 => 'keterangan',
+	 			 14 => 'id'
 	 			);
-
 	 			$where = $sqlTot = $sqlRec = "";
 
 	 			// check search value exist
@@ -1825,7 +1825,6 @@ public function get_datatable_tbc(){
 	 				$where .=" OR nik LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
 	 				$where .=" OR nama LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
 	 				$where .=" OR alamat LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
-	 				$where .=" OR rumah LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%")." )";
 	 			}
 
 	 			// getting total number records without any search
