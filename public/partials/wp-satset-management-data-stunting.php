@@ -27,11 +27,11 @@
                     <th class="text-center">Provinsi</th>
                     <th class="text-center">Kabupaten / Kota</th>
                     <th class="text-center">Kecamatan</th>
-                    <th class="text-center">Desa</th>
-                    <th class="text-center">Rw</th>
-                    <th class="text-center">Rt</th>
                     <th class="text-center">Puskesmas</th>
+                    <th class="text-center">Desa</th>
                     <th class="text-center">Posyandu</th>
+                    <th class="text-center">Rt</th>
+                    <th class="text-center">Rw</th>
                     <th class="text-center">Alamat</th>
                     <th class="text-center">Usia saat Ukur</th>
                     <th class="text-center">tanggal pengukuran</th>
@@ -274,7 +274,15 @@ function get_data_stunting(){
                     className: "text-center"
                 },
                 {
+                    "data": 'puskesmas',
+                    className: "text-center"
+                },
+                {
                     "data": 'desa',
+                    className: "text-center"
+                },
+                {
+                    "data": 'posyandu',
                     className: "text-center"
                 },
                 {
@@ -287,14 +295,6 @@ function get_data_stunting(){
                 },
                 {
                     "data": 'alamat',
-                    className: "text-center"
-                },
-                {
-                    "data": 'puskesmas',
-                    className: "text-center"
-                },
-                {
-                    "data": 'posyandu',
                     className: "text-center"
                 },
                 {
