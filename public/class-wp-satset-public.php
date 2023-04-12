@@ -271,19 +271,19 @@ class Wp_Satset_Public {
 		}
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-rtlh.php';
 	}
-	function management_data_desa_satset(){
+	function management_data_batas_desa_satset(){
 		// untuk disable render shortcode di halaman edit page/post
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-desa.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-batas-desa.php';
 	}
-	function management_data_kecamatan_satset(){
+	function management_data_batas_kecamatan_satset(){
 		// untuk disable render shortcode di halaman edit page/post
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-kecamatan.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-batas-kecamatan.php';
 	}
 
 	function get_polygon($options = array( 'type' => 'desa' )){

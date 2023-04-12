@@ -171,8 +171,7 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_import_excel_rtlh',  $plugin_admin, 'import_excel_rtlh');
 		$this->loader->add_action('wp_ajax_get_data_dtks',  $plugin_admin, 'get_data_dtks');
 		$this->loader->add_action('wp_ajax_get_data_desa',  $plugin_admin, 'get_data_desa');
-		$this->loader->add_action('wp_ajax_get_data_kecamatan',  $plugin_admin, 'get_data_kecamatan');
-		$this->loader->add_action('wp_ajax_get_data_batas_desa',  $plugin_admin, 'get_data_batas_desa');
+		$this->loader->add_action('wp_ajax_get_data_kecamatan',  $plugin_admin, 'get_data_desa');
 		
 
 	}
@@ -217,16 +216,16 @@ class Wp_Satset {
 		add_shortcode('management_data_stunting_satset', array($plugin_public, 'management_data_stunting_satset'));
 		add_shortcode('management_data_tbc_satset', array($plugin_public, 'management_data_tbc_satset'));
 		add_shortcode('management_data_rtlh_satset', array($plugin_public, 'management_data_rtlh_satset'));
-		add_shortcode('management_data_desa_satset', array($plugin_public, 'management_data_desa_satset'));
-		add_shortcode('management_data_kecamatan_satset', array($plugin_public, 'management_data_kecamatan_satset'));
+		add_shortcode('management_data_batas_desa_satset', array($plugin_public, 'management_data_batas_desa_satset'));
+		add_shortcode('management_data_batas_kecamatan_satset', array($plugin_public, 'management_data_batas_kecamatan_satset'));
 		add_shortcode('peta_satset', array($plugin_public, 'peta_satset'));
 		add_shortcode('data_p3ke', array($plugin_public, 'data_p3ke'));
 		add_shortcode('data_stunting', array($plugin_public, 'data_stunting'));
 		add_shortcode('data_tbc', array($plugin_public, 'data_tbc'));
 		add_shortcode('data_rtlh', array($plugin_public, 'data_rtlh'));
 		add_shortcode('data_dtks', array($plugin_public, 'data_dtks'));
-		add_shortcode('data_desa', array($plugin_public, 'data_desa'));
-		add_shortcode('data_kecamatan', array($plugin_public, 'data_kecamatan'));
+		add_shortcode('data_batas_desa', array($plugin_public, 'data_batas_desa'));
+		add_shortcode('data_batas_kecamatan', array($plugin_public, 'data_batas_kecamatan'));
 
 	}
 

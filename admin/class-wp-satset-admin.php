@@ -189,17 +189,17 @@ class Wp_Satset_Admin {
 			'post_status' => 'publish'
 		));
 
-		$data_desa = $this->functions->generatePage(array(
+		$data_batas_desa = $this->functions->generatePage(array(
 			'nama_page' => 'Data Desa', 
-			'content' => '[data_desa]',
+			'content' => '[data_batas_desa]',
         	'show_header' => 1,
         	'no_key' => 1,
 			'post_status' => 'publish'
 		));
 
-		$data_kecamatan = $this->functions->generatePage(array(
+		$data_batas_kecamatan = $this->functions->generatePage(array(
 			'nama_page' => 'Data Kecamatan', 
-			'content' => '[data_kecamatan]',
+			'content' => '[data_batas_kecamatan]',
         	'show_header' => 1,
         	'no_key' => 1,
 			'post_status' => 'publish'
@@ -273,16 +273,16 @@ class Wp_Satset_Admin {
 			'no_key' => 1,
 			'post_status' => 'private'
 		));
-		$management_data_desa = $this->functions->generatePage(array(
+		$management_data_batas_desa = $this->functions->generatePage(array(
 			'nama_page' => 'Management Data Desa',
-			'content' => '[management_data_desa_satset]',
+			'content' => '[management_data_batas_desa_satset]',
 			'show_header' => 1,
 			'no_key' => 1,
 			'post_status' => 'private'
 		));
-		$management_data_kecamatan = $this->functions->generatePage(array(
+		$management_data_batas_kecamatan = $this->functions->generatePage(array(
 			'nama_page' => 'Management Data Kecamatan',
-			'content' => '[management_data_kecamatan_satset]',
+			'content' => '[management_data_batas_kecamatan_satset]',
 			'show_header' => 1,
 			'no_key' => 1,
 			'post_status' => 'private'
@@ -307,8 +307,6 @@ class Wp_Satset_Admin {
 	            		<li><a target="_blank" href="'.$data_tbc['url'].'">'.$data_tbc['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_rtlh['url'].'">'.$data_rtlh['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_dtks['url'].'">'.$data_dtks['title'].'</a></li>
-	            		<li><a target="_blank" href="'.$data_desa['url'].'">'.$data_desa['title'].'</a></li>
-	            		<li><a target="_blank" href="'.$data_kecamatan['url'].'">'.$data_kecamatan['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$petunjuk_penggunaan['url'].'">'.$petunjuk_penggunaan['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$dokumentasi_sistem['url'].'">'.$dokumentasi_sistem['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$tanggapan_publik['url'].'">'.$tanggapan_publik['title'].'</a></li>
@@ -629,50 +627,24 @@ class Wp_Satset_Admin {
 		Container::make( 'theme_options', __( 'Data Desa' ) )
 			->set_page_parent( $basic_options_container )
 			->add_fields( array(
-		    // 	Field::make( 'html', 'crb_desa_hide_sidebar' )
-		    //     	->set_html( '
-		    //     		<style>
-		    //     			.postbox-container { display: none; }
-		    //     			#poststuff #post-body.columns-2 { margin: 0 !important; }
-		    //     		</style>
-		    //     	' ), 
 			Field::make( 'html', 'crb_satset_halaman_terkait_desa' )
 		        	->set_html( '
 					<h5>HALAMAN TERKAIT</h5>
 	            	<ol>
-	            		<li><a target="_blank" href="'.$management_data_desa['url'].'">'.$management_data_desa['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$management_data_batas_desa['url'].'">'.$management_data_batas_desa['title'].'</a></li>
 	            	</ol>
 		        	' )
-		        // Field::make( 'html', 'crb_desa_upload_html' )
-	            // 	->set_html( '<h3>Import EXCEL data Desa</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePickedSatset(event);"><br>Contoh format file excel bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_desa.xlsx">download di sini</a>. Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
-		        // Field::make( 'html', 'crb_desa_satset' )
-	            // 	->set_html( 'Data JSON : <textarea id="data-excel" class="cf-select__input"></textarea>' ),
-		        // Field::make( 'html', 'crb_desa_save_button' )
-	            // 	->set_html( '<a onclick="import_excel_desa(); return false" href="javascript:void(0);" class="button button-primary">Import WP</a>' )
 	        ) );
 	    Container::make( 'theme_options', __( 'Data Kecamatan' ) )
 			->set_page_parent( $basic_options_container )
 			->add_fields( array(
-		    	// Field::make( 'html', 'crb_kecamatan_hide_sidebar' )
-		        // 	->set_html( '
-		        // 		<style>
-		        // 			.postbox-container { display: none; }
-		        // 			#poststuff #post-body.columns-2 { margin: 0 !important; }
-		        // 		</style>
-		        // 	' ), 
 			Field::make( 'html', 'crb_satset_halaman_terkait_kecamatan' )
 		        	->set_html( '
 					<h5>HALAMAN TERKAIT</h5>
 	            	<ol>
-	            		<li><a target="_blank" href="'.$management_data_kecamatan['url'].'">'.$management_data_kecamatan['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$management_data_batas_kecamatan['url'].'">'.$management_data_batas_kecamatan['title'].'</a></li>
 	            	</ol>
 		        	' )
-		        // Field::make( 'html', 'crb_kecamatan_upload_html' )
-	            // 	->set_html( '<h3>Import EXCEL data Kecamatan</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePickedSatset(event);"><br>Contoh format file excel bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_kecamatan.xlsx">download di sini</a>. Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
-		        // Field::make( 'html', 'crb_kecamatan_satset' )
-	            // 	->set_html( 'Data JSON : <textarea id="data-excel" class="cf-select__input"></textarea>' ),
-		        // Field::make( 'html', 'crb_kecamatan_save_button' )
-	            // 	->set_html( '<a onclick="import_excel_kecamatan(); return false" href="javascript:void(0);" class="button button-primary">Import WP</a>' )
 	        ) );
 	}
 
@@ -1050,7 +1022,7 @@ class Wp_Satset_Admin {
 		die(json_encode($ret));
 	}
 
-	function get_data_batas_desa(){
+	function get_data_desa(){
 		global $wpdb;
 		$ret = array(
 			'status'	=> 'success',
@@ -1063,7 +1035,7 @@ class Wp_Satset_Admin {
 			if(!empty($kab)){
 				$where .= " and kab_kot='$kab'";
 			}
-			$data_batas_desa = $wpdb->get_results("
+			$data_desa = $wpdb->get_results("
 				SELECT 
 					provno,
 					kabkotno,
@@ -1073,13 +1045,13 @@ class Wp_Satset_Admin {
 					kab_kot,
 					kecamatan,
 					desa 
-				FROM data_batas_desa 
+				FROM data_desa 
 				WHERE $where
 					AND kecno is not null
 			", ARRAY_A);
 			$data_kec = array();
 
-			foreach($data_batas_desa as $desa){
+			foreach($data_desa as $desa){
 				if(empty($data_kec[$desa['kecamatan']])){
 					$data_kec[$desa['kecamatan']] = array(
 						'kec' => $desa,
