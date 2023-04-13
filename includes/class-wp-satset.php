@@ -171,7 +171,7 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_import_excel_rtlh',  $plugin_admin, 'import_excel_rtlh');
 		$this->loader->add_action('wp_ajax_get_data_dtks',  $plugin_admin, 'get_data_dtks');
 		$this->loader->add_action('wp_ajax_get_data_desa',  $plugin_admin, 'get_data_desa');
-		$this->loader->add_action('wp_ajax_get_data_kecamatan',  $plugin_admin, 'get_data_desa');
+		$this->loader->add_action('wp_ajax_get_data_batas_kecamatan',  $plugin_admin, 'get_data_batas_kecamatan');
 		
 
 	}
@@ -194,6 +194,7 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_get_datatable_stunting', $plugin_public, 'get_datatable_stunting');
 		$this->loader->add_action('wp_ajax_get_datatable_tbc', $plugin_public, 'get_datatable_tbc');
 		$this->loader->add_action('wp_ajax_get_datatable_rtlh', $plugin_public, 'get_datatable_rtlh');
+		$this->loader->add_action('wp_ajax_get_datatable_batas_desa', $plugin_public, 'get_datatable_batas_desa');
 		$this->loader->add_action('wp_ajax_get_data_p3ke_by_id', $plugin_public, 'get_data_p3ke_by_id');
 		$this->loader->add_action('wp_ajax_tambah_data_p3ke', $plugin_public, 'tambah_data_p3ke');
 		$this->loader->add_action('wp_ajax_hapus_data_stunting_by_id', $plugin_public, 'hapus_data_stunting_by_id');
@@ -205,6 +206,12 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_hapus_data_rtlh_by_id', $plugin_public, 'hapus_data_rtlh_by_id');
 		$this->loader->add_action('wp_ajax_get_data_rtlh_by_id', $plugin_public, 'get_data_rtlh_by_id');
 		$this->loader->add_action('wp_ajax_tambah_data_rtlh', $plugin_public, 'tambah_data_rtlh');
+		$this->loader->add_action('wp_ajax_hapus_data_batas_desa_by_id', $plugin_public, 'hapus_data_batas_desa_by_id');
+		$this->loader->add_action('wp_ajax_get_data_batas_desa_by_id', $plugin_public, 'get_data_batas_desa_by_id');
+		$this->loader->add_action('wp_ajax_tambah_data_batas_desa', $plugin_public, 'tambah_data_batas_desa');
+		$this->loader->add_action('wp_ajax_hapus_data_batas_kecamatan_by_id', $plugin_public, 'hapus_data_batas_kecamatan_by_id');
+		$this->loader->add_action('wp_ajax_get_data_batas_kecamatan_by_id', $plugin_public, 'get_data_batas_kecamatan_by_id');
+		$this->loader->add_action('wp_ajax_tambah_data_batas_kecamatan', $plugin_public, 'tambah_data_batas_kecamatan');
 
 		add_shortcode('satset_homepage', array($plugin_public, 'satset_homepage'));
 		add_shortcode('conversi_peta_satset', array($plugin_public, 'conversi_peta_satset'));

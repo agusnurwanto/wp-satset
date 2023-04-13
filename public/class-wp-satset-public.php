@@ -1022,4 +1022,530 @@ public function get_datatable_rtlh(){
 		}
 		die(json_encode($return));
 	}
+public function get_data_batas_desa_by_id(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil get data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				$ret['data'] = $wpdb->get_row($wpdb->prepare('
+					SELECT 
+						*
+					FROM data_batas_desa
+					WHERE id=%d
+				', $_POST['id']), ARRAY_A);
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+
+		die(json_encode($ret));
+	}
+
+public function hapus_data_batas_desa_by_id(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil hapus data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				$ret['data'] = $wpdb->update('data_batas_desa', array('active' => 0), array(
+					'id' => $_POST['id']
+				));
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+
+		die(json_encode($ret));
+	}
+
+public function tambah_data_batas_desa(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil simpan data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				if($ret['status'] != 'error' && !empty($_POST['id_desa'])){
+					$id_desa = $_POST['id_desa'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data id_desa tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['desa'])){
+					$desa = $_POST['desa'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data desa tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kecamatan'])){
+					$kecamatan = $_POST['kecamatan'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data kecamatan tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kabkot'])){
+					$kabkot = $_POST['kabkot'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data kabkot tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['provinsi'])){
+					$provinsi = $_POST['provinsi'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data provinsi tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['area'])){
+					$area = $_POST['area'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data area tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['perimeter'])){
+					$perimeter = $_POST['perimeter'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data perimeter tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['hectares'])){
+					$hectares = $_POST['hectares'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data hectares tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['ukuran_kot'])){
+					$ukuran_kot = $_POST['ukuran_kot'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data ukuran_kot tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['pemusatan'])){
+					$pemusatan = $_POST['pemusatan'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data pemusatan tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['jumlah_pen'])){
+					$jumlah_pen = $_POST['jumlah_pen'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data jumlah_pen tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['provno'])){
+					$provno = $_POST['provno'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data provno tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kabkotno'])){
+					$kabkotno = $_POST['kabkotno'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data kabkotno tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kecno'])){
+					$kecno = $_POST['kecno'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data kecno tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['desano'])){
+					$desano = $_POST['desano'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data desano tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error'){
+					$data = array(
+						'id_desa' => $id_desa,
+						'desa' => $desa,
+						'kecamatan' => $kecamatan,
+						'kabkot' => $kabkot,
+						'provinsi' => $provinsi,
+						'area' => $area,
+						'perimeter' => $perimeter,
+						'hectares' => $hectares,
+						'ukuran_kot' => $ukuran_kot,
+						'pemusatan' => $pemusatan,
+						'jumlah_pen' => $jumlah_pen,
+						'provno' => $provno,
+						'kabkotno' => $kabkotno,
+						'kecno' => $kecno,
+						'desano' => $desano,
+						'active' => 1,
+						'update_at' => current_time('mysql')
+					);
+					if(!empty($_POST['id_data'])){
+						$wpdb->update('data_batas_desa', $data, array(
+							'id' => $_POST['id_data']
+						));
+						$ret['message'] = 'Berhasil update data!';
+					}else{
+						$cek_id = $wpdb->get_row($wpdb->prepare('
+							SELECT
+								id,
+								active
+							FROM data_batas_desa
+							WHERE id_batas_desa=%s
+						', $id_batas_desa), ARRAY_A);
+						if(empty($cek_id)){
+							$wpdb->insert('data_batas_desa', $data);
+						}else{
+							if($cek_id['active'] == 0){
+								$wpdb->update('data_batas_desa', $data, array(
+									'id' => $cek_id['id']
+								));
+							}else{
+								$ret['status'] = 'error';
+								$ret['message'] = 'Gagal disimpan. Data batas_desa dengan id_batas_desa="'.$id_batas_desa.'" sudah ada!';
+							}
+						}
+					}
+				}
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+
+		die(json_encode($ret));
+	}
+	
+public function get_datatable_batas_desa(){
+	 	global $wpdb;
+	 	$ret = array(
+	 		'status' => 'success',
+	 		'message' => 'Berhasil get data!',
+	 		'data'	=> array()
+	 	);
+
+	 	if(!empty($_POST)){
+	 		if (!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+	 			$user_id = um_user( 'ID' );
+	 			$user_meta = get_userdata($user_id);
+	 			$params = $columns = $totalRecords = $data = array();
+	 			$params = $_REQUEST;
+	 			$columns = array( 
+	 			  0 => 'id_desa',
+	 			  1 => 'desa',
+	 			  2 => 'kecamatan',
+	 			  3 => 'kabkot',
+	 			  4 => 'provinsi',
+	 			  5 => 'area',
+	 			  6 => 'perimeter',
+	 			  7 => 'hectares',
+	 			  8 => 'ukuran_kot',
+	 			  9 => 'pemusatan',
+	 			  10 => 'jumlah_pen',
+	 			  11 => 'provno',
+	 			  12 => 'kabkotno',
+	 			  13 => 'kecno',
+	 			  14 => 'desano',
+	 			  15 => 'id'
+	 			);
+	 			$where = $sqlTot = $sqlRec = "";
+
+	 			// check search value exist
+	 			if( !empty($params['search']['value']) ) {
+	 				$where .=" AND ( id_batas_desa LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");  
+	 				$where .=" OR perimeter LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
+	 			}
+
+	 			// getting total number records without any search
+	 			$sql_tot = "SELECT count(id) as jml FROM `data_batas_desa`";
+	 			$sql = "SELECT ".implode(', ', $columns)." FROM `data_batas_desa`";
+	 			$where_first = " WHERE 1=1";
+	 			$sqlTot .= $sql_tot.$where_first;
+	 			$sqlRec .= $sql.$where_first;
+	 			if(isset($where) && $where != '') {
+	 				$sqlTot .= $where;
+	 				$sqlRec .= $where;
+	 			}
+
+	 			$limit = '';
+	 			if($params['length'] != -1){
+	 				$limit = "  LIMIT ".$wpdb->prepare('%d', $params['start'])." ,".$wpdb->prepare('%d', $params['length']);
+	 			}
+	 		 	$sqlRec .=  " ORDER BY ". $columns[$params['order'][0]['column']]."   ".$params['order'][0]['dir'].$limit;
+
+	 			$queryTot = $wpdb->get_results($sqlTot, ARRAY_A);
+	 			$totalRecords = $queryTot[0]['jml'];
+	 			$queryRecords = $wpdb->get_results($sqlRec, ARRAY_A);
+
+	 			foreach($queryRecords as $recKey => $recVal){
+	 				$btn = '<a class="btn btn-sm btn-warning" onclick="edit_data(\''.$recVal['id'].'\'); return false;" href="#" title="Edit Data"><i class="dashicons dashicons-edit"></i></a>';
+					$btn .= '<a class="btn btn-sm btn-danger" onclick="hapus_data(\''.$recVal['id'].'\'); return false;" href="#" title="Edit Data"><i class="dashicons dashicons-trash"></i></a>';
+					$queryRecords[$recKey]['aksi'] = $btn;
+				}
+
+				$json_data = array(
+					"draw"            => intval( $params['draw'] ),   
+					"recordsTotal"    => intval( $totalRecords ),  
+					"recordsFiltered" => intval($totalRecords),
+					"data"            => $queryRecords,
+					"sql"             => $sqlRec
+				);
+
+				die(json_encode($json_data));
+			}else{
+				$return = array(
+					'status' => 'error',
+					'message'	=> 'Api Key tidak sesuai!'
+				);
+			}
+		}else{
+			$return = array(
+				'status' => 'error',
+				'message'	=> 'Format tidak sesuai!'
+			);
+		}
+		die(json_encode($return));
+	}
+public function get_data_batas_kecamatan_by_id(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil get data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				$ret['data'] = $wpdb->get_row($wpdb->prepare('
+					SELECT 
+						*
+					FROM data_batas_kecamatan
+					WHERE id=%d
+				', $_POST['id']), ARRAY_A);
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+
+		die(json_encode($ret));
+	}
+
+public function hapus_data_batas_kecamatan_by_id(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil hapus data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				$ret['data'] = $wpdb->update('data_batas_kecamatan', array('active' => 0), array(
+					'id' => $_POST['id']
+				));
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+
+		die(json_encode($ret));
+	}
+
+public function tambah_data_batas_kecamatan(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil simpan data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				if($ret['status'] != 'error' && !empty($_POST['provno'])){
+					$provno = $_POST['provno'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data provno tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kabkotno'])){
+					$kabkotno = $_POST['kabkotno'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data kabkotno tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kecno'])){
+					$kecno = $_POST['kecno'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data kecno tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kecamatan'])){
+					$kecamatan = $_POST['kecamatan'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data kecamatan tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['provinsi'])){
+					$provinsi = $_POST['provinsi'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data provinsi tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kabkot'])){
+					$kabkot = $_POST['kabkot'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data kabkot tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error'){
+					$data = array(
+						'provno' => $provno,
+						'kabkotno' => $kabkotno,
+						'kecno' => $kecno,
+						'provinsi' => $provinsi,
+						'kabkot' => $kabkot,
+						'kecamatan' => $kecamatan,
+						'active' => 1,
+						'update_at' => current_time('mysql')
+					);
+					if(!empty($_POST['id_data'])){
+						$wpdb->update('data_batas_kecamatan', $data, array(
+							'id' => $_POST['id_data']
+						));
+						$ret['message'] = 'Berhasil update data!';
+					}else{
+						$cek_id = $wpdb->get_row($wpdb->prepare('
+							SELECT
+								id,
+								active
+							FROM data_batas_kecamatan
+							WHERE id_batas_kecamatan=%s
+						', $id_batas_kecamatan), ARRAY_A);
+						if(empty($cek_id)){
+							$wpdb->insert('data_batas_kecamatan', $data);
+						}else{
+							if($cek_id['active'] == 0){
+								$wpdb->update('data_batas_kecamatan', $data, array(
+									'id' => $cek_id['id']
+								));
+							}else{
+								$ret['status'] = 'error';
+								$ret['message'] = 'Gagal disimpan. Data batas_kecamatan dengan id_batas_kecamatan="'.$id_batas_kecamatan.'" sudah ada!';
+							}
+						}
+					}
+				}
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+
+		die(json_encode($ret));
+	}
+	
+public function get_datatable_batas_kecamatan(){
+	 	global $wpdb;
+	 	$ret = array(
+	 		'status' => 'success',
+	 		'message' => 'Berhasil get data!',
+	 		'data'	=> array()
+	 	);
+
+	 	if(!empty($_POST)){
+	 		if (!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+	 			$user_id = um_user( 'ID' );
+	 			$user_meta = get_userdata($user_id);
+	 			$params = $columns = $totalRecords = $data = array();
+	 			$params = $_REQUEST;
+	 			$columns = array(
+	 			 0 => 'kecamatan',
+	 			 1 => 'kabkot',
+	 			 2 => 'provinsi',
+	 			 3  => 'provno',
+	 			 4  => 'kabkotno',
+	 			 5  => 'kecno',
+	 			 6  => 'id'
+	 			);
+	 			$where = $sqlTot = $sqlRec = "";
+
+	 			// check search value exist
+	 			if( !empty($params['search']['value']) ) {
+	 				$where .=" AND ( id_batas_kecamatan LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");  
+	 				$where .=" OR perimeter LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
+	 			}
+
+	 			// getting total number records without any search
+	 			$sql_tot = "SELECT count(id) as jml FROM `data_batas_kecamatan`";
+	 			$sql = "SELECT ".implode(', ', $columns)." FROM `data_batas_kecamatan`";
+	 			$where_first = " WHERE 1=1";
+	 			$sqlTot .= $sql_tot.$where_first;
+	 			$sqlRec .= $sql.$where_first;
+	 			if(isset($where) && $where != '') {
+	 				$sqlTot .= $where;
+	 				$sqlRec .= $where;
+	 			}
+
+	 			$limit = '';
+	 			if($params['length'] != -1){
+	 				$limit = "  LIMIT ".$wpdb->prepare('%d', $params['start'])." ,".$wpdb->prepare('%d', $params['length']);
+	 			}
+	 		 	$sqlRec .=  " ORDER BY ". $columns[$params['order'][0]['column']]."   ".$params['order'][0]['dir'].$limit;
+
+	 			$queryTot = $wpdb->get_results($sqlTot, ARRAY_A);
+	 			$totalRecords = $queryTot[0]['jml'];
+	 			$queryRecords = $wpdb->get_results($sqlRec, ARRAY_A);
+
+	 			foreach($queryRecords as $recKey => $recVal){
+	 				$btn = '<a class="btn btn-sm btn-warning" onclick="edit_data(\''.$recVal['id'].'\'); return false;" href="#" title="Edit Data"><i class="dashicons dashicons-edit"></i></a>';
+					$btn .= '<a class="btn btn-sm btn-danger" onclick="hapus_data(\''.$recVal['id'].'\'); return false;" href="#" title="Edit Data"><i class="dashicons dashicons-trash"></i></a>';
+					$queryRecords[$recKey]['aksi'] = $btn;
+				}
+
+				$json_data = array(
+					"draw"            => intval( $params['draw'] ),   
+					"recordsTotal"    => intval( $totalRecords ),  
+					"recordsFiltered" => intval($totalRecords),
+					"data"            => $queryRecords,
+					"sql"             => $sqlRec
+				);
+
+				die(json_encode($json_data));
+			}else{
+				$return = array(
+					'status' => 'error',
+					'message'	=> 'Api Key tidak sesuai!'
+				);
+			}
+		}else{
+			$return = array(
+				'status' => 'error',
+				'message'	=> 'Format tidak sesuai!'
+			);
+		}
+		die(json_encode($return));
+	}
 }
