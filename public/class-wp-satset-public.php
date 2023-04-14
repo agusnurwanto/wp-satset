@@ -1100,11 +1100,11 @@ public function tambah_data_batas_desa(){
 					$ret['status'] = 'error';
 					$ret['message'] = 'Data kecamatan tidak boleh kosong!';
 				}
-				if($ret['status'] != 'error' && !empty($_POST['kabkot'])){
-					$kabkot = $_POST['kabkot'];
+				if($ret['status'] != 'error' && !empty($_POST['kab_kot'])){
+					$kab_kot = $_POST['kab_kot'];
 				}else{
 					$ret['status'] = 'error';
-					$ret['message'] = 'Data kabkot tidak boleh kosong!';
+					$ret['message'] = 'Data kab_kot tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['provinsi'])){
 					$provinsi = $_POST['provinsi'];
@@ -1142,11 +1142,11 @@ public function tambah_data_batas_desa(){
 					$ret['status'] = 'error';
 					$ret['message'] = 'Data pemusatan tidak boleh kosong!';
 				}
-				if($ret['status'] != 'error' && !empty($_POST['jumlah_pen'])){
-					$jumlah_pen = $_POST['jumlah_pen'];
+				if($ret['status'] != 'error' && !empty($_POST['jumplah_pen'])){
+					$jumplah_pen = $_POST['jumplah_pen'];
 				}else{
 					$ret['status'] = 'error';
-					$ret['message'] = 'Data jumlah_pen tidak boleh kosong!';
+					$ret['message'] = 'Data jumplah_pen tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['provno'])){
 					$provno = $_POST['provno'];
@@ -1177,14 +1177,14 @@ public function tambah_data_batas_desa(){
 						'id_desa' => $id_desa,
 						'desa' => $desa,
 						'kecamatan' => $kecamatan,
-						'kabkot' => $kabkot,
+						'kab_kot' => $kab_kot,
 						'provinsi' => $provinsi,
 						'area' => $area,
 						'perimeter' => $perimeter,
 						'hectares' => $hectares,
 						'ukuran_kot' => $ukuran_kot,
 						'pemusatan' => $pemusatan,
-						'jumlah_pen' => $jumlah_pen,
+						'jumplah_pen' => $jumplah_pen,
 						'provno' => $provno,
 						'kabkotno' => $kabkotno,
 						'kecno' => $kecno,
@@ -1249,14 +1249,14 @@ public function get_datatable_batas_desa(){
 	 			  0 => 'id_desa',
 	 			  1 => 'desa',
 	 			  2 => 'kecamatan',
-	 			  3 => 'kabkot',
+	 			  3 => 'kab_kot',
 	 			  4 => 'provinsi',
 	 			  5 => 'area',
 	 			  6 => 'perimeter',
 	 			  7 => 'hectares',
 	 			  8 => 'ukuran_kot',
 	 			  9 => 'pemusatan',
-	 			  10 => 'jumlah_pen',
+	 			  10 => 'jumplah_pen',
 	 			  11 => 'provno',
 	 			  12 => 'kabkotno',
 	 			  13 => 'kecno',
@@ -1399,12 +1399,6 @@ public function tambah_data_batas_kecamatan(){
 					$ret['status'] = 'error';
 					$ret['message'] = 'Data kecno tidak boleh kosong!';
 				}
-				if($ret['status'] != 'error' && !empty($_POST['kecamatan'])){
-					$kecamatan = $_POST['kecamatan'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data kecamatan tidak boleh kosong!';
-				}
 				if($ret['status'] != 'error' && !empty($_POST['provinsi'])){
 					$provinsi = $_POST['provinsi'];
 				}else{
@@ -1416,6 +1410,12 @@ public function tambah_data_batas_kecamatan(){
 				}else{
 					$ret['status'] = 'error';
 					$ret['message'] = 'Data kabkot tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kecamatan'])){
+					$kecamatan = $_POST['kecamatan'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data kecamatan tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error'){
 					$data = array(
@@ -1481,14 +1481,14 @@ public function get_datatable_batas_kecamatan(){
 	 			$user_meta = get_userdata($user_id);
 	 			$params = $columns = $totalRecords = $data = array();
 	 			$params = $_REQUEST;
-	 			$columns = array(
-	 			 0 => 'kecamatan',
-	 			 1 => 'kabkot',
-	 			 2 => 'provinsi',
-	 			 3  => 'provno',
-	 			 4  => 'kabkotno',
-	 			 5  => 'kecno',
-	 			 6  => 'id'
+	 			$columns = array( 
+	 			 0 => 'provno',
+	 			 1 => 'kabkotno',
+	 			 2 => 'kecno',
+	 			 3 => 'provinsi',
+	 			 4 => 'kabkot',
+	 			 5 => 'kecamatan',
+	 			 6 => 'id'
 	 			);
 	 			$where = $sqlTot = $sqlRec = "";
 

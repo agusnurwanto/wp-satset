@@ -16,10 +16,10 @@
         <div class="wrap-table">
         <table id="management_data_table" cellpadding="2" cellspacing="0" style="font-family:\'Open Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif; border-collapse: collapse; width:100%; overflow-wrap: break-word;" class="table table-bordered">
             <thead>
-                <tr>=
+                <tr>
                     <th class="text-center">Provno</th>
                     <th class="text-center">Kabkotno</th>
-                    <th class="text-center">kecno</th>
+                    <th class="text-center">Kecno</th>
                     <th class="text-center">Provinsi</th>
                     <th class="text-center">Kabupaten / Kota</th>
                     <th class="text-center">Kecamatan</th>
@@ -37,7 +37,7 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalTambahDataBatasKecamatanLabel">Data Batas Desa</h5>
+                <h5 class="modal-title" id="modalTambahDataBatasKecamatanLabel">Data Batas Kecamatan</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -49,7 +49,7 @@
                     <input type="text" id='provno' name="provno" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='kabkotno' style='display:inline-block'>Kabkotno</label>
+                    <label for='kabkotno' style='display:inline-block'>kabkotno</label>
                     <input type="text" id='kabkotno' name="kabkotno" class="form-control" placeholder=''/>
                 </div> 
                 <div class="form-group">
@@ -116,7 +116,7 @@ function get_data_batas_kecamatan(){
                     className: "text-center"
                 },
                 {
-                    "data": 'provinsi',
+                    "data": 'kecamatan',
                     className: "text-center"
                 },
                 {
@@ -124,7 +124,7 @@ function get_data_batas_kecamatan(){
                     className: "text-center"
                 },
                 {
-                    "data": 'kecamatan',
+                    "data": 'provinsi',
                     className: "text-center"
                 },
                 {
@@ -135,7 +135,7 @@ function get_data_batas_kecamatan(){
         });
     }
     // else{
-    //     databataskecamatan.update();
+    //     databatasecamatan.update();
     // }
 }
 
@@ -204,10 +204,10 @@ function edit_data(_id){
                 jQuery('#provno').val(res.data.provno);
                 jQuery('#kabkotno').val(res.data.kabkotno);
                 jQuery('#kecno').val(res.data.kecno);
-                jQuery('#provinsi').val(res.data.provinsi);
-                jQuery('#kabkot').val(res.data.kabkot);
                 jQuery('#kecamatan').val(res.data.kecamatan);
-                jQuery('#modalTambahDataBatasDesa').modal('show');
+                jQuery('#kabkot').val(res.data.kabkot);
+                jQuery('#provinsi').val(res.data.provinsi);
+                jQuery('#modalTambahDataBatasKecamatan').modal('show');
             }else{
                 alert(res.message);
             }

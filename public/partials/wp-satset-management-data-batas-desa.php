@@ -30,8 +30,8 @@
                     <th class="text-center">Jumlah Penduduk</th>
                     <th class="text-center">Provno</th>
                     <th class="text-center">Kabkotno</th>
-                    <th class="text-center">kecno</th>
-                    <th class="text-center">desano</th>
+                    <th class="text-center">Kecno</th>
+                    <th class="text-center">Desano</th>
                     <th class="text-center" style="width: 150px;">Aksi</th>
                 </tr>
             </thead>
@@ -66,8 +66,8 @@
                     <input type="text" id='kecamatan' name="kecamatan" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='kabkot' style='display:inline-block'>Kabupaten / Kota</label>
-                    <input type="text" id='kabkot' name="kabkot" class="form-control" placeholder=''/>
+                    <label for='kab_kot' style='display:inline-block'>Kabupaten / Kota</label>
+                    <input type="text" id='kab_kot' name="kab_kot" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
                     <label for='provinsi' style='display:inline-block'>Provinsi</label>
@@ -93,15 +93,15 @@
                     <input type="text" id='pemusatan' name="pemusatan" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='jumlah_pen' style='display:inline-block'>Jumlah Penduduk</label>
-                    <input type="text" id='jumlah_pen' name="jumlah_pen" class="form-control" placeholder=''/>
+                    <label for='jumplah_pen' style='display:inline-block'>Jumlah Penduduk</label>
+                    <input type="text" id='jumplah_pen' name="jumplah_pen" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
                     <label for='provno' style='display:inline-block'>Provno</label>
                     <input type="text" id='provno' name="provno" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='kabkotno' style='display:inline-block'>Kabkotno</label>
+                    <label for='kabkotno' style='display:inline-block'>kabkotno</label>
                     <input type="text" id='kabkotno' name="kabkotno" class="form-control" placeholder=''/>
                 </div> 
                 <div class="form-group">
@@ -160,7 +160,7 @@ function get_data_batas_desa(){
                     className: "text-center"
                 },
                 {
-                    "data": 'kabkot',
+                    "data": 'kab_kot',
                     className: "text-center"
                 },
                 {
@@ -188,7 +188,7 @@ function get_data_batas_desa(){
                     className: "text-center"
                 },
                 {
-                    "data": 'jumlah_pen',
+                    "data": 'jumplah_pen',
                     className: "text-center"
                 },
                 {
@@ -284,14 +284,14 @@ function edit_data(_id){
                 jQuery('#id_desa').val(res.data.id_desa);
                 jQuery('#desa').val(res.data.desa);
                 jQuery('#kecamatan').val(res.data.kecamatan);
-                jQuery('#kabkot').val(res.data.kabkot);
+                jQuery('#kab_kot').val(res.data.kab_kot);
                 jQuery('#provinsi').val(res.data.provinsi);
                 jQuery('#area').val(res.data.area);
                 jQuery('#perimeter').val(res.data.perimeter);
                 jQuery('#hectares').val(res.data.hectares);
                 jQuery('#ukuran_kot').val(res.data.ukuran_kot);
                 jQuery('#pemusatan').val(res.data.pemusatan);
-                jQuery('#jumlah_pen').val(res.data.jumlah_pen);
+                jQuery('#jumplah_pen').val(res.data.jumplah_pen);
                 jQuery('#provno').val(res.data.provno);
                 jQuery('#kabkotno').val(res.data.kabkotno);
                 jQuery('#kecno').val(res.data.kecno);
@@ -311,14 +311,14 @@ function tambah_data_batas_desa(){
     jQuery('#id_desa').val('');
     jQuery('#desa').val('');
     jQuery('#kecamatan').val('');
-    jQuery('#kabkot').val('');
+    jQuery('#kab_kot').val('');
     jQuery('#provinsi').val('');
     jQuery('#area').val('');
     jQuery('#perimeter').val('');
     jQuery('#ukuran_kot').val('');
     jQuery('#hectares').val('');
     jQuery('#pemusatan').val('');
-    jQuery('#jumlah_pen').val('');
+    jQuery('#jumplah_pen').val('');
     jQuery('#provno').val('');
     jQuery('#kabkotno').val('');
     jQuery('#kecno').val('');
@@ -340,9 +340,9 @@ function submitTambahDataFormBatasDesa(){
     if(kecamatan == ''){
         return alert('Data kecamatan tidak boleh kosong!');
     }
-    var kabkot = jQuery('#kabkot').val();
-    if(kabkot == ''){
-        return alert('Data kabkot tidak boleh kosong!');
+    var kab_kot = jQuery('#kab_kot').val();
+    if(kab_kot == ''){
+        return alert('Data kab_kot tidak boleh kosong!');
     }
     var provinsi = jQuery('#provinsi').val();
     if(provinsi == ''){
@@ -368,9 +368,9 @@ function submitTambahDataFormBatasDesa(){
     if(pemusatan == ''){
         return alert('Data pemusatan tidak boleh kosong!');
     }
-    var jumlah_pen = jQuery('#jumlah_pen').val();
-    if(jumlah_pen == ''){
-        return alert('Data jumlah_pen tidak boleh kosong!');
+    var jumplah_pen = jQuery('#jumplah_pen').val();
+    if(jumplah_pen == ''){
+        return alert('Data jumplah_pen tidak boleh kosong!');
     }
     var provno = jQuery('#provno').val();
     if(provno == ''){
@@ -399,14 +399,14 @@ function submitTambahDataFormBatasDesa(){
             'id_desa': id_desa,
             'desa': desa,
             'kecamatan': kecamatan,
-            'kabkot': kabkot,
+            'kab_kot': kab_kot,
             'provinsi': provinsi,
             'area': area,
             'perimeter': perimeter,
             'ukuran_kot': ukuran_kot,
             'hectares': hectares,
             'pemusatan': pemusatan,
-            'jumlah_pen': jumlah_pen,
+            'jumplah_pen': jumplah_pen,
             'provno': provno,
             'kabkotno': kabkotno,
             'kecno': kecno,
