@@ -7,16 +7,16 @@
 </style>
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 <div class="cetak">
-	<div style="padding: 10px;margin:0 0 3rem 0;">
-		<input type="hidden" value="<?php echo get_option( '_crb_api_key_extension' ); ?>" id="api_key">
-	<h1 class="text-center" style="margin:3rem;">Manajemen Data Stunting</h1>
-		<div style="margin-bottom: 25px;">
-			<button class="btn btn-primary" onclick="tambah_data_stunting();"><i class="dashicons dashicons-plus"></i> Tambah Data Stunting</button>
-		</div>
+    <div style="padding: 10px;margin:0 0 3rem 0;">
+        <input type="hidden" value="<?php echo get_option( '_crb_api_key_extension' ); ?>" id="api_key">
+    <h1 class="text-center" style="margin:3rem;">Manajemen Data Stunting</h1>
+        <div style="margin-bottom: 25px;">
+            <button class="btn btn-primary" onclick="tambah_data_stunting();"><i class="dashicons dashicons-plus"></i> Tambah Data Stunting</button>
+        </div>
         <div class="wrap-table">
-		<table id="management_data_table" cellpadding="2" cellspacing="0" style="font-family:\'Open Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif; border-collapse: collapse; width:100%; overflow-wrap: break-word;" class="table table-bordered">
-			<thead>
-				<tr>
+        <table id="management_data_table" cellpadding="2" cellspacing="0" style="font-family:\'Open Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif; border-collapse: collapse; width:100%; overflow-wrap: break-word;" class="table table-bordered">
+            <thead>
+                <tr>
                     <th class="text-center">NIK</th>
                     <th class="text-center">Nama</th>
                     <th class="text-center">Jenis Kelamin</th>
@@ -49,14 +49,14 @@
                     <th class="text-center">Jumlah Vitamin A</th>
                     <th class="text-center">KPSP</th>
                     <th class="text-center">KIA</th>
-					<th class="text-center" style="width: 150px;">Aksi</th>
-				</tr>
-			</thead>
-			<tbody>
-			</tbody>
-		</table>
+                    <th class="text-center" style="width: 150px;">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
         </div>
-	</div>			
+    </div>          
 </div>
 
 <div class="modal fade mt-4" id="modalTambahDataStunting" tabindex="-1" role="dialog" aria-labelledby="modalTambahDataStuntingLabel" aria-hidden="true">
@@ -212,8 +212,8 @@ jQuery(document).ready(function(){
 });
 
 function get_data_stunting(){
-    if(typeof dataStunting == 'undefined'){
-        window.dataStunting = jQuery('#management_data_table').on('preXhr.dt', function(e, settings, data){
+    if(typeof datastunting == 'undefined'){
+        window.datastunting = jQuery('#management_data_table').on('preXhr.dt', function(e, settings, data){
             jQuery("#wrap-loading").show();
         }).DataTable({
             "processing": true,
@@ -366,35 +366,59 @@ function get_data_stunting(){
                 }
             ]
         });
-     }
-// else{
-    //     dataStunting.update();
+    }
+    // else{
+    //     datastunting.update();
     // }
 }
 
-function hapus_data(_id){
-    if(confirm('Apakah anda yakin untuk menghapus data ini?')){
-        jQuery('#wrap-loading').show();
-        jQuery.ajax({
-            method: 'post',
-            url: '<?php echo admin_url('admin-ajax.php'); ?>',
-            dataType: 'json',
-            data:{
-                'action': 'hapus_data_stunting_by_id',
-                'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
-                'id': _id
-            },
-            success: function(res){
-                alert(res.message);
-                if(res.status == 'success'){
-                    get_data_stunting();
-                }else{
+// function hapus_data(_id){
+//     if(confirm('Apakah anda yakin untuk menghapus data ini?')){
+//         jQuery('#wrap-loading').show();
+//         jQuery.ajax({
+//             method: 'post',
+//             url: '<?php echo admin_url('admin-ajax.php'); ?>',
+//             dataType: 'json',
+//             data:{
+//                 'action': 'hapus_data_p3ke_by_id',
+//                 'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
+//                 'id': _id
+//             },
+//             success: function(res){
+//                 alert(res.message);
+//                 if(res.status == 'success'){
+//                     get_data_stunting();
+//                 }else{
+//                     jQuery('#wrap-loading').hide();
+//                 }
+//             }
+//         })
+//     }
+// }
+function hapus_data(id){
+        let confirmDelete = confirm("Apakah anda yakin akan menghapus data ini?");
+        if(confirmDelete){
+            jQuery('#wrap-loading').show();
+            jQuery.ajax({
+                url: '<?php echo admin_url('admin-ajax.php'); ?>',
+                type:'post',
+                data:{
+                    'action' : 'hapus_data_stunting_by_id',
+                    'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
+                    'id'     : id
+                },
+                dataType: 'json',
+                success:function(response){
                     jQuery('#wrap-loading').hide();
+                    if(response.status == 'success'){
+                        get_data_stunting(); 
+                    }else{
+                        alert(`GAGAL! \n${response.message}`);
+                    }
                 }
-            }
-        })
+            });
+        }
     }
-}
 
 function edit_data(_id){
     jQuery('#wrap-loading').show();
@@ -442,7 +466,6 @@ function edit_data(_id){
                 jQuery('#jml_vit_a').val(res.data.jml_vit_a);
                 jQuery('#kpsp').val(res.data.kpsp);
                 jQuery('#kia').val(res.data.kia);
-                jQuery('#modalTambahDataStunting').modal('show');
             }else{
                 alert(res.message);
             }
@@ -491,7 +514,7 @@ function tambah_data_stunting(){
 
 function submitTambahDataFormStunting(){
     var id_data = jQuery('#id_data').val();
-    var nik = jQuery('#nik').val();
+     var nik = jQuery('#nik').val();
     if(nik == ''){
         return alert('Data nik tidak boleh kosong!');
     }
@@ -619,6 +642,7 @@ function submitTambahDataFormStunting(){
     if(kia == ''){
         return alert('Data kia tidak boleh kosong!');
     }
+
     jQuery('#wrap-loading').show();
     jQuery.ajax({
         method: 'post',

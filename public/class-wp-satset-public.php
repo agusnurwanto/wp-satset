@@ -947,11 +947,15 @@ public function tambah_data_p3ke(){
 				}
 				if($ret['status'] != 'error' && !empty($_POST['resiko_stunting'])){
 					$resiko_stunting = $_POST['resiko_stunting'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data Resiko Stunting tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error'){
 					$data = array(
 						'id_p3ke' => $id_p3ke,
 			            'kode_kemendagri' => $kode_kemendagri,
+			            'nik' => $nik,
 			            'padan_dukcapil' => $padan_dukcapil,
 			            'kepala_keluarga' => $kepala_keluarga,
 			            'jenis_kelamin' => $jenis_kelamin,
@@ -962,6 +966,7 @@ public function tambah_data_p3ke(){
 			            'desa' => $desa,
 			            'alamat' => $alamat,
 			            'pekerjaan' => $pekerjaan,
+			            'pendidikan' => $pendidikan,
 			            'rumah' => $rumah,
 			            'punya_tabungan' => $punya_tabungan,
 			            'jenis_desil' => $jenis_desil,
@@ -1412,6 +1417,444 @@ public function get_datatable_rtlh(){
 		}
 		die(json_encode($return));
 	}
+
+public function get_data_stunting_by_id(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil get data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				$ret['data'] = $wpdb->get_row($wpdb->prepare('
+					SELECT 
+						*
+					FROM data_stunting
+					WHERE id=%d
+				', $_POST['id']), ARRAY_A);
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+
+		die(json_encode($ret));
+	}
+
+public function hapus_data_stunting_by_id(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil hapus data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				$ret['data'] = $wpdb->update('data_stunting', array('active' => 0), array(
+					'id' => $_POST['id']
+				));
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+
+		die(json_encode($ret));
+	}
+
+public function tambah_data_stunting(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil simpan data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				if($ret['status'] != 'error' && !empty($_POST['nik'])){
+					$nik = $_POST['nik'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data NIK tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['nama'])){
+					$nama = $_POST['nama'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data Nama tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['jenis_kelamin'])){
+					$jenis_kelamin = $_POST['jenis_kelamin'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data jenis_kelamin tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['tanggal_lahir'])){
+					$tanggal_lahir = $_POST['tanggal_lahir'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data tanggal_lahir tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['bb_lahir'])){
+					$bb_lahir = $_POST['bb_lahir'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data bb_lahir tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['tb_lahir'])){
+					$tb_lahir = $_POST['tb_lahir'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data tb_lahir tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['nama_ortu'])){
+					$nama_ortu = $_POST['nama_ortu'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data nama_ortu tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['provinsi'])){
+					$provinsi = $_POST['provinsi'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data provinsi tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kabkot'])){
+					$kabkot = $_POST['kabkot'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data kabkot tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kecamatan'])){
+					$kecamatan = $_POST['kecamatan'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data kecamatan tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['puskesmas'])){
+					$puskesmas = $_POST['puskesmas'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data puskesmas tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['desa'])){
+					$desa = $_POST['desa'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data desa tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['posyandu'])){
+					$posyandu = $_POST['posyandu'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data posyandu tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['rt'])){
+					$rt = $_POST['rt'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data rt tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['rw'])){
+					$rw = $_POST['rw'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data rw tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['alamat'])){
+					$alamat = $_POST['alamat'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data alamat tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['usia_saat_ukur'])){
+					$usia_saat_ukur = $_POST['usia_saat_ukur'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data usia_saat_ukur tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['tanggal_pengukuran'])){
+					$tanggal_pengukuran = $_POST['tanggal_pengukuran'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data tanggal_pengukuran tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['berat'])){
+					$berat = $_POST['berat'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data berat tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['tinggi'])){
+					$tinggi = $_POST['tinggi'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data tinggi tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['lingkar_lengan_atas'])){
+					$lingkar_lengan_atas = $_POST['lingkar_lengan_atas'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data lingkar_lengan_atas tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['bb_per_u'])){
+					$bb_per_u = $_POST['bb_per_u'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data bb_per_u tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['zs_bb_per_u'])){
+					$zs_bb_per_u = $_POST['zs_bb_per_u'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data zs_bb_per_u tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['tb_per_u'])){
+					$tb_per_u = $_POST['tb_per_u'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data tb_per_u tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['zs_tb_per_u'])){
+					$zs_tb_per_u = $_POST['zs_tb_per_u'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data zs_tb_per_u tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['bb_per_tb'])){
+					$bb_per_tb = $_POST['bb_per_tb'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data bb_per_tb tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['zs_bb_per_tb'])){
+					$zs_bb_per_tb = $_POST['zs_bb_per_tb'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data zs_bb_per_tb tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['naik_berat_badan'])){
+					$naik_berat_badan = $_POST['naik_berat_badan'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data naik_berat_badan tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['pmt_diterima_per_kg'])){
+					$pmt_diterima_per_kg = $_POST['pmt_diterima_per_kg'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data pmt_diterima_per_kg tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['jml_vit_a'])){
+					$jml_vit_a = $_POST['jml_vit_a'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data jml_vit_a tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kpsp'])){
+					$kpsp = $_POST['kpsp'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data kpsp tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kia'])){
+					$kia = $_POST['kia'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data kia tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error'){
+					$data = array(
+						'nik' => $nik,
+						'nama' => $nama,
+						'jenis_kelamin' => $jenis_kelamin,
+						'tanggal_lahir' => $tanggal_lahir,
+						'bb_lahir' => $bb_lahir,
+						'tb_lahir' => $tb_lahir,
+						'nama_ortu' => $nama_ortu,
+						'provinsi' => $provinsi,
+						'kabkot' => $kabkot,
+						'kecamatan' => $kecamatan,
+						'puskesmas' => $puskesmas,
+						'desa' => $desa,
+						'posyandu' => $posyandu,
+						'rt' => $rt,
+						'rw' => $rw,
+						'alamat' => $alamat,
+						'usia_saat_ukur' => $usia_saat_ukur,
+						'tanggal_pengukuran' => $tanggal_pengukuran,
+						'berat' => $berat,
+						'tinggi' => $tinggi,
+						'lingkar_lengan_atas' => $lingkar_lengan_atas,
+						'bb_per_u' => $bb_per_u,
+						'zs_bb_per_u' => $zs_bb_per_u,
+						'tb_per_u' => $tb_per_u,
+						'zs_tb_per_u' => $zs_tb_per_u,
+						'bb_per_tb' => $bb_per_tb,
+						'zs_bb_per_tb' => $zs_bb_per_tb,
+						'naik_berat_badan' => $naik_berat_badan,
+						'pmt_diterima_per_kg' => $pmt_diterima_per_kg,
+						'jml_vit_a' => $jml_vit_a,
+						'kpsp' => $kpsp,
+						'kia' => $kia,
+						'active' => 1,
+						'update_at' => current_time('mysql')
+					);
+					if(!empty($_POST['id_data'])){
+						$wpdb->update('data_stunting', $data, array(
+							'id' => $_POST['id_data']
+						));
+						$ret['message'] = 'Berhasil update data!';
+					}else{
+						$cek_id = $wpdb->get_row($wpdb->prepare('
+							SELECT
+								id,
+								active
+							FROM data_stunting
+							WHERE id_stunting=%s
+						', $id_stunting), ARRAY_A);
+						if(empty($cek_id)){
+							$wpdb->insert('data_stunting', $data);
+						}else{
+							if($cek_id['active'] == 0){
+								$wpdb->update('data_stunting', $data, array(
+									'id' => $cek_id['id']
+								));
+							}else{
+								$ret['status'] = 'error';
+								$ret['message'] = 'Gagal disimpan. Data stunting dengan id_stunting="'.$id_stunting.'" sudah ada!';
+							}
+						}
+					}
+				}
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+
+		die(json_encode($ret));
+	}
+	
+public function get_datatable_stunting(){
+	 	global $wpdb;
+	 	$ret = array(
+	 		'status' => 'success',
+	 		'message' => 'Berhasil get data!',
+	 		'data'	=> array()
+	 	);
+
+	 	if(!empty($_POST)){
+	 		if (!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+	 			$user_id = um_user( 'ID' );
+	 			$user_meta = get_userdata($user_id);
+	 			$params = $columns = $totalRecords = $data = array();
+	 			$params = $_REQUEST;
+	 			$columns = array( 
+	 			  0 => 'nik',
+				  1 => 'nama',
+				  2 => 'jenis_kelamin',
+				  3 => 'tanggal_lahir',
+				  4 => 'provinsi',
+				  5 => 'kabkot',
+				  6 => 'kecamatan',
+				  7 => 'desa',
+				  8 => 'bb_lahir',
+				  9 => 'tb_lahir',
+				 10	=> 'nama_ortu',
+				 11 => 'rt',
+				 12 => 'rw',
+				 13 => 'alamat',
+				 14 => 'puskesmas',
+				 15 => 'posyandu',
+				 16 => 'usia_saat_ukur',
+				 17 => 'tanggal_pengukuran',
+				 18 => 'berat',
+				 19 => 'tinggi',
+				 20 => 'lingkar_lengan_atas',
+				 21 => 'bb_per_u',
+				 22 => 'tb_per_u',
+				 23 => 'zs_bb_per_u',
+				 24 => 'zs_tb_per_u',
+				 25 => 'bb_per_tb',
+				 26 => 'zs_bb_per_tb',
+				 27 => 'naik_berat_badan',
+				 28 => 'pmt_diterima_per_kg',
+				 29 => 'jml_vit_a',
+				 30 => 'kpsp',
+				 31	=> 'kia',
+				 32 => 'id'	 			);
+	 			$where = $sqlTot = $sqlRec = "";
+
+	 			// check search value exist
+	 			if( !empty($params['search']['value']) ) {
+	 				$where .=" AND ( id_stunting LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");    
+	 				$where .=" OR nik LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
+	 				$where .=" OR nama LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
+	 				$where .=" OR alamat LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
+	 			}
+
+	 			// getting total number records without any search
+	 			$sql_tot = "SELECT count(id) as jml FROM `data_stunting`";
+	 			$sql = "SELECT ".implode(', ', $columns)." FROM `data_stunting`";
+	 			$where_first = " WHERE 1=1";
+	 			$sqlTot .= $sql_tot.$where_first;
+	 			$sqlRec .= $sql.$where_first;
+	 			if(isset($where) && $where != '') {
+	 				$sqlTot .= $where;
+	 				$sqlRec .= $where;
+	 			}
+
+	 			$limit = '';
+	 			if($params['length'] != -1){
+	 				$limit = "  LIMIT ".$wpdb->prepare('%d', $params['start'])." ,".$wpdb->prepare('%d', $params['length']);
+	 			}
+	 		 	$sqlRec .=  " ORDER BY ". $columns[$params['order'][0]['column']]."   ".$params['order'][0]['dir'].$limit;
+
+	 			$queryTot = $wpdb->get_results($sqlTot, ARRAY_A);
+	 			$totalRecords = $queryTot[0]['jml'];
+	 			$queryRecords = $wpdb->get_results($sqlRec, ARRAY_A);
+
+	 			foreach($queryRecords as $recKey => $recVal){
+	 				$btn = '<a class="btn btn-sm btn-warning" onclick="edit_data(\''.$recVal['id'].'\'); return false;" href="#" title="Edit Data"><i class="dashicons dashicons-edit"></i></a>';
+					$btn .= '<a class="btn btn-sm btn-danger" onclick="hapus_data(\''.$recVal['id'].'\'); return false;" href="#" title="Edit Data"><i class="dashicons dashicons-trash"></i></a>';
+					$queryRecords[$recKey]['aksi'] = $btn;
+				}
+
+				$json_data = array(
+					"draw"            => intval( $params['draw'] ),   
+					"recordsTotal"    => intval( $totalRecords ),  
+					"recordsFiltered" => intval($totalRecords),
+					"data"            => $queryRecords,
+					"sql"             => $sqlRec
+				);
+
+				die(json_encode($json_data));
+			}else{
+				$return = array(
+					'status' => 'error',
+					'message'	=> 'Api Key tidak sesuai!'
+				);
+			}
+		}else{
+			$return = array(
+				'status' => 'error',
+				'message'	=> 'Format tidak sesuai!'
+			);
+		}
+		die(json_encode($return));
+	}
+		
 public function get_data_tbc_by_id(){
 		global $wpdb;
 		$ret = array(

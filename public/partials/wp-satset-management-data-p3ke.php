@@ -304,6 +304,10 @@ function get_data_p3ke(){
                     className: "text-center"
                 },
                 {
+                    "data": 'sumber_penerangan',
+                    className: "text-center"
+                },
+                {
                     "data": 'bahan_bakar_memasak',
                     className: "text-center"
                 },
