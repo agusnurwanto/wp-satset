@@ -18,18 +18,35 @@
             <thead>
                 <tr>
                     <th class="text-center">Id P3KE</th>
+                    <th class="text-center">Kode Kemendagri</th>
                     <th class="text-center">NIK</th>
-                    <th class="text-center">Alamat</th>
+                    <th class="text-center">Padan Dukcapil</th>
+                    <th class="text-center">Kepala Keluarga</th>
+                    <th class="text-center">Jenis Kelamin</th>
+                    <th class="text-center">Tanggal Lahir</th>
                     <th class="text-center">Provinsi</th>
                     <th class="text-center">Kabupaten / Kota</th>
                     <th class="text-center">Kecamatan</th>
                     <th class="text-center">Desa</th>
-                    <th class="text-center">Rw</th>
-                    <th class="text-center">Rt</th>
-                    <th class="text-center">Nilai Bantuan</th>
-                    <th class="text-center">LPJ</th>
-                    <th class="text-center">Tanggal LPJ</th>
-                    <th class="text-center">Sumber Dana</th>
+                    <th class="text-center">Alamat</th>
+                    <th class="text-center">Pekerjaan</th>
+                    <th class="text-center">Pendidikan</th>
+                    <th class="text-center">Rumah</th>
+                    <th class="text-center">Punya Tabungan</th>
+                    <th class="text-center">Jenis Desil</th>
+                    <th class="text-center">Jenis Atap</th>
+                    <th class="text-center">Jenis Dinding</th>
+                    <th class="text-center">Jenis Lantai</th>
+                    <th class="text-center">Sumber Penerangan</th>   
+                    <th class="text-center">Bahan Bakar Memasak</th>   
+                    <th class="text-center">Sumber Air Minum</th>
+                    <th class="text-center">Fasilitas BAB</th>
+                    <th class="text-center">Penerima Bpnt</th>   
+                    <th class="text-center">Penerima Bpum</th>   
+                    <th class="text-center">Penerima Bst</th>
+                    <th class="text-center">Penerima Pkh</th>
+                    <th class="text-center">Penerima Sembako</th>
+                    <th class="text-center">Resiko Stunting</th>
                     <th class="text-center" style="width: 150px;">Aksi</th>
                 </tr>
             </thead>
@@ -52,16 +69,32 @@
             <div class="modal-body">
                 <input type='hidden' id='id_data' name="id_data" placeholder=''>
                 <div class="form-group">
-                    <label for='nama' style='display:inline-block'>Nama</label>
-                    <input type='text' id='nama' name="nama" class="form-control" placeholder=''>
+                    <label for='id_p3ke' style='display:inline-block'>Id P3KE</label>
+                    <input type='text' id='id_p3ke' name="id_p3ke" class="form-control" placeholder=''>
+                </div> 
+                <div class="form-group">
+                    <label for='kode_kemendagri' style='display:inline-block'>Kode Kemendagri</label>
+                    <input type='text' id='kode_kemendagri' name="kode_kemendagri" class="form-control" placeholder=''>
                 </div>
                 <div class="form-group">
                     <label for='nik' style='display:inline-block'>NIK</label>
                     <input type='text' id='nik' name="nik" class="form-control" placeholder=''>
-                </div> 
+                </div>
                 <div class="form-group">
-                    <label for='alamat' style='display:inline-block'>Alamat</label>
-                    <input type="text" id='alamat' name="alamat" class="form-control" placeholder=''/>
+                    <label for='tambah_padan_dukcapil' style='display:inline-block'>Padan Dukcapil</label>
+                    <input type="text" id='tambah_padan_dukcapil' name="tambah_padan_dukcapil" class="form-control" placeholder=''/>
+                </div>
+                <div class="form-group">
+                    <label for='kepala_keluarga' style='display:inline-block'>Kepala Keluarga</label>
+                    <input type="text" id='kepala_keluarga' name="kepala_keluarga" class="form-control" placeholder=''/>
+                </div>
+                <div class="form-group">
+                    <label for='jenis_kelamin' style='display:inline-block'>Jenis Kelamin</label>
+                    <input type="text" id='jenis_kelamin' name="jenis_kelamin" class="form-control" placeholder=''/>
+                </div>
+                <div class="form-group">
+                    <label for='tanggal_lahir' style='display:inline-block'>Tanggal Lahir</label>
+                    <input type="text" id='tanggal_lahir' name="tanggal_lahir" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
                     <label for='provinsi' style='display:inline-block'>Provinsi</label>
@@ -80,28 +113,81 @@
                     <input type="text" id='desa' name="desa" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='rw' style='display:inline-block'>RW</label>
-                    <input type="text" id='rw' name="rw" class="form-control" placeholder=''/>
-                <div class="form-group">
-                <div class="form-group">
-                    <label for='rt' style='display:inline-block'>RT</label>
-                    <input type="text" id='rt' name="rt" class="form-control" placeholder=''/>
-                </div>
-                    <label for='nilai_bantuan' style='display:inline-block'>Nilai Bantuan</label>
-                    <input type="text" id='nilai_bantuan' name="nilai_bantuan" class="form-control" placeholder=''/>
+                    <label for='alamat' style='display:inline-block'>Alamat</label>
+                    <input type="text" id='alamat' name="alamat" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='lpj' style='display:inline-block'>LPJ</label>
-                    <input type="text" id='lpj' name="lpj" class="form-control" placeholder=''/>
+                    <label for='pekerjaan' style='display:inline-block'>Pekerjaan</label>
+                    <input type="text" id='pekerjaan' name="pekerjaan" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='tgl_lpj' style='display:inline-block'>Tanggal LPJ</label>
-                    <input type="text" id='tgl_lpj' name="tgl_lpj" class="form-control" placeholder=''/>
+                    <label for='pendidikan' style='display:inline-block'>Pendidikan</label>
+                    <input type="text" id='pendidikan' name="pendidikan" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='sumber_dana' style='display:inline-block'>Sumber Dana</label>
-                    <input type="text" id='sumber_dana' name="sumber_dana" class="form-control" placeholder=''/>
+                    <label for='rumah' style='display:inline-block'>Rumah</label>
+                    <input type="text" id='rumah' name="rumah" class="form-control" placeholder=''/>
+                </div>
+                <div class="form-group">
+                    <label for='punya_tabungan' style='display:inline-block'>Tabungan</label>
+                    <input type="text" id='punya_tabungan' name="punya_tabungan" class="form-control" placeholder=''/>
+                </div>
+                <div class="form-group">
+                    <label for='jenis_desil' style='display:inline-block'>Jenis Desil</label>
+                    <input type="text" id='jenis_desil' name="jenis_desil" class="form-control" placeholder=''/>
+                </div>
+                <div class="form-group">
+                    <label for='jenis_atap' style='display:inline-block'>Jenis Atap</label>
+                    <input type="text" id='jenis_atap' name="jenis_atap" class="form-control" placeholder=''/>
                 </div> 
+                <div class="form-group">
+                    <label for='jenis_dinding' style='display:inline-block'>Jenis Dinding</label>
+                    <input type="text" id='jenis_dinding' name="jenis_dinding" class="form-control" placeholder=''/>
+                </div> 
+                <div class="form-group">
+                    <label for='jenis_lantai' style='display:inline-block'>Jenis Lantai</label>
+                    <input type="text" id='jenis_lantai' name="jenis_lantai" class="form-control" placeholder=''/>
+                </div> 
+                <div class="form-group">
+                    <label for='sumber_penerangan' style='display:inline-block'>Sumber Penerangan</label>
+                    <input type="text" id='sumber_penerangan' name="sumber_penerangan" class="form-control" placeholder=''/>
+                </div> 
+                <div class="form-group">
+                    <label for='bahan_bakar_memasak' style='display:inline-block'>Bahan Bakar Memasak</label>
+                    <input type="text" id='bahan_bakar_memasak' name="bahan_bakar_memasak" class="form-control" placeholder=''/>
+                </div> 
+                <div class="form-group">
+                    <label for='sumber_air_minum' style='display:inline-block'>Sumber Air Minum</label>
+                    <input type="text" id='sumber_air_minum' name="sumber_air_minum" class="form-control" placeholder=''/>
+                </div> 
+                <div class="form-group">
+                    <label for='fasilitas_bab' style='display:inline-block'>Fasilitas BAB</label>
+                    <input type="text" id='fasilitas_bab' name="fasilitas_bab" class="form-control" placeholder=''/>
+                </div> 
+                <div class="form-group">
+                    <label for='penerima_bpnt' style='display:inline-block'>Penerima BPNT</label>
+                    <input type="text" id='penerima_bpnt' name="penerima_bpnt" class="form-control" placeholder=''/>
+                </div> 
+                <div class="form-group">
+                    <label for='penerima_bpum' style='display:inline-block'>Penerima BPUM</label>
+                    <input type="text" id='penerima_bpum' name="penerima_bpum" class="form-control" placeholder=''/>
+                </div>  
+                <div class="form-group">
+                    <label for='penerima_bst' style='display:inline-block'>Penerima BST</label>
+                    <input type="text" id='penerima_bst' name="penerima_bst" class="form-control" placeholder=''/>
+                </div>  
+                <div class="form-group">
+                    <label for='penerima_pkh' style='display:inline-block'>Penerima PKH</label>
+                    <input type="text" id='penerima_pkh' name="penerima_pkh" class="form-control" placeholder=''/>
+                </div>  
+                <div class="form-group">
+                    <label for='penerima_sembako' style='display:inline-block'>Penerima Sembako</label>
+                    <input type="text" id='penerima_sembako' name="penerima_sembako" class="form-control" placeholder=''/>
+                </div>  
+                <div class="form-group">
+                    <label for='resiko_stunting' style='display:inline-block'>Resiko Stunting</label>
+                    <input type="text" id='resiko_stunting' name="resiko_stunting" class="form-control" placeholder=''/>
+                </div>  
             </div> 
             <div class="modal-footer">
                 <button class="btn btn-primary submitBtn" onclick="submitTambahDataFormP3KE()">Simpan</button>
@@ -138,7 +224,11 @@ function get_data_p3ke(){
             },
             "columns": [
                 {
-                    "data": 'nama',
+                    "data": 'id_p3ke',
+                    className: "text-center"
+                },
+                {
+                    "data": 'kode_kemendagri',
                     className: "text-center"
                 },
                 {
@@ -146,7 +236,19 @@ function get_data_p3ke(){
                     className: "text-center"
                 },
                 {
-                    "data": 'alamat',
+                    "data": 'padan_dukcapil',
+                    className: "text-center"
+                },
+                {
+                    "data": 'kepala_keluarga',
+                    className: "text-center"
+                },
+                {
+                    "data": 'jenis_kelamin',
+                    className: "text-center"
+                },
+                {
+                    "data": 'tanggal_lahir',
                     className: "text-center"
                 },
                 {
@@ -166,27 +268,75 @@ function get_data_p3ke(){
                     className: "text-center"
                 },
                 {
-                    "data": 'rw',
+                    "data": 'alamat',
                     className: "text-center"
                 },
                 {
-                    "data": 'rt',
+                    "data": 'pekerjaan',
                     className: "text-center"
                 },
                 {
-                    "data": 'nilai_bantuan',
+                    "data": 'pendidikan',
                     className: "text-center"
                 },
                 {
-                    "data": 'lpj',
+                    "data": 'rumah',
                     className: "text-center"
                 },
                 {
-                    "data": 'tgl_lpj',
+                    "data": 'punya_tabungan',
                     className: "text-center"
                 },
                 {
-                    "data": 'sumber_dana',
+                    "data": 'jenis_desil',
+                    className: "text-center"
+                },
+                {
+                    "data": 'jenis_atap',
+                    className: "text-center"
+                },
+                {
+                    "data": 'jenis_dinding',
+                    className: "text-center"
+                },
+                {
+                    "data": 'jenis_lantai',
+                    className: "text-center"
+                },
+                {
+                    "data": 'bahan_bakar_memasak',
+                    className: "text-center"
+                },
+                {
+                    "data": 'sumber_air_minum',
+                    className: "text-center"
+                },
+                {
+                    "data": 'fasilitas_bab',
+                    className: "text-center"
+                },
+                {
+                    "data": 'penerima_bpnt',
+                    className: "text-center"
+                },
+                {
+                    "data": 'penerima_bpum',
+                    className: "text-center"
+                },
+                {
+                    "data": 'penerima_bst',
+                    className: "text-center"
+                },
+                {
+                    "data": 'penerima_pkh',
+                    className: "text-center"
+                },
+                {
+                    "data": 'penerima_sembako',
+                    className: "text-center"
+                },
+                {
+                    "data": 'resiko_stunting',
                     className: "text-center"
                 },
                 {
@@ -232,7 +382,7 @@ function hapus_data(id){
                 url: '<?php echo admin_url('admin-ajax.php'); ?>',
                 type:'post',
                 data:{
-                    'action' : 'submit_delete_schedule',
+                    'action' : 'hapus_data_p3ke_by_id',
                     'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
                     'id'     : id
                 },
@@ -263,19 +413,36 @@ function edit_data(_id){
         success: function(res){
             if(res.status == 'success'){
                 jQuery('#id_data').val(res.data.id);
-                jQuery('#nama').val(res.data.nama);
+                jQuery('#id_p3ke').val(res.data.id_p3ke);
+                jQuery('#kode_kemendagri').val(res.data.kode_kemendagri);
                 jQuery('#nik').val(res.data.nik);
-                jQuery('#alamat').val(res.data.alamat);
+                jQuery('#padan_dukcapil').val(res.data.padan_dukcapil);
+                jQuery('#kepala_keluarga').val(res.data.kepala_keluarga);
+                jQuery('#jenis_kelamin').val(res.data.jenis_kelamin);
+                jQuery('#tanggal_lahir').val(res.data.tanggal_lahir);
                 jQuery('#provinsi').val(res.data.provinsi);
                 jQuery('#kabkot').val(res.data.kabkot);
                 jQuery('#kecamatan').val(res.data.kecamatan);
                 jQuery('#desa').val(res.data.desa);
-                jQuery('#rw').val(res.data.rw);
-                jQuery('#rt').val(res.data.rt);
-                jQuery('#nilai_bantuan').val(res.data.nilai_bantuan);
-                jQuery('#lpj').val(res.data.lpj);
-                jQuery('#tgl_lpj').val(res.data.tgl_lpj);
-                jQuery('#sumber_dana').val(res.data.sumber_dana);
+                jQuery('#alamat').val(res.data.alamat);
+                jQuery('#pekerjaan').val(res.data.pekerjaan);
+                jQuery('#pendidikan').val(res.data.pendidikan);
+                jQuery('#rumah').val(res.data.rumah);
+                jQuery('#punya_tabungan').val(res.data.punya_tabungan);
+                jQuery('#jenis_desil').val(res.data.jenis_desil);
+                jQuery('#jenis_atap').val(res.data.jenis_atap);
+                jQuery('#jenis_dinding').val(res.data.jenis_dinding);
+                jQuery('#jenis_lantai').val(res.data.jenis_lantai);
+                jQuery('#sumber_penerangan').val(res.data.sumber_penerangan);
+                jQuery('#bahan_bakar_memasak').val(res.data.bahan_bakar_memasak);
+                jQuery('#sumber_air_minum').val(res.data.sumber_air_minum);
+                jQuery('#fasilitas_bab').val(res.data.fasilitas_bab);
+                jQuery('#penerima_bpnt').val(res.data.penerima_bpnt);
+                jQuery('#penerima_bpum').val(res.data.penerima_bpum);
+                jQuery('#penerima_bst').val(res.data.penerima_bst);
+                jQuery('#penerima_pkh').val(res.data.penerima_pkh);
+                jQuery('#penerima_sembako').val(res.data.penerima_sembako);
+                jQuery('#resiko_stunting').val(res.data.resiko_stunting);
                 jQuery('#modalTambahDataP3KE').modal('show');
             }else{
                 alert(res.message);
@@ -288,35 +455,67 @@ function edit_data(_id){
 //show tambah data
 function tambah_data_p3ke(){
     jQuery('#id_data').val('');
+    jQuery('#id_p3ke').val('');
+    jQuery('#kode_kemendagri').val('');
     jQuery('#nik').val('');
-    jQuery('#nama').val('');
-    jQuery('#alamat').val('');
+    jQuery('#padan_dukcapil').val('');
+    jQuery('#kepala_keluarga').val('');
+    jQuery('#jenis_kelamin').val('');
+    jQuery('#tanggal_lahir').val('');
     jQuery('#provinsi').val('');
     jQuery('#kabkot').val('');
     jQuery('#kecamatan').val('');
     jQuery('#desa').val('');
-    jQuery('#rt').val('');
-    jQuery('#rw').val('');
-    jQuery('#nilai_bantuan').val('');
-    jQuery('#lpj').val('');
-    jQuery('#tgl_lpj').val('');
-    jQuery('#sumber_dana').val('');
+    jQuery('#alamat').val('');
+    jQuery('#pekerjaan').val('');
+    jQuery('#rumah').val('');
+    jQuery('#punya_tabungan').val('');
+    jQuery('#jenis_desil').val('');
+    jQuery('#jenis_atap').val('');
+    jQuery('#jenis_dinding').val('');
+    jQuery('#jenis_lantai').val('');
+    jQuery('#sumber_penerangan').val('');
+    jQuery('#bahan_bakar_memasak').val('');
+    jQuery('#sumber_air_minum').val('');
+    jQuery('#fasilitas_bab').val('');
+    jQuery('#penerima_bpnt').val('');
+    jQuery('#penerima_bpum').val('');
+    jQuery('#penerima_bst').val('');
+    jQuery('#penerima_pkh').val('');
+    jQuery('#penerima_sembako').val('');
+    jQuery('#resiko_stunting').val('');
     jQuery('#modalTambahDataP3KE').modal('show');
 }
 
 function submitTambahDataFormP3KE(){
     var id_data = jQuery('#id_data').val();
+    var id_p3ke = jQuery('#id_p3ke').val();
+    if(id_p3ke == ''){
+        return alert('Data id_p3ke tidak boleh kosong!');
+    }
+    var kode_kemendagri = jQuery('#kode_kemendagri').val();
+    if(kode_kemendagri == ''){
+        return alert('Data kode_kemendagri tidak boleh kosong!');
+    }
     var nik = jQuery('#nik').val();
     if(nik == ''){
         return alert('Data nik tidak boleh kosong!');
     }
-    var nama = jQuery('#nama').val();
-    if(nama == ''){
-        return alert('Data nama tidak boleh kosong!');
+    var padan_dukcapil = jQuery('#padan_dukcapil').val();
+    if(padan_dukcapil == ''){
+        return alert('Data padan_dukcapil tidak boleh kosong!');
     }
-    var alamat = jQuery('#alamat').val();
-    if(alamat == ''){
-        return alert('Data alamat tidak boleh kosong!');
+    var kepala_keluarga = jQuery('#kepala_keluarga').val();
+    if(kepala_keluarga == ''){
+        return alert('Data kepala_keluarga tidak boleh kosong!');
+    }
+    var jenis_kelamin = jQuery('#jenis_kelamin').val();
+    if(jenis_kelamin == ''){
+        return alert('Data jenis_kelamin tidak boleh kosong!');
+    }
+    var tanggal_lahir = jQuery('#tanggal_lahir').val();
+    if(tanggal_lahir == ''){
+        return alert('Data tanggal_lahir tidak boleh kosong!');
     }
     var provinsi = jQuery('#provinsi').val();
     if(provinsi == ''){
@@ -334,29 +533,81 @@ function submitTambahDataFormP3KE(){
     if(desa == ''){
         return alert('Data desa tidak boleh kosong!');
     }
-    var rt = jQuery('#rt').val();
-    if(rt == ''){
-        return alert('Data rt tidak boleh kosong!');
+    var alamat = jQuery('#alamat').val();
+    if(alamat == ''){
+        return alert('Data alamat tidak boleh kosong!');
     }
-    var rw = jQuery('#rw').val();
-    if(rw == ''){
-        return alert('Data rw tidak boleh kosong!');
+    var pekerjaan = jQuery('#pekerjaan').val();
+    if(pekerjaan == ''){
+        return alert('Data pekerjaan tidak boleh kosong!');
     }
-    var nilai_bantuan = jQuery('#nilai_bantuan').val();
-    if(nilai_bantuan == ''){
-        return alert('Data nilai_bantuan tidak boleh kosong!');
+    var pendidikan = jQuery('#pendidikan').val();
+    if(pendidikan == ''){
+        return alert('Data pendidikan tidak boleh kosong!');
     }
-    var lpj = jQuery('#lpj').val();
-    if(lpj == ''){
-        return alert('Data lpj tidak boleh kosong!');
+    var rumah = jQuery('#rumah').val();
+    if(rumah == ''){
+        return alert('Data rumah tidak boleh kosong!');
     }
-    var tgl_lpj = jQuery('#tgl_lpj').val();
-    if(tgl_lpj == ''){
-        return alert('Data tgl_lpj tidak boleh kosong!');
+    var punya_tabungan = jQuery('#punya_tabungan').val();
+    if(punya_tabungan == ''){
+        return alert('Data punya_tabungan tidak boleh kosong!');
     }
-    var sumber_dana = jQuery('#sumber_dana').val();
-    if(sumber_dana == ''){
-        return alert('Data sumber_dana tidak boleh kosong!');
+    var jenis_desil = jQuery('#jenis_desil').val();
+    if(jenis_desil == ''){
+        return alert('Data jenis_desil tidak boleh kosong!');
+    }
+    var jenis_atap = jQuery('#jenis_atap').val();
+    if(jenis_atap == ''){
+        return alert('Data jenis_atap tidak boleh kosong!');
+    }
+    var jenis_dinding = jQuery('#jenis_dinding').val();
+    if(jenis_dinding == ''){
+        return alert('Data jenis_dinding tidak boleh kosong!');
+    }
+    var jenis_lantai = jQuery('#jenis_lantai').val();
+    if(jenis_lantai == ''){
+        return alert('Data jenis_lantai tidak boleh kosong!');
+    }
+    var sumber_penerangan = jQuery('#sumber_penerangan').val();
+    if(sumber_penerangan == ''){
+        return alert('Data sumber_penerangan tidak boleh kosong!');
+    }
+    var bahan_bakar_memasak = jQuery('#bahan_bakar_memasak').val();
+    if(bahan_bakar_memasak == ''){
+        return alert('Data bahan_bakar_memasak tidak boleh kosong!');
+    }
+    var sumber_air_minum = jQuery('#sumber_air_minum').val();
+    if(sumber_air_minum == ''){
+        return alert('Data sumber_air_minum tidak boleh kosong!');
+    }
+    var fasilitas_bab = jQuery('#fasilitas_bab').val();
+    if(fasilitas_bab == ''){
+        return alert('Data fasilitas_bab tidak boleh kosong!');
+    }
+    var penerima_bpnt = jQuery('#penerima_bpnt').val();
+    if(penerima_bpnt == ''){
+        return alert('Data penerima_bpnt tidak boleh kosong!');
+    }
+    var penerima_bpum = jQuery('#penerima_bpum').val();
+    if(penerima_bpum == ''){
+        return alert('Data penerima_bpum tidak boleh kosong!');
+    }
+    var penerima_bst = jQuery('#penerima_bst').val();
+    if(penerima_bst == ''){
+        return alert('Data penerima_bst tidak boleh kosong!');
+    }
+    var penerima_pkh = jQuery('#penerima_pkh').val();
+    if(penerima_pkh == ''){
+        return alert('Data penerima_pkh tidak boleh kosong!');
+    }
+    var penerima_sembako = jQuery('#penerima_sembako').val();
+    if(penerima_sembako == ''){
+        return alert('Data penerima_sembako tidak boleh kosong!');
+    }
+    var resiko_stunting = jQuery('#resiko_stunting').val();
+    if(resiko_stunting == ''){
+        return alert('Data resiko_stunting tidak boleh kosong!');
     }
 
     jQuery('#wrap-loading').show();
@@ -368,19 +619,35 @@ function submitTambahDataFormP3KE(){
             'action': 'tambah_data_p3ke',
             'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
             'id_data': id_data,
+            'id_p3ke': id_p3ke,
+            'kode_kemendagri': kode_kemendagri,
             'nik': nik,
-            'nama': nama,
-            'alamat': alamat,
+            'padan_dukcapil': padan_dukcapil,
+            'kepala_keluarga': kepala_keluarga,
+            'jenis_kelamin': jenis_kelamin,
+            'tanggal_lahir': tanggal_lahir,
             'provinsi': provinsi,
             'kabkot': kabkot,
             'kecamatan': kecamatan,
             'desa': desa,
-            'rt': rt,
-            'rw': rw,
-            'nilai_bantuan': nilai_bantuan,
-            'lpj': lpj,
-            'tgl_lpj': tgl_lpj,
-            'sumber_dana': sumber_dana,
+            'alamat': alamat,
+            'pekerjaan': pekerjaan,
+            'rumah': rumah,
+            'punya_tabungan': punya_tabungan,
+            'jenis_desil': jenis_desil,
+            'jenis_atap': jenis_atap,
+            'jenis_dinding': jenis_dinding,
+            'jenis_lantai': jenis_lantai,
+            'sumber_penerangan': sumber_penerangan,
+            'bahan_bakar_memasak': bahan_bakar_memasak,
+            'sumber_air_minum': sumber_air_minum,
+            'fasilitas_bab': fasilitas_bab,
+            'penerima_bpnt': penerima_bpnt,
+            'penerima_bpum': penerima_bpum,
+            'penerima_bst': penerima_bst,
+            'penerima_pkh': penerima_pkh,
+            'penerima_sembako': penerima_sembako,
+            'resiko_stunting': resiko_stunting,
         },
         success: function(res){
             alert(res.message);

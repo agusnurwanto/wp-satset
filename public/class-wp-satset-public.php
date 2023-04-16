@@ -735,7 +735,397 @@ public function cari_data_satset(){
 		die(json_encode($ret));
 	}
 
+public function get_data_p3ke_by_id(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil get data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				$ret['data'] = $wpdb->get_row($wpdb->prepare('
+					SELECT 
+						*
+					FROM data_p3ke
+					WHERE id=%d
+				', $_POST['id']), ARRAY_A);
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
 
+		die(json_encode($ret));
+	}
+
+public function hapus_data_p3ke_by_id(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil hapus data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				$ret['data'] = $wpdb->update('data_p3ke', array('active' => 0), array(
+					'id' => $_POST['id']
+				));
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+
+		die(json_encode($ret));
+	}
+
+public function tambah_data_p3ke(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil simpan data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				if($ret['status'] != 'error' && !empty($_POST['id_p3ke'])){
+					$id_p3ke = $_POST['id_p3ke'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data id_p3ke tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kode_kemendagri'])){
+					$kode_kemendagri = $_POST['kode_kemendagri'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data kode_kemendagri tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['nik'])){
+					$nik = $_POST['nik'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data nik tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['provinsi'])){
+					$provinsi = $_POST['provinsi'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data provinsi tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kabkot'])){
+					$kabkot = $_POST['kabkot'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data kabkot tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['kecamatan'])){
+					$kecamatan = $_POST['kecamatan'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data kecamatan tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['desa'])){
+					$desa = $_POST['desa'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data desa tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['alamat'])){
+					$alamat = $_POST['alamat'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data alamat tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['pekerjaan'])){
+					$pekerjaan = $_POST['pekerjaan'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data pekerjaan tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['pendidikan'])){
+					$pendidikan = $_POST['pendidikan'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data pendidikan tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['rumah'])){
+					$rumah = $_POST['rumah'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data rumah tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['punya_tabungan'])){
+					$punya_tabungan = $_POST['punya_tabungan'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data punya_tabungan tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['jenis_desil'])){
+					$jenis_desil = $_POST['jenis_desil'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data jenis_desil tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['jenis_atap'])){
+					$jenis_atap = $_POST['jenis_atap'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data jenis_atap tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['jenis_dinding'])){
+					$jenis_dinding = $_POST['jenis_dinding'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data jenis_dinding tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['jenis_lantai'])){
+					$jenis_lantai = $_POST['jenis_lantai'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data jenis_lantai tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['sumber_penerangan'])){
+					$sumber_penerangan = $_POST['sumber_penerangan'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data sumber_penerangan tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['bahan_bakar_memasak'])){
+					$bahan_bakar_memasak = $_POST['bahan_bakar_memasak'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data bahan_bakar_memasak tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['sumber_air_minum'])){
+					$sumber_air_minum = $_POST['sumber_air_minum'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data sumber_air_minum tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['fasilitas_bab'])){
+					$fasilitas_bab = $_POST['fasilitas_bab'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data fasilitas_bab tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['penerima_bpnt'])){
+					$penerima_bpnt = $_POST['penerima_bpnt'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data penerima_bpnt tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['penerima_bpum'])){
+					$penerima_bpum = $_POST['penerima_bpum'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data penerima_bpum tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['penerima_bst'])){
+					$penerima_bst = $_POST['penerima_bst'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data penerima_bst tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['penerima_pkh'])){
+					$penerima_pkh = $_POST['penerima_pkh'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data penerima_pkh tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['penerima_sembako'])){
+					$penerima_sembako = $_POST['penerima_sembako'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data penerima_sembako tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['resiko_stunting'])){
+					$resiko_stunting = $_POST['resiko_stunting'];
+				}
+				if($ret['status'] != 'error'){
+					$data = array(
+						'id_p3ke' => $id_p3ke,
+			            'kode_kemendagri' => $kode_kemendagri,
+			            'padan_dukcapil' => $padan_dukcapil,
+			            'kepala_keluarga' => $kepala_keluarga,
+			            'jenis_kelamin' => $jenis_kelamin,
+			            'tanggal_lahir' => $tanggal_lahir,
+			            'provinsi' => $provinsi,
+			            'kabkot' => $kabkot,
+			            'kecamatan' => $kecamatan,
+			            'desa' => $desa,
+			            'alamat' => $alamat,
+			            'pekerjaan' => $pekerjaan,
+			            'rumah' => $rumah,
+			            'punya_tabungan' => $punya_tabungan,
+			            'jenis_desil' => $jenis_desil,
+			            'jenis_atap' => $jenis_atap,
+			            'jenis_dinding' => $jenis_dinding,
+			            'jenis_lantai' => $jenis_lantai,
+			            'sumber_penerangan' => $sumber_penerangan,
+			            'bahan_bakar_memasak' => $bahan_bakar_memasak,
+			            'sumber_air_minum' => $sumber_air_minum,
+			            'fasilitas_bab' => $fasilitas_bab,
+			            'penerima_bpnt' => $penerima_bpnt,
+			            'penerima_bpum' => $penerima_bpum,
+			            'penerima_bst' => $penerima_bst,
+			            'penerima_pkh' => $penerima_pkh,
+			            'penerima_sembako' => $penerima_sembako,
+			            'resiko_stunting' => $resiko_stunting,
+						'active' => 1,
+						'update_at' => current_time('mysql')
+					);
+					if(!empty($_POST['id_data'])){
+						$wpdb->update('data_p3ke', $data, array(
+							'id' => $_POST['id_data']
+						));
+						$ret['message'] = 'Berhasil update data!';
+					}else{
+						$cek_id = $wpdb->get_row($wpdb->prepare('
+							SELECT
+								id,
+								active
+							FROM data_p3ke
+							WHERE id_p3ke=%s
+						', $id_p3ke), ARRAY_A);
+						if(empty($cek_id)){
+							$wpdb->insert('data_p3ke', $data);
+						}else{
+							if($cek_id['active'] == 0){
+								$wpdb->update('data_p3ke', $data, array(
+									'id' => $cek_id['id']
+								));
+							}else{
+								$ret['status'] = 'error';
+								$ret['message'] = 'Gagal disimpan. Data p3ke dengan id_p3ke="'.$id_p3ke.'" sudah ada!';
+							}
+						}
+					}
+				}
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+
+		die(json_encode($ret));
+	}
+	
+public function get_datatable_p3ke(){
+	 	global $wpdb;
+	 	$ret = array(
+	 		'status' => 'success',
+	 		'message' => 'Berhasil get data!',
+	 		'data'	=> array()
+	 	);
+
+	 	if(!empty($_POST)){
+	 		if (!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+	 			$user_id = um_user( 'ID' );
+	 			$user_meta = get_userdata($user_id);
+	 			$params = $columns = $totalRecords = $data = array();
+	 			$params = $_REQUEST;
+	 			$columns = array( 
+	 					0	=> 'id_p3ke',
+			            1	=> 'kode_kemendagri',
+			            2	=> 'nik',
+			            3	=> 'padan_dukcapil',
+			            4	=> 'kepala_keluarga',
+			            5	=> 'jenis_kelamin',
+			            6	=> 'tanggal_lahir',
+			            7	=> 'provinsi',
+			            8	=> 'kabkot',
+			            9	=> 'kecamatan',
+			            10	=> 'desa',
+			            11	=> 'alamat',
+			            12	=> 'pekerjaan',
+			            13	=> 'pendidikan',
+			            14	=> 'rumah',
+			            15	=> 'punya_tabungan',
+			            16	=> 'jenis_desil',
+			            17	=> 'jenis_atap',
+			            18	=> 'jenis_dinding',
+			            19	=> 'jenis_lantai',
+			            20	=> 'sumber_penerangan',
+			            21	=> 'bahan_bakar_memasak',
+			            22	=> 'sumber_air_minum',
+			            23	=> 'fasilitas_bab',
+			            24	=> 'penerima_bpnt',
+			            25	=> 'penerima_bpum',
+			            26	=> 'penerima_bst',
+			            27	=> 'penerima_pkh',
+			            28	=> 'penerima_sembako',
+			            29	=> 'resiko_stunting',
+	 			);
+	 			$where = $sqlTot = $sqlRec = "";
+
+	 			// check search value exist
+	 			if( !empty($params['search']['value']) ) {
+	 				$where .=" AND ( id_p3ke LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");    
+	 				$where .=" OR nik LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
+	 				$where .=" OR nama LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
+	 				$where .=" OR alamat LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
+	 			}
+
+	 			// getting total number records without any search
+	 			$sql_tot = "SELECT count(id) as jml FROM `data_p3ke`";
+	 			$sql = "SELECT ".implode(', ', $columns)." FROM `data_p3ke`";
+	 			$where_first = " WHERE 1=1";
+	 			$sqlTot .= $sql_tot.$where_first;
+	 			$sqlRec .= $sql.$where_first;
+	 			if(isset($where) && $where != '') {
+	 				$sqlTot .= $where;
+	 				$sqlRec .= $where;
+	 			}
+
+	 			$limit = '';
+	 			if($params['length'] != -1){
+	 				$limit = "  LIMIT ".$wpdb->prepare('%d', $params['start'])." ,".$wpdb->prepare('%d', $params['length']);
+	 			}
+	 		 	$sqlRec .=  " ORDER BY ". $columns[$params['order'][0]['column']]."   ".$params['order'][0]['dir'].$limit;
+
+	 			$queryTot = $wpdb->get_results($sqlTot, ARRAY_A);
+	 			$totalRecords = $queryTot[0]['jml'];
+	 			$queryRecords = $wpdb->get_results($sqlRec, ARRAY_A);
+
+	 			foreach($queryRecords as $recKey => $recVal){
+	 				$btn = '<a class="btn btn-sm btn-warning" onclick="edit_data(\''.$recVal['id'].'\'); return false;" href="#" title="Edit Data"><i class="dashicons dashicons-edit"></i></a>';
+					$btn .= '<a class="btn btn-sm btn-danger" onclick="hapus_data(\''.$recVal['id'].'\'); return false;" href="#" title="Edit Data"><i class="dashicons dashicons-trash"></i></a>';
+					$queryRecords[$recKey]['aksi'] = $btn;
+				}
+
+				$json_data = array(
+					"draw"            => intval( $params['draw'] ),   
+					"recordsTotal"    => intval( $totalRecords ),  
+					"recordsFiltered" => intval($totalRecords),
+					"data"            => $queryRecords,
+					"sql"             => $sqlRec
+				);
+
+				die(json_encode($json_data));
+			}else{
+				$return = array(
+					'status' => 'error',
+					'message'	=> 'Api Key tidak sesuai!'
+				);
+			}
+		}else{
+			$return = array(
+				'status' => 'error',
+				'message'	=> 'Format tidak sesuai!'
+			);
+		}
+		die(json_encode($return));
+	}
 
 public function get_data_rtlh_by_id(){
 		global $wpdb;
