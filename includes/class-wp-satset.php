@@ -198,6 +198,7 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_get_datatable_batas_kecamatan', $plugin_public, 'get_datatable_batas_kecamatan');
 		$this->loader->add_action('wp_ajax_get_data_p3ke_by_id', $plugin_public, 'get_data_p3ke_by_id');
 		$this->loader->add_action('wp_ajax_tambah_data_p3ke', $plugin_public, 'tambah_data_p3ke');
+		$this->loader->add_action('wp_ajax_hapus_data_p3ke_by_id', $plugin_public, 'hapus_data_p3ke_by_id');
 		$this->loader->add_action('wp_ajax_hapus_data_stunting_by_id', $plugin_public, 'hapus_data_stunting_by_id');
 		$this->loader->add_action('wp_ajax_get_data_stunting_by_id', $plugin_public, 'get_data_stunting_by_id');
 		$this->loader->add_action('wp_ajax_tambah_data_stunting', $plugin_public, 'tambah_data_stunting');
