@@ -81,8 +81,8 @@
                     <input type='text' id='nik' name="nik" class="form-control" placeholder=''>
                 </div>
                 <div class="form-group">
-                    <label for='tambah_padan_dukcapil' style='display:inline-block'>Padan Dukcapil</label>
-                    <input type="text" id='tambah_padan_dukcapil' name="tambah_padan_dukcapil" class="form-control" placeholder=''/>
+                    <label for='padan_dukcapil' style='display:inline-block'>Padan Dukcapil</label>
+                    <input type="text" id='padan_dukcapil' name="padan_dukcapil" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
                     <label for='kepala_keluarga' style='display:inline-block'>Kepala Keluarga</label>
