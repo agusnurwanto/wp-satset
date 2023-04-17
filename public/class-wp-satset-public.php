@@ -1102,14 +1102,14 @@ public function get_datatable_p3ke(){
 	 			if( !empty($params['search']['value']) ) {
 	 				$where .=" AND ( id_p3ke LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");    
 	 				$where .=" OR nik LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
-	 				$where .=" OR nama LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
+	 				$where .=" OR kepala_keluarga LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
 	 				$where .=" OR alamat LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
 	 			}
 
 	 			// getting total number records without any search
 	 			$sql_tot = "SELECT count(id) as jml FROM `data_p3ke`";
 	 			$sql = "SELECT ".implode(', ', $columns)." FROM `data_p3ke`";
-	 			$where_first = " WHERE 1=1";
+	 			$where_first = " WHERE 1=1 AND active = 1";
 	 			$sqlTot .= $sql_tot.$where_first;
 	 			$sqlRec .= $sql.$where_first;
 	 			if(isset($where) && $where != '') {
@@ -1546,7 +1546,7 @@ public function get_datatable_stunting(){
 	 			// getting total number records without any search
 	 			$sql_tot = "SELECT count(id) as jml FROM `data_stunting`";
 	 			$sql = "SELECT ".implode(', ', $columns)." FROM `data_stunting`";
-	 			$where_first = " WHERE 1=1";
+	 			$where_first = " WHERE 1=1 AND active = 1";
 	 			$sqlTot .= $sql_tot.$where_first;
 	 			$sqlRec .= $sql.$where_first;
 	 			if(isset($where) && $where != '') {
@@ -1837,7 +1837,7 @@ public function get_datatable_tbc(){
 	 			// getting total number records without any search
 	 			$sql_tot = "SELECT count(id) as jml FROM `data_tbc`";
 	 			$sql = "SELECT ".implode(', ', $columns)." FROM `data_tbc`";
-	 			$where_first = " WHERE 1=1";
+	 			$where_first = " WHERE 1=1 AND active = 1";
 	 			$sqlTot .= $sql_tot.$where_first;
 	 			$sqlRec .= $sql.$where_first;
 	 			if(isset($where) && $where != '') {
@@ -2123,7 +2123,7 @@ public function get_datatable_rtlh(){
 	 			// getting total number records without any search
 	 			$sql_tot = "SELECT count(id) as jml FROM `data_rtlh`";
 	 			$sql = "SELECT ".implode(', ', $columns)." FROM `data_rtlh`";
-	 			$where_first = " WHERE 1=1";
+	 			$where_first = " WHERE 1=1 AND active = 1";
 	 			$sqlTot .= $sql_tot.$where_first;
 	 			$sqlRec .= $sql.$where_first;
 	 			if(isset($where) && $where != '') {
@@ -2423,7 +2423,7 @@ public function get_datatable_batas_desa(){
 	 			// getting total number records without any search
 	 			$sql_tot = "SELECT count(id) as jml FROM `data_batas_desa`";
 	 			$sql = "SELECT ".implode(', ', $columns)." FROM `data_batas_desa`";
-	 			$where_first = " WHERE 1=1";
+	 			$where_first = " WHERE 1=1 AND active = 1";
 	 			$sqlTot .= $sql_tot.$where_first;
 	 			$sqlRec .= $sql.$where_first;
 	 			if(isset($where) && $where != '') {
@@ -2471,12 +2471,12 @@ public function get_datatable_batas_desa(){
 		die(json_encode($return));
 	}
 public function get_data_batas_kecamatan_by_id(){
-		global $wpdb;
-		$ret = array(
-			'status' => 'success',
-			'message' => 'Berhasil get data!',
-			'data' => array()
-		);
+	global $wpdb;
+	$ret = array(
+		'status' => 'success',
+		'message' => 'Berhasil get data!',
+		'data' => array()
+	);
 		if(!empty($_POST)){
 			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
 				$ret['data'] = $wpdb->get_row($wpdb->prepare('
@@ -2498,12 +2498,12 @@ public function get_data_batas_kecamatan_by_id(){
 	}
 
 public function hapus_data_batas_kecamatan_by_id(){
-		global $wpdb;
-		$ret = array(
-			'status' => 'success',
-			'message' => 'Berhasil hapus data!',
-			'data' => array()
-		);
+	global $wpdb;
+	$ret = array(
+		'status' => 'success',
+		'message' => 'Berhasil hapus data!',
+		'data' => array()
+	);
 		if(!empty($_POST)){
 			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
 				$ret['data'] = $wpdb->update('data_batas_kecamatan', array('active' => 0), array(
@@ -2518,8 +2518,8 @@ public function hapus_data_batas_kecamatan_by_id(){
 			$ret['message']	= 'Format Salah!';
 		}
 
-		die(json_encode($ret));
-	}
+	die(json_encode($ret));
+}
 
 public function tambah_data_batas_kecamatan(){
 		global $wpdb;
@@ -2650,7 +2650,7 @@ public function get_datatable_batas_kecamatan(){
 	 			// getting total number records without any search
 	 			$sql_tot = "SELECT count(id) as jml FROM `data_batas_kecamatan`";
 	 			$sql = "SELECT ".implode(', ', $columns)." FROM `data_batas_kecamatan`";
-	 			$where_first = " WHERE 1=1";
+	 			$where_first = " WHERE 1=1 AND active = 1";
 	 			$sqlTot .= $sql_tot.$where_first;
 	 			$sqlRec .= $sql.$where_first;
 	 			if(isset($where) && $where != '') {

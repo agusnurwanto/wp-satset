@@ -139,53 +139,53 @@ function get_data_batas_kecamatan(){
     // }
 }
 
-// function hapus_data(_id){
-//     if(confirm('Apakah anda yakin untuk menghapus data ini?')){
-//         jQuery('#wrap-loading').show();
-//         jQuery.ajax({
-//             method: 'post',
-//             url: '<?php echo admin_url('admin-ajax.php'); ?>',
-//             dataType: 'json',
-//             data:{
-//                 'action': 'hapus_data_p3ke_by_id',
-//                 'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
-//                 'id': _id
-//             },
-//             success: function(res){
-//                 alert(res.message);
-//                 if(res.status == 'success'){
-//                     get_data_batas_kecamatan();
-//                 }else{
-//                     jQuery('#wrap-loading').hide();
-//                 }
-//             }
-//         })
-//     }
-// }
 function hapus_data(id){
-        let confirmDelete = confirm("Apakah anda yakin akan menghapus data ini?");
-        if(confirmDelete){
-            jQuery('#wrap-loading').show();
-            jQuery.ajax({
-                url: '<?php echo admin_url('admin-ajax.php'); ?>',
-                type:'post',
-                data:{
-                    'action' : 'hapus_data_batas_kecamatan_by_id',
-                    'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
-                    'id'     : id
-                },
-                dataType: 'json',
-                success:function(response){
+    if(confirm('Apakah anda yakin untuk menghapus data ini?')){
+        jQuery('#wrap-loading').show();
+        jQuery.ajax({
+            method: 'post',
+            url: '<?php echo admin_url('admin-ajax.php'); ?>',
+            dataType: 'json',
+            data:{
+                'action': 'hapus_data_batas_kecamatan_by_id',
+                'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
+                'id': id
+            },
+            success: function(res){
+                alert(res.message);
+                if(res.status == 'success'){
+                    get_data_batas_kecamatan();
+                }else{
                     jQuery('#wrap-loading').hide();
-                    if(response.status == 'success'){
-                        get_data_batas_kecamatan(); 
-                    }else{
-                        alert(`GAGAL! \n${response.message}`);
-                    }
                 }
-            });
-        }
+            }
+        })
     }
+}
+// function hapus_data(id){
+//         let confirmDelete = confirm("Apakah anda yakin akan menghapus data ini?");
+//         if(confirmDelete){
+//             jQuery('#wrap-loading').show();
+//             jQuery.ajax({
+//                 url: '<?php echo admin_url('admin-ajax.php'); ?>',
+//                 type:'post',
+//                 data:{
+//                     'action' : 'hapus_data_batas_kecamatan_by_id',
+//                     'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
+//                     'id'     : id
+//                 },
+//                 dataType: 'json',
+//                 success:function(response){
+//                     jQuery('#wrap-loading').hide();
+//                     if(response.status == 'success'){
+//                         get_data_batas_kecamatan(); 
+//                     }else{
+//                         alert(`GAGAL! \n${response.message}`);
+//                     }
+//                 }
+//             });
+//         }
+//     }
 
 function edit_data(_id){
     jQuery('#wrap-loading').show();
