@@ -54,18 +54,18 @@
                 <input type='hidden' id='id_data' name="id_data" placeholder=''>
                 <div class="form-group">
                 <div class="form-group">
-                    <label for='tanggal_register' style='display:inline-block'>tanggal_register</label>
+                    <label for='tanggal_register' style='display:inline-block'>Tanggal Register</label>
                     <input type='text' id='tanggal_register' name="tanggal_register" class="form-control" placeholder=''>
                 </div> 
-                    <label for='no_reg_fasyankes' style='display:inline-block'>no_reg_fasyankes</label>
+                    <label for='no_reg_fasyankes' style='display:inline-block'>No Register Fasyankes</label>
                     <input type='text' id='no_reg_fasyankes' name="no_reg_fasyankes" class="form-control" placeholder=''>
                 </div>
                 <div class="form-group">
-                    <label for='no_reg_kabkot' style='display:inline-block'>no_reg_kabkot</label>
+                    <label for='no_reg_kabkot' style='display:inline-block'>No Register Kabupaten / Kot</label>
                     <input type="text" id='no_reg_kabkot' name="no_reg_kabkot" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='nik' style='display:inline-block'>nik</label>
+                    <label for='nik' style='display:inline-block'>Nik</label>
                     <input type="text" id='nik' name="nik" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
@@ -73,40 +73,40 @@
                     <input type="text" id='nama' name="nama" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='umur' style='display:inline-block'>umur</label>
+                    <label for='umur' style='display:inline-block'>Umur</label>
                     <input type="text" id='umur' name="umur" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='jenis_kelamin' style='display:inline-block'>jenis_kelamin</label>
+                    <label for='jenis_kelamin' style='display:inline-block'>Jenis Kelamin</label>
                     <input type="text" id='jenis_kelamin' name="jenis_kelamin" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='alamat' style='display:inline-block'>alamat</label>
+                    <label for='alamat' style='display:inline-block'>Alamat</label>
                     <input type="text" id='alamat' name="alamat" class="form-control" placeholder=''/>
                 <div class="form-group">
                 <div class="form-group">
-                    <label for='pindahan_dari_fasyankes' style='display:inline-block'>pindahan_dari_fasyankes</label>
+                    <label for='pindahan_dari_fasyankes' style='display:inline-block'>Pindahan dari Fasyankes</label>
                     <input type="text" id='pindahan_dari_fasyankes' name="pindahan_dari_fasyankes" class="form-control" placeholder=''/>
                 </div>
-                    <label for='tindak_lanjut' style='display:inline-block'>Nilai Bantuan</label>
+                    <label for='tindak_lanjut' style='display:inline-block'>Tindak Lanjut</label>
                     <input type="text" id='tindak_lanjut' name="tindak_lanjut" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='tanggal_mulai_pengobatan' style='display:inline-block'>tanggal_mulai_pengobatan</label>
+                    <label for='tanggal_mulai_pengobatan' style='display:inline-block'>Tanggal Mulai Pengobatan</label>
                     <input type="text" id='tanggal_mulai_pengobatan' name="tanggal_mulai_pengobatan" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='hasil_akhir_pengobatan' style='display:inline-block'>Tanggal tanggal_mulai_pengobatan</label>
+                    <label for='hasil_akhir_pengobatan' style='display:inline-block'>Hasil Akhir Pengobatan</label>
                     <input type="text" id='hasil_akhir_pengobatan' name="hasil_akhir_pengobatan" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='status_pengobatan' style='display:inline-block'>Sumber Dana</label>
+                    <label for='status_pengobatan' style='display:inline-block'>Status Pengobatan</label>
                     <input type="text" id='status_pengobatan' name="status_pengobatan" class="form-control" placeholder=''/>
                 </div> 
 
                 <div class="form-group">
-                    <label for='Keterangan' style='display:inline-block'>Keterangan</label>
-                    <input type="text" id='Keterangan' name="Keterangan" class="form-control" placeholder=''/>
+                    <label for='keterangan' style='display:inline-block'>Keterangan</label>
+                    <input type="text" id='keterangan' name="keterangan" class="form-control" placeholder=''/>
                 </div> 
             </div> 
             <div class="modal-footer">

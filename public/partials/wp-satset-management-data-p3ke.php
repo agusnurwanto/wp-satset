@@ -472,6 +472,7 @@ function tambah_data_p3ke(){
     jQuery('#desa').val('');
     jQuery('#alamat').val('');
     jQuery('#pekerjaan').val('');
+    jQuery('#pendidikan').val('');
     jQuery('#rumah').val('');
     jQuery('#punya_tabungan').val('');
     jQuery('#jenis_desil').val('');
@@ -636,6 +637,7 @@ function submitTambahDataFormP3KE(){
             'desa': desa,
             'alamat': alamat,
             'pekerjaan': pekerjaan,
+            'pendidikan': pendidikan,
             'rumah': rumah,
             'punya_tabungan': punya_tabungan,
             'jenis_desil': jenis_desil,
