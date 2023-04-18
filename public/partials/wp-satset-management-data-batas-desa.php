@@ -32,6 +32,7 @@
                     <th class="text-center">Kabkotno</th>
                     <th class="text-center">Kecno</th>
                     <th class="text-center">Desano</th>
+                    <th class="text-center">Id 2012</th>
                     <th class="text-center" style="width: 150px;">Aksi</th>
                 </tr>
             </thead>
@@ -111,6 +112,10 @@
                 <div class="form-group">
                     <label for='desano' style='display:inline-block'>desano</label>
                     <input type="text" id='desano' name="desano" class="form-control" placeholder=''/>
+                </div>  
+                <div class="form-group">
+                    <label for='id2012' style='display:inline-block'>id2012</label>
+                    <input type="text" id='id2012' name="id2012" class="form-control" placeholder=''/>
                 </div> 
             </div> 
             <div class="modal-footer">
@@ -208,6 +213,10 @@ function get_data_batas_desa(){
                     className: "text-center"
                 },
                 {
+                    "data": 'id2012',
+                    className: "text-center"
+                },
+                {
                     "data": 'aksi',
                     className: "text-center"
                 }
@@ -296,6 +305,7 @@ function edit_data(_id){
                 jQuery('#kabkotno').val(res.data.kabkotno);
                 jQuery('#kecno').val(res.data.kecno);
                 jQuery('#desano').val(res.data.desano);
+                jQuery('#id2012').val(res.data.id2012);
                 jQuery('#modalTambahDataBatasDesa').modal('show');
             }else{
                 alert(res.message);
@@ -323,6 +333,7 @@ function tambah_data_batas_desa(){
     jQuery('#kabkotno').val('');
     jQuery('#kecno').val('');
     jQuery('#desano').val('');
+    jQuery('#id2012').val('');
     jQuery('#modalTambahDataBatasDesa').modal('show');
 }
 
@@ -382,6 +393,9 @@ function submitTambahDataFormBatasDesa(){
     }var desano = jQuery('#desano').val();
     if(desano == ''){
         return alert('Data desano tidak boleh kosong!');
+    }var id2012 = jQuery('#id2012').val();
+    if(id2012 == ''){
+        return alert('Data id2012 tidak boleh kosong!');
     }
 
     jQuery('#wrap-loading').show();
@@ -408,6 +422,7 @@ function submitTambahDataFormBatasDesa(){
             'kabkotno': kabkotno,
             'kecno': kecno,
             'desano': desano,
+            'id2012': id2012,
         },
         success: function(res){
             alert(res.message);

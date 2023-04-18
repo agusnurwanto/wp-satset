@@ -2321,6 +2321,12 @@ public function tambah_data_batas_desa(){
 				// 	$ret['status'] = 'error';
 				// 	$ret['message'] = 'Data desano tidak boleh kosong!';
 				}
+				if($ret['status'] != 'error' && !empty($_POST['id2012'])){
+					$id2012 = $_POST['id2012'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data id2012 tidak boleh kosong!';
+				}
 				if($ret['status'] != 'error'){
 					$data = array(
 						'id_desa' => $id_desa,
@@ -2338,6 +2344,7 @@ public function tambah_data_batas_desa(){
 						'kabkotno' => $kabkotno,
 						'kecno' => $kecno,
 						'desano' => $desano,
+						'id2012' => $id2012,
 						'active' => 1,
 						'update_at' => current_time('mysql')
 					);
@@ -2410,7 +2417,8 @@ public function get_datatable_batas_desa(){
 	 			  12 => 'kabkotno',
 	 			  13 => 'kecno',
 	 			  14 => 'desano',
-	 			  15 => 'id'
+	 			  15 => 'id2012',
+	 			  16 => 'id'
 	 			);
 	 			$where = $sqlTot = $sqlRec = "";
 
