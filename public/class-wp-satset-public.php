@@ -2320,7 +2320,7 @@ public function tambah_data_batas_desa(){
 				// }else{
 				// 	$ret['status'] = 'error';
 				// 	$ret['message'] = 'Data desano tidak boleh kosong!';
-				// }
+				}
 				if($ret['status'] != 'error'){
 					$data = array(
 						'id_desa' => $id_desa,
