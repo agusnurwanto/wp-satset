@@ -2317,10 +2317,10 @@ public function tambah_data_batas_desa(){
 				}
 				if($ret['status'] != 'error' && !empty($_POST['desano'])){
 					$desano = $_POST['desano'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data desano tidak boleh kosong!';
-				}
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data desano tidak boleh kosong!';
+				// }
 				if($ret['status'] != 'error'){
 					$data = array(
 						'id_desa' => $id_desa,
