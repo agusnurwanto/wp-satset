@@ -2293,9 +2293,9 @@ public function tambah_data_batas_desa(){
 				}
 				if($ret['status'] != 'error' && !empty($_POST['jumplah_pen'])){
 					$jumplah_pen = $_POST['jumplah_pen'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data jumplah_pen tidak boleh kosong!';
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data jumplah_pen tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['provno'])){
 					$provno = $_POST['provno'];

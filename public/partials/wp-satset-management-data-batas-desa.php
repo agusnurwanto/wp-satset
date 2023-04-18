@@ -369,9 +369,6 @@ function submitTambahDataFormBatasDesa(){
         return alert('Data pemusatan tidak boleh kosong!');
     }
     var jumplah_pen = jQuery('#jumplah_pen').val();
-    if(jumplah_pen == ''){
-        return alert('Data jumplah_pen tidak boleh kosong!');
-    }
     var provno = jQuery('#provno').val();
     if(provno == ''){
         return alert('Data provno tidak boleh kosong!');
