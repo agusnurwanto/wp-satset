@@ -220,6 +220,7 @@ class Wp_Satset {
 		add_shortcode('peta_satset_desa', array($plugin_public, 'peta_satset_desa'));
 		add_shortcode('peta_satset_kecamatan', array($plugin_public, 'peta_satset_kecamatan'));
 		add_shortcode('data_irisan_satset', array($plugin_public, 'data_irisan_satset'));
+		add_shortcode('filter_data_irisan_satset', array($plugin_public, 'filter_data_irisan_satset'));
 		add_shortcode('cek_nik_satset', array($plugin_public, 'cek_nik_satset'));
 		add_shortcode('management_data_p3ke_satset', array($plugin_public, 'management_data_p3ke_satset'));
 		add_shortcode('management_data_stunting_satset', array($plugin_public, 'management_data_stunting_satset'));
