@@ -1229,13 +1229,13 @@ public function tambah_data_stunting(){
 					$nik = $_POST['nik'];
 				}else{
 					$ret['status'] = 'error';
-					$ret['message'] = 'Data NIK tidak boleh kosong!';
+					$ret['message'] = 'Data nik tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['nama'])){
 					$nama = $_POST['nama'];
 				}else{
 					$ret['status'] = 'error';
-					$ret['message'] = 'Data Nama tidak boleh kosong!';
+					$ret['message'] = 'Data nama tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['jenis_kelamin'])){
 					$jenis_kelamin = $_POST['jenis_kelamin'];
@@ -1285,17 +1285,17 @@ public function tambah_data_stunting(){
 					$ret['status'] = 'error';
 					$ret['message'] = 'Data kecamatan tidak boleh kosong!';
 				}
-				if($ret['status'] != 'error' && !empty($_POST['puskesmas'])){
-					$puskesmas = $_POST['puskesmas'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data puskesmas tidak boleh kosong!';
-				}
 				if($ret['status'] != 'error' && !empty($_POST['desa'])){
 					$desa = $_POST['desa'];
 				}else{
 					$ret['status'] = 'error';
 					$ret['message'] = 'Data desa tidak boleh kosong!';
+				}
+				if($ret['status'] != 'error' && !empty($_POST['puskesmas'])){
+					$puskesmas = $_POST['puskesmas'];
+				}else{
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data puskesmas tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['posyandu'])){
 					$posyandu = $_POST['posyandu'];
@@ -1305,117 +1305,60 @@ public function tambah_data_stunting(){
 				}
 				if($ret['status'] != 'error' && !empty($_POST['rt'])){
 					$rt = $_POST['rt'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data rt tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['rw'])){
 					$rw = $_POST['rw'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data rw tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['alamat'])){
 					$alamat = $_POST['alamat'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data alamat tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['usia_saat_ukur'])){
 					$usia_saat_ukur = $_POST['usia_saat_ukur'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data usia_saat_ukur tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['tanggal_pengukuran'])){
 					$tanggal_pengukuran = $_POST['tanggal_pengukuran'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data tanggal_pengukuran tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['berat'])){
 					$berat = $_POST['berat'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data berat tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['tinggi'])){
 					$tinggi = $_POST['tinggi'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data tinggi tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['lingkar_lengan_atas'])){
 					$lingkar_lengan_atas = $_POST['lingkar_lengan_atas'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data lingkar_lengan_atas tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['bb_per_u'])){
 					$bb_per_u = $_POST['bb_per_u'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data bb_per_u tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['zs_bb_per_u'])){
 					$zs_bb_per_u = $_POST['zs_bb_per_u'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data zs_bb_per_u tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['tb_per_u'])){
 					$tb_per_u = $_POST['tb_per_u'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data tb_per_u tidak boleh kosong!';
 				}
-				if($ret['status'] != 'error' && !empty($_POST['zs_tb_per_u'])){
-					$zs_tb_per_u = $_POST['zs_tb_per_u'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data zs_tb_per_u tidak boleh kosong!';
+				if($ret['status'] != 'error' && !empty($_POST['zs_b_per_u'])){
+					$zs_b_per_u = $_POST['zs_b_per_u'];
 				}
 				if($ret['status'] != 'error' && !empty($_POST['bb_per_tb'])){
 					$bb_per_tb = $_POST['bb_per_tb'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data bb_per_tb tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['zs_bb_per_tb'])){
 					$zs_bb_per_tb = $_POST['zs_bb_per_tb'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data zs_bb_per_tb tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['naik_berat_badan'])){
 					$naik_berat_badan = $_POST['naik_berat_badan'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data naik_berat_badan tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['pmt_diterima_per_kg'])){
 					$pmt_diterima_per_kg = $_POST['pmt_diterima_per_kg'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data pmt_diterima_per_kg tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['jml_vit_a'])){
 					$jml_vit_a = $_POST['jml_vit_a'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data jml_vit_a tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['kpsp'])){
 					$kpsp = $_POST['kpsp'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data kpsp tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error' && !empty($_POST['kia'])){
 					$kia = $_POST['kia'];
-				}else{
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data kia tidak boleh kosong!';
 				}
 				if($ret['status'] != 'error'){
 					$data = array(
@@ -1429,8 +1372,8 @@ public function tambah_data_stunting(){
 						'provinsi' => $provinsi,
 						'kabkot' => $kabkot,
 						'kecamatan' => $kecamatan,
-						'puskesmas' => $puskesmas,
 						'desa' => $desa,
+						'puskesmas' => $puskesmas,
 						'posyandu' => $posyandu,
 						'rt' => $rt,
 						'rw' => $rw,

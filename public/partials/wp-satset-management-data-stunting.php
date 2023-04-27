@@ -479,33 +479,33 @@ function tambah_data_stunting(){
     jQuery('#id_data').val('');
     jQuery('#nik').val('');
     jQuery('#nama').val('');
-    jQuery('#nama_ortu').val('');
-    jQuery('#tb_lahir').val('');
     jQuery('#jenis_kelamin').val('');
     jQuery('#tanggal_lahir').val('');
+    jQuery('#bb_lahir').val('');
+    jQuery('#tb_lahir').val('');
+    jQuery('#nama_ortu').val('');
     jQuery('#provinsi').val('');
     jQuery('#kabkot').val('');
     jQuery('#kecamatan').val('');
     jQuery('#desa').val('');
-    jQuery('#alamat').val('');
-    jQuery('#rt').val('');
     jQuery('#puskesmas').val('');
     jQuery('#posyandu').val('');
+    jQuery('#rt').val('');
     jQuery('#rw').val('');
-    jQuery('#bb_lahir').val('');
+    jQuery('#alamat').val('');
     jQuery('#usia_saat_ukur').val('');
     jQuery('#tanggal_pengukuran').val('');
     jQuery('#berat').val('');
+    jQuery('#jenis_lantai').val('');
     jQuery('#tinggi').val('');
     jQuery('#lingkar_lengan_atas').val('');
     jQuery('#bb_per_u').val('');
-    jQuery('#tb_per_u').val('');
     jQuery('#zs_bb_per_u').val('');
+    jQuery('#tb_per_u').val('');
     jQuery('#zs_tb_per_u').val('');
     jQuery('#bb_per_tb').val('');
     jQuery('#zs_bb_per_tb').val('');
     jQuery('#naik_berat_badan').val('');
-    jQuery('#pmt_diterima_per_kg').val('');
     jQuery('#jml_vit_a').val('');
     jQuery('#kpsp').val('');
     jQuery('#kia').val('');
@@ -514,7 +514,7 @@ function tambah_data_stunting(){
 
 function submitTambahDataFormStunting(){
     var id_data = jQuery('#id_data').val();
-     var nik = jQuery('#nik').val();
+    var nik = jQuery('#nik').val();
     if(nik == ''){
         return alert('Data nik tidak boleh kosong!');
     }
@@ -522,21 +522,25 @@ function submitTambahDataFormStunting(){
     if(nama == ''){
         return alert('Data nama tidak boleh kosong!');
     }
-    var nama_ortu = jQuery('#nama_ortu').val();
-    if(nama_ortu == ''){
-        return alert('Data nama_ortu tidak boleh kosong!');
-    }
-    var tb_lahir = jQuery('#tb_lahir').val();
-    if(tb_lahir == ''){
-        return alert('Data tb_lahir tidak boleh kosong!');
+    var tanggal_lahir = jQuery('#tanggal_lahir').val();
+    if(tanggal_lahir == ''){
+        return alert('Data tanggal_lahir tidak boleh kosong!');
     }
     var jenis_kelamin = jQuery('#jenis_kelamin').val();
     if(jenis_kelamin == ''){
         return alert('Data jenis_kelamin tidak boleh kosong!');
     }
-    var tanggal_lahir = jQuery('#tanggal_lahir').val();
-    if(tanggal_lahir == ''){
-        return alert('Data tanggal_lahir tidak boleh kosong!');
+    var bb_lahir = jQuery('#bb_lahir').val();
+    if(bb_lahir == ''){
+        return alert('Data bb_lahir tidak boleh kosong!');
+    }
+    var tb_lahir = jQuery('#tb_lahir').val();
+    if(tb_lahir == ''){
+        return alert('Data tb_lahir tidak boleh kosong!');
+    }
+    var nama_ortu = jQuery('#nama_ortu').val();
+    if(nama_ortu == ''){
+        return alert('Data nama_ortu tidak boleh kosong!');
     }
     var provinsi = jQuery('#provinsi').val();
     if(provinsi == ''){
@@ -554,14 +558,6 @@ function submitTambahDataFormStunting(){
     if(desa == ''){
         return alert('Data desa tidak boleh kosong!');
     }
-    var alamat = jQuery('#alamat').val();
-    if(alamat == ''){
-        return alert('Data alamat tidak boleh kosong!');
-    }
-    var rt = jQuery('#rt').val();
-    if(rt == ''){
-        return alert('Data rt tidak boleh kosong!');
-    }
     var puskesmas = jQuery('#puskesmas').val();
     if(puskesmas == ''){
         return alert('Data puskesmas tidak boleh kosong!');
@@ -570,13 +566,17 @@ function submitTambahDataFormStunting(){
     if(posyandu == ''){
         return alert('Data posyandu tidak boleh kosong!');
     }
+    var rt = jQuery('#rt').val();
+    if(rt == ''){
+        return alert('Data rt tidak boleh kosong!');
+    }
     var rw = jQuery('#rw').val();
     if(rw == ''){
         return alert('Data rw tidak boleh kosong!');
     }
-    var bb_lahir = jQuery('#bb_lahir').val();
-    if(bb_lahir == ''){
-        return alert('Data bb_lahir tidak boleh kosong!');
+    var alamat = jQuery('#alamat').val();
+    if(alamat == ''){
+        return alert('Data alamat tidak boleh kosong!');
     }
     var usia_saat_ukur = jQuery('#usia_saat_ukur').val();
     if(usia_saat_ukur == ''){
@@ -590,6 +590,10 @@ function submitTambahDataFormStunting(){
     if(berat == ''){
         return alert('Data berat tidak boleh kosong!');
     }
+    var jenis_lantai = jQuery('#jenis_lantai').val();
+    if(jenis_lantai == ''){
+        return alert('Data jenis_lantai tidak boleh kosong!');
+    }
     var tinggi = jQuery('#tinggi').val();
     if(tinggi == ''){
         return alert('Data tinggi tidak boleh kosong!');
@@ -602,13 +606,13 @@ function submitTambahDataFormStunting(){
     if(bb_per_u == ''){
         return alert('Data bb_per_u tidak boleh kosong!');
     }
-    var tb_per_u = jQuery('#tb_per_u').val();
-    if(tb_per_u == ''){
-        return alert('Data tb_per_u tidak boleh kosong!');
-    }
     var zs_bb_per_u = jQuery('#zs_bb_per_u').val();
     if(zs_bb_per_u == ''){
         return alert('Data zs_bb_per_u tidak boleh kosong!');
+    }
+    var tb_per_u = jQuery('#tb_per_u').val();
+    if(tb_per_u == ''){
+        return alert('Data tb_per_u tidak boleh kosong!');
     }
     var zs_tb_per_u = jQuery('#zs_tb_per_u').val();
     if(zs_tb_per_u == ''){
@@ -625,10 +629,6 @@ function submitTambahDataFormStunting(){
     var naik_berat_badan = jQuery('#naik_berat_badan').val();
     if(naik_berat_badan == ''){
         return alert('Data naik_berat_badan tidak boleh kosong!');
-    }
-    var pmt_diterima_per_kg = jQuery('#pmt_diterima_per_kg').val();
-    if(pmt_diterima_per_kg == ''){
-        return alert('Data pmt_diterima_per_kg tidak boleh kosong!');
     }
     var jml_vit_a = jQuery('#jml_vit_a').val();
     if(jml_vit_a == ''){
@@ -654,33 +654,33 @@ function submitTambahDataFormStunting(){
             'id_data': id_data,
             'nik': nik,
             'nama': nama,
-            'nama_ortu': nama_ortu,
-            'tb_lahir': tb_lahir,
             'jenis_kelamin': jenis_kelamin,
             'tanggal_lahir': tanggal_lahir,
+            'bb_lahir': bb_lahir,
+            'tb_lahir': tb_lahir,
+            'nama_ortu': nama_ortu,
             'provinsi': provinsi,
             'kabkot': kabkot,
             'kecamatan': kecamatan,
             'desa': desa,
-            'alamat': alamat,
-            'rt': rt,
-            'rw': rw,
             'puskesmas': puskesmas,
             'posyandu': posyandu,
-            'bb_lahir': bb_lahir,
+            'rt': rt,
+            'rw': rw,
+            'alamat': alamat,
             'usia_saat_ukur': usia_saat_ukur,
             'tanggal_pengukuran': tanggal_pengukuran,
             'berat': berat,
+            'jenis_lantai': jenis_lantai,
             'tinggi': tinggi,
             'lingkar_lengan_atas': lingkar_lengan_atas,
             'bb_per_u': bb_per_u,
-            'tb_per_u': tb_per_u,
             'zs_bb_per_u': zs_bb_per_u,
+            'tb_per_u': tb_per_u,
             'zs_tb_per_u': zs_tb_per_u,
             'bb_per_tb': bb_per_tb,
             'zs_bb_per_tb': zs_bb_per_tb,
             'naik_berat_badan': naik_berat_badan,
-            'pmt_diterima_per_kg': pmt_diterima_per_kg,
             'jml_vit_a': jml_vit_a,
             'kpsp': kpsp,
             'kia': kia,
