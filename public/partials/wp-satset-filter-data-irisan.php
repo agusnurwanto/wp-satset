@@ -8,131 +8,185 @@ if(is_user_logged_in()){
         $login = true;
     }
 }
-
-if(true == $login){
-    $data_irisan_admin = $this->functions->generatePage(array(
-        'nama_page' => 'Data Disabilitas Admin', 
-        'content' => '[data_irisan_admin]',
-        'show_header' => 1,
-        'no_key' => 1,
-    ));
-    $link_data_admin = $data_irisan_admin['url'];
-}else{
-    $link_data_admin = '';
+if($login == false){
+    die('Anda tidak punya akses ke halaman ini!');
 }
 
-function link_detail($link_admin, $jenis){
-    return "<a target='_blank' href='".$link_admin."?".$jenis['key']."=".$jenis['value']."'>".$jenis['label']."</a>";
+$data = $wpdb->get_results("select * from data_batas_kecamatan order by id2012 ASC", ARRAY_A);
+$kec = "<option value='-1'>Semua Kecamatan</option>";
+foreach($data as $val){
+    $kec .= "<option value='$val[id]'>($val[id2012]) $val[kecamatan]</option>";
 }
-
-function generateRandomColor($k){
-    $color = array('#f44336', '#9c27b0', '#2196f3', '#009688', '#4caf50', '#cddc39', '#ff9800', '#795548', '#9e9e9e', '#607d8b');
-    return $color[$k%10];
-}
-$data = $wpdb->get_results("select * from data_irisan", ARRAY_A);
-$total_data = count($data);
-$p3ke = array() ;
-$stunting = array() ;
-$rtlh = array() ;
-$tbc = array() ;
-$dtks = array() ;
-$batas_kecamatan = array() ;
-$batas_desa = array();
-foreach($data as $k => $v){
-    
-    if(empty($batas_desa[$v["desa"]])){
-        $batas_desa[$v["desa"]] = array();
-    }
-    $batas_desa[$v["desa"]][] = $v;
-    
-
-}
-ksort($batas_desa);
-
-
-// Data Batas Desa
-$chart_desa = array(
-    'label' => array(),
-    'data'  => array(),
-    'color' => array()
-);
-$total_desa = 0;
-$body_desa = "";
-$no = 0;
-foreach($batas_desa as $k => $v){
-    if($k == 'Tidak diketahui'){
-        $jenis = $k;
-    }
-    $no++;
-    $jumlah = count($v);
-    $total_desa += $jumlah;
-    $nama_desa = $k;
-    if(empty($nama_desa)){
-        $nama_desa = 'Tidak diketahui';
-    }
-    $chart_desa['label'][] = $nama_desa;
-    $chart_desa['data'][] = $jumlah;
-    $chart_desa['color'][] = generateRandomColor($no);
-    if(true == $login){
-        $nama_desa = link_detail($link_data_admin, array('key' => 'desa', 'value' => $nama_desa, 'label' => $nama_desa ));
-    }
-    $body_desa .= "
-        <tr>
-            <td style='text-transform: uppercase;'>$nama_desa</td>
-            <td class='text-right'>$jumlah</td>
-        </tr>
-    ";
+$data = $wpdb->get_results("select * from data_batas_desa order by id2012 ASC", ARRAY_A);
+$desa = "<option value='-1'>Semua Desa</option>";
+foreach($data as $val){
+    $desa .= "<option value='$val[id]'>($val[id2012]) $val[desa]</option>";
 }
 ?>
 <style type="text/css">
     .card {
         margin-top: 20px;
     }
+<style type="text/css">
+    .wrap-pesan{
+        padding: 10px; 
+        width: 100%; 
+        margin-top: 35px;
+    }
+    .isi-pesan .wrap-table{
+        overflow: auto;
+        max-height: 100vh; 
+        width: 100%; 
+    }
+    .isi-pesan h3{
+        margin-top: 35px;
+    }
 </style>
 <div class="cetak">
     <div style="padding: 10px;">
         <div class="row">
             <div class="col-md-12">
-                <h1 class="text-center">Data Batas Desa</h1>
+                <h1 class="text-center">Data Irisan</h1>
                 <h2 class="text-center"><?php echo get_option("_crb_prov_satset"); ?><br><?php echo get_option("_crb_kab_satset"); ?></h2>
     </div>
-        </div><!-- 
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header bg-primary">
-                        <h2 class="text-center text-white">Data Batas Desa</h2>
-                    </div> -->
-                    <div class="card-body">
-                        <div class="container counting-inner">
-                            <div class="row counting-box title-row" style="margin-bottom: 1px;">
-                                <div class="col-md-12 text-center animated" data-animation="fadeInBottom"
-                                    data-animation-delay="200">
-                                    <div style="width: 10%; margin:auto;">
-                                        <canvas id="chart_per_desa"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th class="text-center">Desa</th>
-                                    <th class="text-center" style="width: 10px;">Jumlah</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php echo $body_desa; ?>
-                            </tbody>
-                            <tfoot>
-                                <th class="text-center">Total</th>
-                                <th class="text-right"><?php echo $total_desa; ?></th>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
+</div>
+
+<form id="formid" onsubmit="return false; " style="width: 500px; margin: auto;">
+    <div class="form-group">
+        <label>Pilih Kecamatan</label>
+        <select class="form-control">
+            <?php echo $kec; ?>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Pilih Desa</label>
+        <select class="form-control">
+            <?php echo $desa; ?>
+        </select>
+    </div>
+    <div class="row">
+        <legend class="col-form-label col-sm-3 pt-0">Data Irisan :</legend>
+        <div class="col-sm-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="" id="" value="p3ke" checked>P3KE</label>
             </div>
-        </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="" id="" value="stunting" checked>Stunting</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="" id="" value="tbc" checked>TBC</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="" id="" value="rtlh" checked>RTLH</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="" id="" value="dtks" checked>DTKS</label>
+            </div>
+        </div>    
+    </div>
+    <div class="form-group">
+        <span class="btn btn-primary" type="button" onclick="return false" id="cari" style="margin-left: 5px;">Cari Data</span>
+    </div>
+</form>
+<div class="wrap-pesan">
+    <div id="pesan" class="isi-pesan">
     </div>
 </div>
+<script>
+    jQuery(document).ready(function(){
+        jQuery("#cari").click(function(){
+            cari_data_satset(jQuery('#desa').val());
+        });
+        jQuery("#desa").keyup(function(event) {
+            event.preventDefault();
+            if (event.keyCode === 13) {
+                jQuery("#cari").click();
+            }
+        });
+    })
+
+function cari_data_satset(desa) {
+        if(''){
+            return alert("Nama Desa Tidak Ditemukan!");
+        }
+        jQuery('#wrap-loading').show();
+        jQuery.ajax({
+            method: 'post',
+            url: '<?php echo admin_url('admin-ajax.php'); ?>',
+            dataType: 'json',
+            data:{
+                'action': 'cari_data_satset',
+                'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
+                'desa': desa
+            },
+            success: function(response) {
+                if(response.status == 'error'){
+                    alert(response.message);
+                }else{
+                    let html = '';
+                    if(''){
+                        response.data.desa.map(function(value, index){
+                            html +='<tr>';
+                                html +='<th scope="row">'+(index+1)+'</th>';
+                                html +='<td>'+value.id_desa+'</td>';
+                                html +='<td>'+value.desa+'</td>';
+                                html +='<td>'+value.kecamatan+'</td>';
+                                html +='<td>'+value.kab_kot+'</td>';
+                                html +='<td>'+value.provinsi+'</td>';
+                                html +='<td>'+value.area+'</td>';
+                                html +='<td>'+value.perimeter+'</td>';
+                                html +='<td>'+value.hectares+'</td>';
+                                html +='<td>'+value.ukuran_kot+'</td>';
+                                html +='<td>'+value.pemusatan+'</td>';
+                                html +='<td>'+value.jumplah_pen+'</td>';
+                                html +='<td>'+value.provno+'</td>';
+                                html +='<td>'+value.kabkotno+'</td>';
+                                html +='<td>'+value.kecno+'</td>';
+                                html +='<td>'+value.desano+'</td>';
+                                html +='<td>'+value.id2012+'</td>';
+                        })
+                        var pesan = ''
+                            +'<h3 class="text-center">Data Desa</h3>'
+                            +'<div class="wrap-table">'
+                                +'<table class="table table-bordered">'
+                                    +'<thead>'
+                                        +'<tr>'
+                                            +'<th class="text-center" style="width: 20px;">No</th>'
+                                            +'<th class="text-center">Id Desa</th>'
+                                            +'<th class="text-center">Desa</th>'
+                                            +'<th class="text-center">Kecamatan</th>'
+                                            +'<th class="text-center">Kabupaten / Kota</th>'
+                                            +'<th class="text-center">Provinsi</th>'
+                                            +'<th class="text-center"Aarea</th>'
+                                            +'<th class="text-center">Perimeter</th>'
+                                            +'<th class="text-center">Hectares</th>'
+                                            +'<th class="text-center">Ukuran Kota</th>'
+                                            +'<th class="text-center">Pemusatan</th>'
+                                            +'<th class="text-center">Jumplah Penduduk</th>'
+                                            +'<th class="text-center">Nomor Provinsi</th>'
+                                            +'<th class="text-center">Nomor Kabupaten / Kota</th>'
+                                            +'<th class="text-center">Nomor Kecamatan</th>'
+                                            +'<th class="text-center">No Desa</th>'
+                                            +'<th class="text-center">Id 2012/th>'
+                                        +'</tr>'
+                                    +'</thead>'
+                                    +'<tbody>'
+                                        +html
+                                    +'</tbody>'
+                                +'</table>'
+                            +'</div>';
+                        jQuery('#pesan').html(pesan);
+                    }else{
+                        jQuery('#pesan').html('');
+                    }
+                     }
+                if(''){
+                alert('Data tidak ditemukan!');
+            }else{
+                jQuery('.isi-pesan .wrap-table .table').dataTable();
+            }
+            jQuery('#wrap-loading').hide();
+        }
+    });
+}
 </script>

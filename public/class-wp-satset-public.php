@@ -726,11 +726,18 @@ public function cari_data_satset(){
 					WHERE nik like %s
 						OR nama like %s
 				", '%' .$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
+				$data_batas_desa = $wpdb->get_results($wpdb->prepare("
+					SELECT
+						*
+					FROM data_batas_desa
+					WHERE desa like %s
+				", '%' .$_POST['desa'].'%', '%'.$_POST['desa'].'%'));
 				$ret['data']['p3ke'] = $data;
 				$ret['data']['stunting'] = $data_stunting;
 				$ret['data']['tbc'] = $data_tbc;
 				$ret['data']['rtlh'] = $data_rtlh;
 				$ret['data']['dtks'] = $data_dtks;
+				$ret['data']['desa'] = $data_batas_desa;
 			}else{
 				$ret['status']	= 'error';
 				$ret['message']	= 'Api key tidak ditemukan!';
