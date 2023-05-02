@@ -1054,7 +1054,7 @@ class Wp_Satset_Admin {
 					kab_kot,
 					kecamatan,
 					desa 
-				FROM data_desa 
+				FROM data_batas_desa 
 				WHERE $where
 					AND kecno is not null
 			", ARRAY_A);
