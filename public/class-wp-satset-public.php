@@ -731,7 +731,7 @@ public function cari_data_satset(){
 						*
 					FROM data_batas_desa
 					WHERE desa like %s
-				", '%' .$_POST['desa'].'%', '%'.$_POST['desa'].'%'));
+				", '%' .$_POST['irisan'].'%', '%'.$_POST['irisan'].'%'));
 				$ret['data']['p3ke'] = $data;
 				$ret['data']['stunting'] = $data_stunting;
 				$ret['data']['tbc'] = $data_tbc;
@@ -747,6 +747,61 @@ public function cari_data_satset(){
 			$ret['message']	= 'Format Salah!';
 		}
 
+		die(json_encode($ret));
+	}
+public function cari_data_filter_satset(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil get data!',
+			'data' => array()
+		);
+			if (!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				$where = '';
+				if(!empty($_POST['kec'])){
+					$where .= $wpdb->prepare(" and kecamatan = %s", $_POST['kec']);
+				}
+				if(!empty($_POST['desa'])){
+					$where .= $wpdb->prepare(" and desa = %s", $_POST['desa']);
+				}
+				if(!empty($_POST['p3ke'])){
+					//
+				}
+				$data = $wpdb->get_results("
+					SELECT
+						*
+					FROM data_p3ke
+					WHERE 1=1 $where");
+				$data_stunting = $wpdb->get_results("
+					SELECT
+						*
+					FROM data_stunting
+					WHERE 1=1 $where");
+				$data_tbc = $wpdb->get_results("
+					SELECT
+						*
+					FROM data_tbc
+					WHERE 1=1 $where");
+				$data_rtlh = $wpdb->get_results("
+					SELECT
+						*
+					FROM data_rtlh
+					WHERE 1=1 $where");
+				$data_dtks = $wpdb->get_results("
+					SELECT
+						*
+					FROM data_dtks
+					WHERE 1=1 $where");
+				$ret['data']['p3ke'] = $data;
+				$ret['data']['stunting'] = $data_stunting;
+				$ret['data']['tbc'] = $data_tbc;
+				$ret['data']['rtlh'] = $data_rtlh;
+				$ret['data']['dtks'] = $data_dtks;
+				$ret['data']['sql'] = $wpdb->last_query;
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+		}
 		die(json_encode($ret));
 	}
 

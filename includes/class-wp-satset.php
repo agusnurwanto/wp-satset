@@ -189,6 +189,7 @@ class Wp_Satset {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+		$this->loader->add_action('wp_ajax_cari_data_filter_satset', $plugin_public, 'cari_data_filter_satset');
 		$this->loader->add_action('wp_ajax_cari_data_satset', $plugin_public, 'cari_data_satset');
 		$this->loader->add_action('wp_ajax_get_datatable_p3ke', $plugin_public, 'get_datatable_p3ke');
 		$this->loader->add_action('wp_ajax_get_datatable_stunting', $plugin_public, 'get_datatable_stunting');
