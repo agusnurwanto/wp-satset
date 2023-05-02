@@ -3,8 +3,9 @@ $center = $this->get_center();
 $maps_all = $this->get_polygon();
 
 $body =  '';
-foreach($maps_all as $desa){
+foreach($maps_all as $i => $desa){
     $search = $this->getSearchLocation($desa['data']);
+    $maps_all[$i]['index'] = $i;
     $body .= "
         <tr>
             <td class='text-center'>".$desa['data']['id2012']."</td>

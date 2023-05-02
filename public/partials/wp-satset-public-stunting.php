@@ -18,7 +18,8 @@ foreach ($stunting_all as $data) {
 
 $total_all = 0;
 $body =  '';
-foreach ($maps_all as $i => $desa) {
+foreach($maps_all as $i => $desa){
+    $maps_all[$i]['index'] = $i;
     $index = $desa['data']['provinsi'] . '.' . $desa['data']['kab_kot'] . '.' . $desa['data']['kecamatan'] . '.' . $desa['data']['desa'];
     $total_stunting = 0;
     $total_bb_per_u = array();

@@ -103,10 +103,13 @@ function initMap() {
 
                 var id = "chart-"+index;
                 if(!chartRenderWindow[id]){
-                    console.log('index, chartWindow[index]', index, chartWindow[index]);
-
                     // menampilkan chart
                     setTimeout(function(){
+                        if(!chartWindow[index]){
+                            return;
+                        }
+
+                        console.log('index, chartWindow[index]', index, chartWindow[index]);
                         chartRenderWindow[id] = new Chart(document.getElementById(id).getContext('2d'), {
                             type: "pie",
                             data: {
@@ -161,10 +164,13 @@ function initMap() {
 
                 var id_dtks = "chart-dtks-"+index;
                 if(!chartRenderWindowDtks[id_dtks]){
-                    console.log('index, chartWindow[index]', index, chartRenderWindowDtks[index]);
-
                     // menampilkan chart
                     setTimeout(function(){
+                        if(!chartWindowDtks[index]){
+                            return;
+                        }
+
+                        console.log('index, chartWindowDtks[index]', index, chartWindowDtks[index]);
                         chartRenderWindowDtks[id_dtks] = new Chart(document.getElementById(id_dtks).getContext('2d'), {
                             type: "pie",
                             data: {

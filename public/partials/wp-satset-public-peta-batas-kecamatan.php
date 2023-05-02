@@ -5,7 +5,8 @@ $maps_all = $this->get_polygon(array(
 ));
 
 $body =  '';
-foreach ($maps_all as $desa) {
+foreach ($maps_all as $i => $desa) {
+    $maps_all[$i]['index'] = $i;
     $search = $this->getSearchLocation($desa['data']);
     $body .= "
         <tr>

@@ -1,6 +1,9 @@
 <?php
 $center = $this->get_center();
 $maps_all = $this->get_polygon();
+foreach($maps_all as $i => $desa){
+    $maps_all[$i]['index'] = $i;
+}
 ?>
 <h1 class="text-center">Peta Satu Data<br><?php echo $this->getNamaDaerah(); ?></h1>
 <div style="width: 95%; margin: 0 auto; height: 90vh; padding-bottom: 75px;">
