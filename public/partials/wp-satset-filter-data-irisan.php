@@ -69,19 +69,19 @@ foreach($data_desa as $val){
         <legend class="col-form-label col-sm-3 pt-0">Data Irisan :</legend>
         <div class="col-sm-4">
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="" id="p3ke" value="p3ke" checked>P3KE</label>
+              <input class="form-check-input" type="checkbox" name="" id="p3ke" value="p3ke">P3KE</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="" id="" value="stunting" checked>Stunting</label>
+              <input class="form-check-input" type="checkbox" name="" id="stunting" value="stunting">Stunting</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="" id="" value="tbc" checked>TBC</label>
+              <input class="form-check-input" type="checkbox" name="" id="tbc" value="tbc">TBC</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="" id="" value="rtlh" checked>RTLH</label>
+              <input class="form-check-input" type="checkbox" name="" id="rtlh" value="rtlh">RTLH</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="" id="" value="dtks" checked>DTKS</label>
+              <input class="form-check-input" type="checkbox" name="" id="dtks" value="dtks">DTKS</label>
             </div>
         </div>    
     </div>
@@ -140,6 +140,22 @@ foreach($data_desa as $val){
         if(jQuery('#p3ke').is(':checked')){
             p3ke = 1;
         }
+        var stunting = '';
+        if(jQuery('#stunting').is(':checked')){
+            stunting = 1;
+        }
+        var tbc = '';
+        if(jQuery('#tbc').is(':checked')){
+            tbc = 1;
+        }
+        var rtlh = '';
+        if(jQuery('#rtlh').is(':checked')){
+            rtlh = 1;
+        }
+        var dtks = '';
+        if(jQuery('#dtks').is(':checked')){
+            dtks = 1;
+        }
         jQuery('#wrap-loading').show();
         jQuery.ajax({
             method: 'post',
@@ -150,7 +166,11 @@ foreach($data_desa as $val){
                 'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
                 'desa': desa,
                 'kec': kec,
-                'p3ke': p3ke
+                'p3ke': p3ke,
+                'stunting': stunting,
+                'tbc': tbc,
+                'rtlh': rtlh,
+                'dtks': dtks
             },
            success: function(response) {
                 if(response.status == 'error'){

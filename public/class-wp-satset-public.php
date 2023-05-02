@@ -764,8 +764,132 @@ public function cari_data_filter_satset(){
 				if(!empty($_POST['desa'])){
 					$where .= $wpdb->prepare(" and desa = %s", $_POST['desa']);
 				}
+				$all_nik = array(
+					'nik' => array(),
+					'cek' => array()
+				);
 				if(!empty($_POST['p3ke'])){
-					//
+					$nik = $wpdb->get_results("
+					SELECT
+						nik
+					FROM data_p3ke
+					WHERE 1=1 $where", ARRAY_A);
+					foreach($nik as $n){
+						$all_nik['nik'][] = "'".$n['nik']."'";
+					}
+					$all_nik['cek'][] = "p3ke";
+				}
+				if(!empty($_POST['stunting'])){
+					if(!empty($all_nik['cek'])){
+						if(!empty($all_nik['nik'])){
+							$where_nik = " and nik in (".implode(',', $all_nik['nik']).")";
+							$nik = $wpdb->get_results("
+								SELECT
+									nik
+								FROM data_stunting
+								WHERE 1=1 $where $where_nik
+							", ARRAY_A);
+						}else{
+							$nik = array();
+						}
+					}else{
+						$nik = $wpdb->get_results("
+							SELECT
+								nik
+							FROM data_stunting
+							WHERE 1=1 $where
+						", ARRAY_A);
+					}
+					$all_nik['nik'] = array();
+					foreach($nik as $n){
+						$all_nik['nik'][] = "'".$n['nik']."'";
+					}
+				}
+				if(!empty($_POST['tbc'])){
+					if(!empty($all_nik['cek'])){
+						if(!empty($all_nik['nik'])){
+							$where_nik = " and nik in (".implode(',', $all_nik['nik']).")";
+							$nik = $wpdb->get_results("
+								SELECT
+									nik
+								FROM data_tbc
+								WHERE 1=1 $where $where_nik
+							", ARRAY_A);
+						}else{
+							$nik = array();
+						}
+					}else{
+						$nik = $wpdb->get_results("
+							SELECT
+								nik
+							FROM data_tbc
+							WHERE 1=1 $where
+						", ARRAY_A);
+					}
+					$all_nik['nik'] = array();
+					foreach($nik as $n){
+						$all_nik['nik'][] = "'".$n['nik']."'";
+					}
+				}
+				if(!empty($_POST['rtlh'])){
+					if(!empty($all_nik['cek'])){
+						if(!empty($all_nik['nik'])){
+							$where_nik = " and nik in (".implode(',', $all_nik['nik']).")";
+							$nik = $wpdb->get_results("
+								SELECT
+									nik
+								FROM data_rtlh
+								WHERE 1=1 $where $where_nik
+							", ARRAY_A);
+						}else{
+							$nik = array();
+						}
+					}else{
+						$nik = $wpdb->get_results("
+							SELECT
+								nik
+							FROM data_rtlh
+							WHERE 1=1 $where
+						", ARRAY_A);
+					}
+					$all_nik['nik'] = array();
+					foreach($nik as $n){
+						$all_nik['nik'][] = "'".$n['nik']."'";
+					}
+				}
+				if(!empty($_POST['dtks'])){
+					if(!empty($all_nik['cek'])){
+						if(!empty($all_nik['nik'])){
+							$where_nik = " and nik in (".implode(',', $all_nik['nik']).")";
+							$nik = $wpdb->get_results("
+								SELECT
+									nik
+								FROM data_dtks_satset
+								WHERE 1=1 $where $where_nik
+							", ARRAY_A);
+						}else{
+							$nik = array();
+						}
+					}else{
+						$nik = $wpdb->get_results("
+							SELECT
+								nik
+							FROM data_dtks_satset
+							WHERE 1=1 $where
+						", ARRAY_A);
+					}
+					$all_nik['nik'] = array();
+					foreach($nik as $n){
+						$all_nik['nik'][] = "'".$n['nik']."'";
+					}
+				}
+
+				if(!empty($all_nik['cek'])){
+					if(!empty($all_nik['nik'])){
+						$where .= " and nik in (".implode(',', $all_nik['nik']).")";
+					}else{
+						$where .= " and 1=2";
+					}
 				}
 				$data = $wpdb->get_results("
 					SELECT
@@ -790,7 +914,7 @@ public function cari_data_filter_satset(){
 				$data_dtks = $wpdb->get_results("
 					SELECT
 						*
-					FROM data_dtks
+					FROM data_dtks_satset
 					WHERE 1=1 $where");
 				$ret['data']['p3ke'] = $data;
 				$ret['data']['stunting'] = $data_stunting;
