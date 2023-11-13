@@ -75,11 +75,12 @@ function relayAjax(options, retries=20, delay=5000, timeout=9000000){
     });
 }
 
-function import_excel_p3ke(){
+function import_excel_p3ke(tipe_data=0){
     var data = jQuery('#data-excel').val();
     if(!data){
         return alert('Excel Data can not empty!');
     }else{
+        var update_active = prompt("Apakah anda mau menonaktifkan data sebelumnya? ketik 1 jika iya dan kosongkan saja jika tidak.");
         data = JSON.parse(data);
         jQuery('#wrap-loading').show();
 
@@ -96,16 +97,21 @@ function import_excel_p3ke(){
         if(data_sementara.length > 0){
             data_all.push(data_sementara);
         }
+        var page = 0;
         var last = data_all.length - 1;
         data_all.reduce(function(sequence, nextData){
             return sequence.then(function(current_data){
                 return new Promise(function(resolve_reduce, reject_reduce){
+                    page++;
                     relayAjax({
                         url: ajaxurl,
                         type: 'post',
                         data: {
                             action: 'import_excel_p3ke',
-                            data: current_data
+                            data: current_data,
+                            page: page,
+                            tipe_data: tipe_data,
+                            update_active: update_active
                         },
                         success: function(res){
                             resolve_reduce(nextData);

@@ -330,7 +330,10 @@ class Wp_Satset_Admin {
 	            	->set_help_text('Nama provinsi dalam huruf besar dan tanpa awalan.'),
 	            Field::make( 'text', 'crb_kab_satset', 'Nama Kabupaten/Kota' )
 	            	->set_default_value( 'MAGETAN' )
-	            	->set_help_text('Nama kabupaten dalam huruf besar dan tanpa awalan.')
+	            	->set_help_text('Nama kabupaten dalam huruf besar dan tanpa awalan.'),
+            	Field::make( 'html', 'crb_satset_sql_migrate' )
+	            	->set_html( '<a onclick="sql_migrate_satset(); return false" href="javascript:void(0);" class="button button-primary">SQL Migrate</a>' )
+	            	->set_help_text('Tombol ini untuk melakukan perbaikan struktur tabel database.')
 
             ) );
 
@@ -542,11 +545,13 @@ class Wp_Satset_Admin {
 	            	</ol>
 		        	' ),
 		        Field::make( 'html', 'crb_p3ke_upload_html' )
-	            	->set_html( '<h3>Import EXCEL data P3KE</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePickedSatset(event);"><br>Contoh format file excel bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_p3ke.xlsx">download di sini</a>. Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
+	            	->set_html( '<h3>Import EXCEL data Kepala Keluarga P3KE</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePickedSatset(event);"><br>Contoh format file excel bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_p3ke.xlsx">download di sini</a>. Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
+		        Field::make( 'html', 'crb_p3ke_anggota_upload_html' )
+	            	->set_html( '<h3>Import EXCEL data Anggota Keluarga P3KE</h3>Pilih file excel .xlsx : <input type="file" id="file-excel-anggota" onchange="filePickedSatset(event);"><br>Contoh format file excel bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_p3ke_keluarga.xlsx">download di sini</a>. Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
 		        Field::make( 'html', 'crb_p3ke_satset' )
 	            	->set_html( 'Data JSON : <textarea id="data-excel" class="cf-select__input"></textarea>' ),
 		        Field::make( 'html', 'crb_p3ke_save_button' )
-	            	->set_html( '<a onclick="import_excel_p3ke(); return false" href="javascript:void(0);" class="button button-primary">Import WP</a>' )
+	            	->set_html( '<a onclick="import_excel_p3ke(); return false" href="javascript:void(0);" class="button button-primary">Import P3KE Kepala Keluarga</a><a style="margin-left: 20px;" onclick="import_excel_p3ke(1); return false" href="javascript:void(0);" class="button button-primary">Import P3KE Anggota Keluarga</a>' )
 	        ) );
 
 		Container::make( 'theme_options', __( 'Data Stunting' ) )
@@ -664,6 +669,16 @@ class Wp_Satset_Admin {
 			'message'	=> 'Berhasil import excel!'
 		);
 		if (!empty($_POST)) {
+			$table_data = 'data_p3ke';
+			if($_POST['tipe_data'] == 1){
+				$table_data = 'data_p3ke_anggota_keluarga';
+			}
+			if(
+				!empty($_POST['update_active']) 
+				&& $_POST['page'] == 1
+			){
+				$wpdb->update($table_data, array('active' => 0));
+			}
 			$ret['data'] = array(
 				'insert' => 0, 
 				'update' => 0,
@@ -674,44 +689,82 @@ class Wp_Satset_Admin {
 				foreach($data as $kk => $vv){
 					$newData[trim(preg_replace('/\s+/', ' ', $kk))] = trim(preg_replace('/\s+/', ' ', $vv));
 				}
-				$data_db = array(
-					'id_p3ke' => $newData['id_p3ke'],
-				    'provinsi' => $newData['provinsi'],
-				    'kabkot' => $newData['kabkot'],
-				    'kecamatan' => $newData['kecamatan'],
-				    'desa' => $newData['desa'],
-				    'kode_kemendagri' => $newData['kode_kemendagri'],
-				    'jenis_desil' => $newData['jenis_desil'],
-				    'alamat' => $newData['alamat'],
-				    'kepala_keluarga' => $newData['kepala_keluarga'],
-				    'nik' => $newData['nik'],
-				    'padan_dukcapil' => $newData['padan_dukcapil'],
-				    'jenis_kelamin' => $newData['jenis_kelamin'],
-				    'tanggal_lahir' => $newData['tanggal_lahir'],
-				    'pekerjaan' => $newData['pekerjaan'],
-				    'pendidikan' => $newData['pendidikan'],
-				    'rumah' => $newData['rumah'],
-				    'punya_tabungan' => $newData['punya_tabungan'],
-				    'jenis_atap' => $newData['jenis_atap'],
-				    'jenis_dinding' => $newData['jenis_dinding'],
-				    'jenis_lantai' => $newData['jenis_lantai'],
-				    'sumber_penerangan' => $newData['sumber_penerangan'],
-				    'bahan_bakar_memasak' => $newData['bahan_bakar_memasak'],
-				    'sumber_air_minum' => $newData['sumber_air_minum'],
-				    'fasilitas_bab' => $newData['fasilitas_bab'],
-				    'penerima_bpnt' => $newData['penerima_bpnt'],
-				    'penerima_bpum' => $newData['penerima_bpum'],
-				    'penerima_bst' => $newData['penerima_bst'],
-				    'penerima_pkh' => $newData['penerima_pkh'],
-				    'penerima_sembako' => $newData['penerima_sembako'],
-				    'resiko_stunting' => $newData['resiko_stunting']
-				);
+				// kepala keluarga
+				if($_POST['tipe_data'] == 0){
+					$data_db = array(
+						'id_p3ke' => $newData['id_p3ke'],
+					    'provinsi' => $newData['provinsi'],
+					    'kabkot' => $newData['kabkot'],
+					    'kecamatan' => $newData['kecamatan'],
+					    'desa' => $newData['desa'],
+					    'kode_kemendagri' => $newData['kode_kemendagri'],
+					    'jenis_desil' => $newData['jenis_desil'],
+					    'alamat' => $newData['alamat'],
+					    'kepala_keluarga' => $newData['kepala_keluarga'],
+					    'nik' => $newData['nik'],
+					    'padan_dukcapil' => $newData['padan_dukcapil'],
+					    'jenis_kelamin' => $newData['jenis_kelamin'],
+					    'tanggal_lahir' => $newData['tanggal_lahir'],
+					    'pekerjaan' => $newData['pekerjaan'],
+					    'pendidikan' => $newData['pendidikan'],
+					    'rumah' => $newData['rumah'],
+					    'punya_tabungan' => $newData['punya_tabungan'],
+					    'jenis_atap' => $newData['jenis_atap'],
+					    'jenis_dinding' => $newData['jenis_dinding'],
+					    'jenis_lantai' => $newData['jenis_lantai'],
+					    'sumber_penerangan' => $newData['sumber_penerangan'],
+					    'bahan_bakar_memasak' => $newData['bahan_bakar_memasak'],
+					    'sumber_air_minum' => $newData['sumber_air_minum'],
+					    'fasilitas_bab' => $newData['fasilitas_bab'],
+					    'penerima_bpnt' => $newData['penerima_bpnt'],
+					    'penerima_bpum' => $newData['penerima_bpum'],
+					    'penerima_bst' => $newData['penerima_bst'],
+					    'penerima_pkh' => $newData['penerima_pkh'],
+					    'penerima_sembako' => $newData['penerima_sembako'],
+					    'resiko_stunting' => $newData['resiko_stunting']
+					);
+				// anggota keluarga
+				}else{
+					$data_db = array(
+						'id_p3ke' => $newData['id_p3ke'],
+					    'provinsi' => $newData['provinsi'],
+					    'kabkot' => $newData['kabkot'],
+					    'kecamatan' => $newData['kecamatan'],
+					    'desa' => $newData['desa'],
+					    'kode_kemendagri' => $newData['kode_kemendagri'],
+					    'jenis_desil' => $newData['jenis_desil'],
+					    'alamat' => $newData['alamat'],
+					    'id_individu' => $newData['id_individu'],
+					    'nama' => $newData['nama'],
+					    'nik' => $newData['nik'],
+					    'padan_dukcapil' => $newData['padan_dukcapil'],
+					    'jenis_kelamin' => $newData['jenis_kelamin'],
+					    'hubungan_keluarga' => $newData['hubungan_keluarga'],
+					    'tanggal_lahir' => $newData['tanggal_lahir'],
+					    'status_kawin' => $newData['status_kawin'],
+					    'pekerjaan' => $newData['pekerjaan'],
+					    'pendidikan' => $newData['pendidikan'],
+					    'usia_dibawah_7' => $newData['usia_dibawah_7'],
+					    'usia_7_12' => $newData['usia_7_12'],
+					    'usia_13_15' => $newData['usia_13_15'],
+					    'usia_16_18' => $newData['usia_16_18'],
+					    'usia_19_21' => $newData['usia_19_21'],
+					    'usia_22_59' => $newData['usia_22_59'],
+					    'usia_60_keatas' => $newData['usia_60_keatas'],
+					    'penerima_bpnt' => $newData['penerima_bpnt'],
+					    'penerima_bpum' => $newData['penerima_bpum'],
+					    'penerima_bst' => $newData['penerima_bst'],
+					    'penerima_pkh' => $newData['penerima_pkh'],
+					    'penerima_sembako' => $newData['penerima_sembako'],
+					    'resiko_stunting' => $newData['resiko_stunting']
+					);
+				}
 				$wpdb->last_error = "";
 				if(empty($newData['nik'])){
 					$cek_id = $wpdb->get_var($wpdb->prepare("
 						SELECT 
 							id 
-						from data_p3ke 
+						from $table_data 
 						where kepala_keluarga=%s 
 							and kode_kemendagri=%s
 							and id_p3ke=%s
@@ -721,7 +774,7 @@ class Wp_Satset_Admin {
 					$cek_id = $wpdb->get_var($wpdb->prepare("
 						SELECT 
 							id 
-						from data_p3ke 
+						from $table_data 
 						where kepala_keluarga=%s 
 							and kode_kemendagri=%s
 							and id_p3ke=%s
@@ -729,10 +782,10 @@ class Wp_Satset_Admin {
 						, $newData['kepala_keluarga'], $newData['kode_kemendagri'], $newData['id_p3ke'], $newData['nik']));
 				}
 				if(empty($cek_id)){
-					$wpdb->insert("data_p3ke", $data_db);
+					$wpdb->insert($table_data, $data_db);
 					$ret['data']['insert']++;
 				}else{
-					$wpdb->update("data_p3ke", $data_db, array(
+					$wpdb->update($table_data, $data_db, array(
 						"id" => $cek_id
 					));
 					$ret['data']['update']++;
@@ -740,7 +793,6 @@ class Wp_Satset_Admin {
 				if(!empty($wpdb->last_error)){
 					$ret['data']['error'][] = array($wpdb->last_error, $data_db);
 				};
-
 			}
 		} else {
 			$ret['status'] = 'error';
