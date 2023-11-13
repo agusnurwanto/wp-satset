@@ -80,6 +80,7 @@ foreach($maps_all as $i => $desa){
     }else if($total_dtks > 3000){
         $maps_all[$i]['color'] = '#ff0000';
     }
+    $maps_all[$i]['index'] = $i;
     $search = $this->getSearchLocation($desa['data']);
     $body .= "
         <tr>
