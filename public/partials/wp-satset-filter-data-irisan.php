@@ -467,13 +467,16 @@ foreach($data_desa as $val){
                         response.data.dtks.map(function(value, index){
                             data_dtks +='<tr>';
                                 data_dtks +='<th scope="row">'+(index+1)+'</th>';
-                                data_dtks +='<td>'+value.provinsi+'</td>';
-                                data_dtks +='<td>'+value.kabkot+'</td>';
-                                data_dtks +='<td>'+value.kecamatan+'</td>';
-                                data_dtks +='<td>'+value.desa+'</td>';
-                                data_dtks +='<td>'+value.desa_kelurahan+'</td>';
                                 data_dtks +='<td>'+value.id_kec+'</td>';
                                 data_dtks +='<td>'+value.id_desa+'</td>';
+                                data_dtks +='<td>'+value.NOKK+'</td>';
+                                data_dtks +='<td>'+value.NIK+'</td>';
+                                data_dtks +='<td>'+value.Nama+'</td>';
+                                data_dtks +='<td>'+value.provinsi+'</td>';
+                                data_dtks +='<td>'+value.kecamatan+'</td>';
+                                data_dtks +='<td>'+value.kabkot+'</td>';
+                                data_dtks +='<td>'+value.desa+'</td>';
+                                data_dtks +='<td>'+value.desa_kelurahan+'</td>';
                                 data_dtks +='<td>'+value.Alamat+'</td>';
                                 data_dtks +='<td>'+value.BLT+'</td>';
                                 data_dtks +='<td>'+value.BLT_BBM+'</td>';
@@ -481,9 +484,6 @@ foreach($data_desa as $val){
                                 data_dtks +='<td>'+value.BPNT+'</td>';
                                 data_dtks +='<td>'+value.BST+'</td>';
                                 data_dtks +='<td>'+value.FIRST_SK+'</td>';
-                                data_dtks +='<td>'+value.NIK+'</td>';
-                                data_dtks +='<td>'+value.NOKK+'</td>';
-                                data_dtks +='<td>'+value.Nama+'</td>';
                                 data_dtks +='<td>'+value.PBI+'</td>';
                                 data_dtks +='<td>'+value.PKH+'</td>';
                                 data_dtks +='<td>'+value.RUTILAHU+'</td>';
