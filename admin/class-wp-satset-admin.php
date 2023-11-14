@@ -1139,6 +1139,7 @@ class Wp_Satset_Admin {
 			'status'	=> 'success',
 			'message'	=> 'Berhasil menjalankan SQL migrate!'
 		);
+		
 		$file = 'table.sql';
 		$ret['value'] = $file.' (tgl: '.date('Y-m-d H:i:s').')';
 		$path = SATSET_PLUGIN_PATH.'/'.$file;
@@ -1154,6 +1155,12 @@ class Wp_Satset_Admin {
 			}else{
 				$ret['message'] = implode(' | ', $rows_affected);
 			}
+			if($ret['status'] == 'success'){
+				$ret['version'] = $this->version;
+				update_option('_last_update_sql_migrate_satset', $ret['value']);
+				update_option('_wp_sipd_db_version_satset', $this->version);
+			}
+
 			if(
 				!empty($_POST) 
 				&& !empty($_POST['migrate'])
@@ -1169,6 +1176,7 @@ class Wp_Satset_Admin {
 				}else{
 					$ret['message_desa'] = $res;
 				}
+				$ret['sql_desa'] = $sql;
 
 				$path = SATSET_PLUGIN_PATH.'/migrate/data_batas_kecamatan.sql';
 				$sql = file_get_contents($path);
@@ -1180,11 +1188,7 @@ class Wp_Satset_Admin {
 				}else{
 					$ret['message_kecamatan'] = $res;
 				}
-			}
-			if($ret['status'] == 'success'){
-				$ret['version'] = $this->version;
-				update_option('_last_update_sql_migrate_satset', $ret['value']);
-				update_option('_wp_sipd_db_version_satset', $this->version);
+				$ret['sql_kec'] = $sql;
 			}
 		}else{
 			$ret['status'] = 'error';
