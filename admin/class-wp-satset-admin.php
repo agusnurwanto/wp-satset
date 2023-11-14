@@ -721,7 +721,10 @@ class Wp_Satset_Admin {
 					    'penerima_bst' => $newData['penerima_bst'],
 					    'penerima_pkh' => $newData['penerima_pkh'],
 					    'penerima_sembako' => $newData['penerima_sembako'],
-					    'resiko_stunting' => $newData['resiko_stunting']
+					    'resiko_stunting' => $newData['resiko_stunting'],
+					    'active' => 1,
+					    'update_at' => current_time('mysql'),
+					    'tahun_anggaran' => $newData['tahun_anggaran']
 					);
 				// anggota keluarga
 				}else{
@@ -756,7 +759,10 @@ class Wp_Satset_Admin {
 					    'penerima_bst' => $newData['penerima_bst'],
 					    'penerima_pkh' => $newData['penerima_pkh'],
 					    'penerima_sembako' => $newData['penerima_sembako'],
-					    'resiko_stunting' => $newData['resiko_stunting']
+					    'resiko_stunting' => $newData['resiko_stunting'],
+					    'active' => 1,
+					    'update_at' => current_time('mysql'),
+					    'tahun_anggaran' => $newData['tahun_anggaran']
 					);
 				}
 				$wpdb->last_error = "";
@@ -765,21 +771,19 @@ class Wp_Satset_Admin {
 						SELECT 
 							id 
 						from $table_data 
-						where kepala_keluarga=%s 
-							and kode_kemendagri=%s
+						where kode_kemendagri=%s
 							and id_p3ke=%s
 							and nik is null"
-						, $newData['kepala_keluarga'], $newData['kode_kemendagri'], $newData['id_p3ke']));
+						, $newData['kode_kemendagri'], $newData['id_p3ke']));
 				}else{
 					$cek_id = $wpdb->get_var($wpdb->prepare("
 						SELECT 
 							id 
 						from $table_data 
-						where kepala_keluarga=%s 
-							and kode_kemendagri=%s
+						where kode_kemendagri=%s
 							and id_p3ke=%s
 							and nik=%s"
-						, $newData['kepala_keluarga'], $newData['kode_kemendagri'], $newData['id_p3ke'], $newData['nik']));
+						, $newData['kode_kemendagri'], $newData['id_p3ke'], $newData['nik']));
 				}
 				if(empty($cek_id)){
 					$wpdb->insert($table_data, $data_db);
@@ -1125,6 +1129,66 @@ class Wp_Satset_Admin {
 		} else {
 			$ret['status'] = 'error';
 			$ret['message'] = 'Format Salah!';
+		}
+		die(json_encode($ret));
+	}
+
+	function sql_migrate_satset(){
+		global $wpdb;
+		$ret = array(
+			'status'	=> 'success',
+			'message'	=> 'Berhasil menjalankan SQL migrate!'
+		);
+		$file = 'table.sql';
+		$ret['value'] = $file.' (tgl: '.date('Y-m-d H:i:s').')';
+		$path = SATSET_PLUGIN_PATH.'/'.$file;
+		if(file_exists($path)){
+			$sql = file_get_contents($path);
+			$ret['sql'] = $sql;
+			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+			$wpdb->hide_errors();
+			$rows_affected = dbDelta($sql);
+			if(empty($rows_affected)){
+				$ret['status'] = 'error';
+				$ret['message'] = $wpdb->last_error;
+			}else{
+				$ret['message'] = implode(' | ', $rows_affected);
+			}
+			if(
+				!empty($_POST) 
+				&& !empty($_POST['migrate'])
+				&& $_POST['migrate'] == 1
+			){
+				$path = SATSET_PLUGIN_PATH.'/migrate/data_batas_desa.sql';
+				$sql = file_get_contents($path);
+				$wpdb->hide_errors();
+				$res = $wpdb->query($sql);
+				if(empty($res)){
+					$ret['status_desa'] = 'error';
+					$ret['message_desa'] = $wpdb->last_error;
+				}else{
+					$ret['message_desa'] = $res;
+				}
+
+				$path = SATSET_PLUGIN_PATH.'/migrate/data_batas_kecamatan.sql';
+				$sql = file_get_contents($path);
+				$wpdb->hide_errors();
+				$res = $wpdb->query($sql);
+				if(empty($res)){
+					$ret['status_kecamatan'] = 'error';
+					$ret['message_kecamatan'] = $wpdb->last_error;
+				}else{
+					$ret['message_kecamatan'] = $res;
+				}
+			}
+			if($ret['status'] == 'success'){
+				$ret['version'] = $this->version;
+				update_option('_last_update_sql_migrate_satset', $ret['value']);
+				update_option('_wp_sipd_db_version_satset', $this->version);
+			}
+		}else{
+			$ret['status'] = 'error';
+			$ret['message'] = 'File '.$path.' tidak ditemukan!';
 		}
 		die(json_encode($ret));
 	}

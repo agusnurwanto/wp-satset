@@ -75,6 +75,27 @@ function relayAjax(options, retries=20, delay=5000, timeout=9000000){
     });
 }
 
+function sql_migrate_satset(){
+    jQuery('#wrap-loading').show();
+    relayAjax({
+        url: ajaxurl,
+        type: 'post',
+        data: {
+            action: 'sql_migrate_satset',
+            migrate: prompt("Apakah anda mau menjalakan insert query dari folder migrate? Ketik 1 jika iya dan kosongkan jika hanya mau memperbaharui struktur database.")
+        },
+        success: function(res){
+            jQuery('#wrap-loading').hide();
+            alert('Success melakukan SQL migrate!');
+        },
+        error: function(e){
+            console.log('Error sql_migrate_satset', e);
+            alert('Error '+e);
+            jQuery('#wrap-loading').hide();
+        }
+    });
+}
+
 function import_excel_p3ke(tipe_data=0){
     var data = jQuery('#data-excel').val();
     if(!data){

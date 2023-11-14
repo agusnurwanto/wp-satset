@@ -172,6 +172,7 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_get_data_dtks',  $plugin_admin, 'get_data_dtks');
 		$this->loader->add_action('wp_ajax_get_data_desa',  $plugin_admin, 'get_data_desa');
 		$this->loader->add_action('wp_ajax_get_data_batas_kecamatan',  $plugin_admin, 'get_data_batas_kecamatan');
+		$this->loader->add_action('wp_ajax_sql_migrate_satset',  $plugin_admin, 'sql_migrate_satset');
 		
 
 	}
