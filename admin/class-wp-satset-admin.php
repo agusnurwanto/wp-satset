@@ -545,9 +545,7 @@ class Wp_Satset_Admin {
 	            	</ol>
 		        	' ),
 		        Field::make( 'html', 'crb_p3ke_upload_html' )
-	            	->set_html( '<h3>Import EXCEL data Kepala Keluarga P3KE</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePickedSatset(event);"><br>Contoh format file excel bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_p3ke.xlsx">download di sini</a>. Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
-		        Field::make( 'html', 'crb_p3ke_anggota_upload_html' )
-	            	->set_html( '<h3>Import EXCEL data Anggota Keluarga P3KE</h3>Pilih file excel .xlsx : <input type="file" id="file-excel-anggota" onchange="filePickedSatset(event);"><br>Contoh format file excel bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_p3ke_keluarga.xlsx">download di sini</a>. Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
+	            	->set_html( '<h3>Import EXCEL data P3KE</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePickedSatset(event);"><br>Contoh format file excel untuk <b>Kepala Keluarga P3KE</b> bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_p3ke.xlsx">download di sini</a>.<br>Contoh format file excel <b>Anggota Keluarga P3KE</b> bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_p3ke_keluarga.xlsx">download di sini</a>.<br>Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
 		        Field::make( 'html', 'crb_p3ke_satset' )
 	            	->set_html( 'Data JSON : <textarea id="data-excel" class="cf-select__input"></textarea>' ),
 		        Field::make( 'html', 'crb_p3ke_save_button' )
@@ -691,6 +689,10 @@ class Wp_Satset_Admin {
 				}
 				// kepala keluarga
 				if($_POST['tipe_data'] == 0){
+					if(empty($newData['kepala_keluarga'])){
+						$ret['data']['error'][] = 'data kepala keluarga tidak boleh kosong!';
+						continue;
+					}
 					$data_db = array(
 						'id_p3ke' => $newData['id_p3ke'],
 					    'provinsi' => $newData['provinsi'],
@@ -728,6 +730,10 @@ class Wp_Satset_Admin {
 					);
 				// anggota keluarga
 				}else{
+					if(empty($newData['hubungan_keluarga'])){
+						$ret['data']['error'][] = 'data hubungan keluarga keluarga tidak boleh kosong!';
+						continue;
+					}
 					$data_db = array(
 						'id_p3ke' => $newData['id_p3ke'],
 					    'provinsi' => $newData['provinsi'],
