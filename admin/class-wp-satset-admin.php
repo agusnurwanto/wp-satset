@@ -263,7 +263,7 @@ class Wp_Satset_Admin {
 		));
 		$management_data_p3ke_anggota_keluarga = $this->functions->generatePage(array(
 			'nama_page' => 'Management Data P3KE Anggota Keluarga', 
-			'content' => '[management_data_p3ke_anggota_keluarga_satset]',
+			'content' => '[management_data_p3ke_anggota_keluarga]',
         	'show_header' => 1,
         	'no_key' => 1,
 			'post_status' => 'publish'
