@@ -9,38 +9,39 @@
 <div class="cetak">
     <div style="padding: 10px;margin:0 0 3rem 0;">
         <input type="hidden" value="<?php echo get_option( '_crb_api_key_extension' ); ?>" id="api_key">
-    <h1 class="text-center" style="margin:3rem;">Manajemen Data P3KE</h1>
+    <h1 class="text-center" style="margin:3rem;">Manajemen Data Anggota Keluarga<br>P3KE</h1>
         <div style="margin-bottom: 25px;">
-            <button class="btn btn-primary" onclick="tambah_data_p3ke();"><i class="dashicons dashicons-plus"></i> Tambah Data P3KE</button>
+            <button class="btn btn-primary" onclick="tambah_data_p3ke_anggota_keluarga();"><i class="dashicons dashicons-plus"></i> Tambah Data</button>
         </div>
         <div class="wrap-table">
         <table id="management_data_table" cellpadding="2" cellspacing="0" style="font-family:\'Open Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif; border-collapse: collapse; width:100%; overflow-wrap: break-word;" class="table table-bordered">
             <thead>
                 <tr>
                     <th class="text-center">Id P3KE</th>
-                    <th class="text-center">Kode Kemendagri</th>
-                    <th class="text-center">NIK</th>
-                    <th class="text-center">Padan Dukcapil</th>
-                    <th class="text-center">Kepala Keluarga</th>
-                    <th class="text-center">Jenis Kelamin</th>
-                    <th class="text-center">Tanggal Lahir</th>
                     <th class="text-center">Provinsi</th>
                     <th class="text-center">Kabupaten / Kota</th>
                     <th class="text-center">Kecamatan</th>
                     <th class="text-center">Desa</th>
+                    <th class="text-center">Kode Kemendagri</th>
+                    <th class="text-center">Jenis Desil</th>
                     <th class="text-center">Alamat</th>
+                    <th class="text-center">ID Individu</th>
+                    <th class="text-center">Nama</th>
+                    <th class="text-center">NIK</th>
+                    <th class="text-center">Padan Dukcapil</th>
+                    <th class="text-center">Jenis Kelamin</th>
+                    <th class="text-center">Hubungan Keluarga</th>
+                    <th class="text-center">Tanggal Lahir</th>
+                    <th class="text-center">Status Kawin</th>
                     <th class="text-center">Pekerjaan</th>
                     <th class="text-center">Pendidikan</th>
-                    <th class="text-center">Rumah</th>
-                    <th class="text-center">Punya Tabungan</th>
-                    <th class="text-center">Jenis Desil</th>
-                    <th class="text-center">Jenis Atap</th>
-                    <th class="text-center">Jenis Dinding</th>
-                    <th class="text-center">Jenis Lantai</th>
-                    <th class="text-center">Sumber Penerangan</th>   
-                    <th class="text-center">Bahan Bakar Memasak</th>   
-                    <th class="text-center">Sumber Air Minum</th>
-                    <th class="text-center">Fasilitas BAB</th>
+                    <th class="text-center">Jumlah Usia Dibawah 7 Tahun</th>
+                    <th class="text-center">Jumlah Usia 7 - 12 Tahun</th>
+                    <th class="text-center">Jumlah Usia 13 - 15 Tahun</th>
+                    <th class="text-center">Jumlah Usia 16 - 18 Tahun</th>
+                    <th class="text-center">Jumlah Usia 19 - 21 Tahun</th>
+                    <th class="text-center">Jumlah Usia 22 - 59 Tahun</th>
+                    <th class="text-center">Jumlah Usia 60 Tahun Keatas</th>
                     <th class="text-center">Penerima Bpnt</th>   
                     <th class="text-center">Penerima Bpum</th>   
                     <th class="text-center">Penerima Bst</th>
@@ -57,11 +58,11 @@
     </div>          
 </div>
 
-<div class="modal fade mt-4" id="modalTambahDataP3KE" tabindex="-1" role="dialog" aria-labelledby="modalTambahDataP3KELabel" aria-hidden="true">
+<div class="modal fade mt-4" id="modalTambahDataP3KEAnggotaKeluarga" tabindex="-1" role="dialog" aria-labelledby="modalTambahDataP3KEAnggotaKeluargaLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="modalTambahDataP3KELabel">Data P3KE</h5>
+                <h5 class="modal-title" id="modalTambahDataP3KEAnggotaKeluargaLabel">Data P3KE Anggota Keluarga</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -72,30 +73,6 @@
                     <label for='id_p3ke' style='display:inline-block'>Id P3KE</label>
                     <input type='text' id='id_p3ke' name="id_p3ke" class="form-control" placeholder=''>
                 </div> 
-                <div class="form-group">
-                    <label for='kode_kemendagri' style='display:inline-block'>Kode Kemendagri</label>
-                    <input type='text' id='kode_kemendagri' name="kode_kemendagri" class="form-control" placeholder=''>
-                </div>
-                <div class="form-group">
-                    <label for='nik' style='display:inline-block'>NIK</label>
-                    <input type='text' id='nik' name="nik" class="form-control" placeholder=''>
-                </div>
-                <div class="form-group">
-                    <label for='padan_dukcapil' style='display:inline-block'>Padan Dukcapil</label>
-                    <input type="text" id='padan_dukcapil' name="padan_dukcapil" class="form-control" placeholder=''/>
-                </div>
-                <div class="form-group">
-                    <label for='kepala_keluarga' style='display:inline-block'>Kepala Keluarga</label>
-                    <input type="text" id='kepala_keluarga' name="kepala_keluarga" class="form-control" placeholder=''/>
-                </div>
-                <div class="form-group">
-                    <label for='jenis_kelamin' style='display:inline-block'>Jenis Kelamin</label>
-                    <input type="text" id='jenis_kelamin' name="jenis_kelamin" class="form-control" placeholder=''/>
-                </div>
-                <div class="form-group">
-                    <label for='tanggal_lahir' style='display:inline-block'>Tanggal Lahir</label>
-                    <input type="text" id='tanggal_lahir' name="tanggal_lahir" class="form-control" placeholder=''/>
-                </div>
                 <div class="form-group">
                     <label for='provinsi' style='display:inline-block'>Provinsi</label>
                     <input type="text" id='provinsi' name="provinsi" class="form-control" placeholder=''/>
@@ -113,8 +90,48 @@
                     <input type="text" id='desa' name="desa" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
+                    <label for='kode_kemendagri' style='display:inline-block'>Kode Kemendagri</label>
+                    <input type='text' id='kode_kemendagri' name="kode_kemendagri" class="form-control" placeholder=''>
+                </div>
+                <div class="form-group">
+                    <label for='jenis_desil' style='display:inline-block'>Jenis Desil</label>
+                    <input type="text" id='jenis_desil' name="jenis_desil" class="form-control" placeholder=''/>
+                </div>
+                <div class="form-group">
                     <label for='alamat' style='display:inline-block'>Alamat</label>
                     <input type="text" id='alamat' name="alamat" class="form-control" placeholder=''/>
+                </div>
+                <div class="form-group">
+                    <label for='id_individu' style='display:inline-block'>ID Individu</label>
+                    <input type="text" id='id_individu' name="id_individu" class="form-control" placeholder=''/>
+                </div>
+                <div class="form-group">
+                    <label for='nama' style='display:inline-block'>Nama</label>
+                    <input type="text" id='nama' name="nama" class="form-control" placeholder=''/>
+                </div>
+                <div class="form-group">
+                    <label for='nik' style='display:inline-block'>NIK</label>
+                    <input type='text' id='nik' name="nik" class="form-control" placeholder=''>
+                </div>
+                <div class="form-group">
+                    <label for='padan_dukcapil' style='display:inline-block'>Padan Dukcapil</label>
+                    <input type="text" id='padan_dukcapil' name="padan_dukcapil" class="form-control" placeholder=''/>
+                </div>
+                <div class="form-group">
+                    <label for='hubungan_keluarga' style='display:inline-block'>Hubungan Keluarga</label>
+                    <input type="text" id='hubungan_keluarga' name="hubungan_keluarga" class="form-control" placeholder=''/>
+                </div>
+                <div class="form-group">
+                    <label for='jenis_kelamin' style='display:inline-block'>Jenis Kelamin</label>
+                    <input type="text" id='jenis_kelamin' name="jenis_kelamin" class="form-control" placeholder=''/>
+                </div>
+                <div class="form-group">
+                    <label for='tanggal_lahir' style='display:inline-block'>Tanggal Lahir</label>
+                    <input type="text" id='tanggal_lahir' name="tanggal_lahir" class="form-control" placeholder=''/>
+                </div>
+                <div class="form-group">
+                    <label for='status_kawin' style='display:inline-block'>Status Kawin</label>
+                    <input type="text" id='status_kawin' name="status_kawin" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
                     <label for='pekerjaan' style='display:inline-block'>Pekerjaan</label>
@@ -125,44 +142,32 @@
                     <input type="text" id='pendidikan' name="pendidikan" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='rumah' style='display:inline-block'>Rumah</label>
-                    <input type="text" id='rumah' name="rumah" class="form-control" placeholder=''/>
+                    <label for='usia_dibawah_7' style='display:inline-block'>Jumlah Usia Dibawah 7 Tahun</label>
+                    <input type="text" id='usia_dibawah_7' name="usia_dibawah_7" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='punya_tabungan' style='display:inline-block'>Tabungan</label>
-                    <input type="text" id='punya_tabungan' name="punya_tabungan" class="form-control" placeholder=''/>
+                    <label for='usia_7_12' style='display:inline-block'>Jumlah Usia 7 - 12 Tahun</label>
+                    <input type="text" id='usia_7_12' name="usia_7_12" class="form-control" placeholder=''/>
                 </div>
                 <div class="form-group">
-                    <label for='jenis_desil' style='display:inline-block'>Jenis Desil</label>
-                    <input type="text" id='jenis_desil' name="jenis_desil" class="form-control" placeholder=''/>
-                </div>
-                <div class="form-group">
-                    <label for='jenis_atap' style='display:inline-block'>Jenis Atap</label>
-                    <input type="text" id='jenis_atap' name="jenis_atap" class="form-control" placeholder=''/>
+                    <label for='usia_13_15' style='display:inline-block'>Jumlah Usia 13 - 15 Tahun</label>
+                    <input type="text" id='usia_13_15' name="usia_13_15" class="form-control" placeholder=''/>
                 </div> 
                 <div class="form-group">
-                    <label for='jenis_dinding' style='display:inline-block'>Jenis Dinding</label>
-                    <input type="text" id='jenis_dinding' name="jenis_dinding" class="form-control" placeholder=''/>
+                    <label for='usia_16_18' style='display:inline-block'>Jumlah Usia 16 - 18 Tahun</label>
+                    <input type="text" id='usia_16_18' name="usia_16_18" class="form-control" placeholder=''/>
                 </div> 
                 <div class="form-group">
-                    <label for='jenis_lantai' style='display:inline-block'>Jenis Lantai</label>
-                    <input type="text" id='jenis_lantai' name="jenis_lantai" class="form-control" placeholder=''/>
+                    <label for='usia_19_21' style='display:inline-block'>Jumlah Usia 19 - 21 Tahun</label>
+                    <input type="text" id='usia_19_21' name="usia_19_21" class="form-control" placeholder=''/>
                 </div> 
                 <div class="form-group">
-                    <label for='sumber_penerangan' style='display:inline-block'>Sumber Penerangan</label>
-                    <input type="text" id='sumber_penerangan' name="sumber_penerangan" class="form-control" placeholder=''/>
+                    <label for='usia_22_59' style='display:inline-block'>Jumlah Usia 22 - 59 Tahun</label>
+                    <input type="text" id='usia_22_59' name="usia_22_59" class="form-control" placeholder=''/>
                 </div> 
                 <div class="form-group">
-                    <label for='bahan_bakar_memasak' style='display:inline-block'>Bahan Bakar Memasak</label>
-                    <input type="text" id='bahan_bakar_memasak' name="bahan_bakar_memasak" class="form-control" placeholder=''/>
-                </div> 
-                <div class="form-group">
-                    <label for='sumber_air_minum' style='display:inline-block'>Sumber Air Minum</label>
-                    <input type="text" id='sumber_air_minum' name="sumber_air_minum" class="form-control" placeholder=''/>
-                </div> 
-                <div class="form-group">
-                    <label for='fasilitas_bab' style='display:inline-block'>Fasilitas BAB</label>
-                    <input type="text" id='fasilitas_bab' name="fasilitas_bab" class="form-control" placeholder=''/>
+                    <label for='usia_60_keatas' style='display:inline-block'>Jumlah Usia 60 Tahun Keatas</label>
+                    <input type="text" id='usia_60_keatas' name="usia_60_keatas" class="form-control" placeholder=''/>
                 </div> 
                 <div class="form-group">
                     <label for='penerima_bpnt' style='display:inline-block'>Penerima BPNT</label>
@@ -198,12 +203,12 @@
 </div>
 <script>    
 jQuery(document).ready(function(){
-    get_data_p3ke();
+    get_data_p3ke_anggota_keluarga();
 });
 
-function get_data_p3ke(){
-    if(typeof datap3ke == 'undefined'){
-        window.datap3ke = jQuery('#management_data_table').on('preXhr.dt', function(e, settings, data){
+function get_data_p3ke_anggota_keluarga (){
+    if(typeof datap3keanggotakeluarga == 'undefined'){
+        window.datap3keanggotakeluarga = jQuery('#management_data_table').on('preXhr.dt', function(e, settings, data){
             jQuery("#wrap-loading").show();
         }).DataTable({
             "processing": true,
@@ -213,7 +218,7 @@ function get_data_p3ke(){
                 type: 'post',
                 dataType: 'json',
                 data:{
-                    'action': 'get_datatable_p3ke',
+                    'action': 'get_datatable_p3ke_anggota_keluarga',
                     'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
                 }
             },
@@ -225,30 +230,6 @@ function get_data_p3ke(){
             "columns": [
                 {
                     "data": 'id_p3ke',
-                    className: "text-center"
-                },
-                {
-                    "data": 'kode_kemendagri',
-                    className: "text-center"
-                },
-                {
-                    "data": 'nik',
-                    className: "text-center"
-                },
-                {
-                    "data": 'padan_dukcapil',
-                    className: "text-center"
-                },
-                {
-                    "data": 'kepala_keluarga',
-                    className: "text-center"
-                },
-                {
-                    "data": 'jenis_kelamin',
-                    className: "text-center"
-                },
-                {
-                    "data": 'tanggal_lahir',
                     className: "text-center"
                 },
                 {
@@ -268,7 +249,47 @@ function get_data_p3ke(){
                     className: "text-center"
                 },
                 {
+                    "data": 'kode_kemendagri',
+                    className: "text-center"
+                },
+                {
+                    "data": 'jenis_desil',
+                    className: "text-center"
+                },
+                {
                     "data": 'alamat',
+                    className: "text-center"
+                },
+                {
+                    "data": 'id_individu',
+                    className: "text-center"
+                },
+                {
+                    "data": 'nama',
+                    className: "text-center"
+                },
+                {
+                    "data": 'nik',
+                    className: "text-center"
+                },
+                {
+                    "data": 'padan_dukcapil',
+                    className: "text-center"
+                },
+                {
+                    "data": 'jenis_kelamin',
+                    className: "text-center"
+                },
+                {
+                    "data": 'hubungan_keluarga',
+                    className: "text-center"
+                },
+                {
+                    "data": 'tanggal_lahir',
+                    className: "text-center"
+                },
+                {
+                    "data": 'status_kawin',
                     className: "text-center"
                 },
                 {
@@ -280,43 +301,31 @@ function get_data_p3ke(){
                     className: "text-center"
                 },
                 {
-                    "data": 'rumah',
+                    "data": 'usia_dibawah_7',
                     className: "text-center"
                 },
                 {
-                    "data": 'punya_tabungan',
+                    "data": 'usia_7_12',
                     className: "text-center"
                 },
                 {
-                    "data": 'jenis_desil',
+                    "data": 'usia_13_15',
                     className: "text-center"
                 },
                 {
-                    "data": 'jenis_atap',
+                    "data": 'usia_16_18',
                     className: "text-center"
                 },
                 {
-                    "data": 'jenis_dinding',
+                    "data": 'usia_19_21',
                     className: "text-center"
                 },
                 {
-                    "data": 'jenis_lantai',
+                    "data": 'usia_22_59',
                     className: "text-center"
                 },
                 {
-                    "data": 'sumber_penerangan',
-                    className: "text-center"
-                },
-                {
-                    "data": 'bahan_bakar_memasak',
-                    className: "text-center"
-                },
-                {
-                    "data": 'sumber_air_minum',
-                    className: "text-center"
-                },
-                {
-                    "data": 'fasilitas_bab',
+                    "data": 'usia_60_keatas',
                     className: "text-center"
                 },
                 {
@@ -350,7 +359,7 @@ function get_data_p3ke(){
             ]
         });
     }else{
-        datap3ke.draw();
+        datap3keanggotakeluarga.draw();
     }
 }
 
@@ -362,7 +371,7 @@ function hapus_data(id){
                 url: '<?php echo admin_url('admin-ajax.php'); ?>',
                 type:'post',
                 data:{
-                    'action' : 'hapus_data_p3ke_by_id',
+                    'action' : 'hapus_data_p3ke_anggota_keluarga_by_id',
                     'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
                     'id'     : id
                 },
@@ -370,7 +379,7 @@ function hapus_data(id){
                 success:function(response){
                     jQuery('#wrap-loading').hide();
                     if(response.status == 'success'){
-                        get_data_p3ke(); 
+                        get_data_p3ke_anggota_keluarga(); 
                     }else{
                         alert(`GAGAL! \n${response.message}`);
                     }
@@ -386,7 +395,7 @@ function edit_data(_id){
         url: '<?php echo admin_url('admin-ajax.php'); ?>',
         dataType: 'json',
         data:{
-            'action': 'get_data_p3ke_by_id',
+            'action': 'get_data_p3ke_anggota_keluarga_by_id',
             'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
             'id': _id,
         },
@@ -394,28 +403,30 @@ function edit_data(_id){
             if(res.status == 'success'){
                 jQuery('#id_data').val(res.data.id);
                 jQuery('#id_p3ke').val(res.data.id_p3ke);
-                jQuery('#kode_kemendagri').val(res.data.kode_kemendagri);
-                jQuery('#nik').val(res.data.nik);
-                jQuery('#padan_dukcapil').val(res.data.padan_dukcapil);
-                jQuery('#kepala_keluarga').val(res.data.kepala_keluarga);
-                jQuery('#jenis_kelamin').val(res.data.jenis_kelamin);
-                jQuery('#tanggal_lahir').val(res.data.tanggal_lahir);
                 jQuery('#provinsi').val(res.data.provinsi);
                 jQuery('#kabkot').val(res.data.kabkot);
                 jQuery('#kecamatan').val(res.data.kecamatan);
                 jQuery('#desa').val(res.data.desa);
+                jQuery('#kode_kemendagri').val(res.data.kode_kemendagri);
+                jQuery('#jenis_desil').val(res.data.jenis_desil);
                 jQuery('#alamat').val(res.data.alamat);
+                jQuery('#id_individu').val(res.data.id_individu);
+                jQuery('#nama').val(res.data.nama);
+                jQuery('#nik').val(res.data.nik);
+                jQuery('#padan_dukcapil').val(res.data.padan_dukcapil);
+                jQuery('#jenis_kelamin').val(res.data.jenis_kelamin);
+                jQuery('#hubungan_keluarga').val(res.data.hubungan_keluarga);
+                jQuery('#tanggal_lahir').val(res.data.tanggal_lahir);
+                jQuery('#status_kawin').val(res.data.status_kawin);
                 jQuery('#pekerjaan').val(res.data.pekerjaan);
                 jQuery('#pendidikan').val(res.data.pendidikan);
-                jQuery('#rumah').val(res.data.rumah);
-                jQuery('#punya_tabungan').val(res.data.punya_tabungan);
-                jQuery('#jenis_desil').val(res.data.jenis_desil);
-                jQuery('#jenis_atap').val(res.data.jenis_atap);
-                jQuery('#jenis_dinding').val(res.data.jenis_dinding);
-                jQuery('#jenis_lantai').val(res.data.jenis_lantai);
-                jQuery('#sumber_penerangan').val(res.data.sumber_penerangan);
-                jQuery('#bahan_bakar_memasak').val(res.data.bahan_bakar_memasak);
-                jQuery('#sumber_air_minum').val(res.data.sumber_air_minum);
+                jQuery('#usia_dibawah_7').val(res.data.usia_dibawah_7);
+                jQuery('#usia_7_12').val(res.data.usia_7_12);
+                jQuery('#usia_13_15').val(res.data.usia_13_15);
+                jQuery('#usia_16_18').val(res.data.usia_16_18);
+                jQuery('#usia_19_21').val(res.data.usia_19_21);
+                jQuery('#usia_22_59').val(res.data.usia_22_59);
+                jQuery('#usia_60_keatas').val(res.data.usia_60_keatas);
                 jQuery('#fasilitas_bab').val(res.data.fasilitas_bab);
                 jQuery('#penerima_bpnt').val(res.data.penerima_bpnt);
                 jQuery('#penerima_bpum').val(res.data.penerima_bpum);
@@ -423,7 +434,7 @@ function edit_data(_id){
                 jQuery('#penerima_pkh').val(res.data.penerima_pkh);
                 jQuery('#penerima_sembako').val(res.data.penerima_sembako);
                 jQuery('#resiko_stunting').val(res.data.resiko_stunting);
-                jQuery('#modalTambahDataP3KE').modal('show');
+                jQuery('#modalTambahDataP3KEAnggotaKeluarga').modal('show');
             }else{
                 alert(res.message);
             }
@@ -433,31 +444,33 @@ function edit_data(_id){
 }
 
 //show tambah data
-function tambah_data_p3ke(){
+function tambah_data_p3ke_anggota_keluarga(){
     jQuery('#id_data').val('');
     jQuery('#id_p3ke').val('');
-    jQuery('#kode_kemendagri').val('');
-    jQuery('#nik').val('');
-    jQuery('#padan_dukcapil').val('');
-    jQuery('#kepala_keluarga').val('');
-    jQuery('#jenis_kelamin').val('');
-    jQuery('#tanggal_lahir').val('');
     jQuery('#provinsi').val('');
     jQuery('#kabkot').val('');
     jQuery('#kecamatan').val('');
     jQuery('#desa').val('');
+    jQuery('#kode_kemendagri').val('');
+    jQuery('#jenis_desil').val('');
     jQuery('#alamat').val('');
+    jQuery('#id_individu').val('');
+    jQuery('#nama').val('');
+    jQuery('#nik').val('');
+    jQuery('#padan_dukcapil').val('');
+    jQuery('#jenis_kelamin').val('');
+    jQuery('#hubungan_keluarga').val('');
+    jQuery('#tanggal_lahir').val('');
+    jQuery('#status_kawin').val('');
     jQuery('#pekerjaan').val('');
     jQuery('#pendidikan').val('');
-    jQuery('#rumah').val('');
-    jQuery('#punya_tabungan').val('');
-    jQuery('#jenis_desil').val('');
-    jQuery('#jenis_atap').val('');
-    jQuery('#jenis_dinding').val('');
-    jQuery('#jenis_lantai').val('');
-    jQuery('#sumber_penerangan').val('');
-    jQuery('#bahan_bakar_memasak').val('');
-    jQuery('#sumber_air_minum').val('');
+    jQuery('#usia_dibawah_7').val('');
+    jQuery('#usia_7_12').val('');
+    jQuery('#usia_13_15').val('');
+    jQuery('#usia_16_18').val('');
+    jQuery('#usia_19_21').val('');
+    jQuery('#usia_22_59').val('');
+    jQuery('#usia_60_keatas').val('');
     jQuery('#fasilitas_bab').val('');
     jQuery('#penerima_bpnt').val('');
     jQuery('#penerima_bpum').val('');
@@ -465,130 +478,134 @@ function tambah_data_p3ke(){
     jQuery('#penerima_pkh').val('');
     jQuery('#penerima_sembako').val('');
     jQuery('#resiko_stunting').val('');
-    jQuery('#modalTambahDataP3KE').modal('show');
+    jQuery('#modalTambahDataP3KEAnggotaKeluarga').modal('show');
 }
 
 function submitTambahDataFormP3KE(){
     var id_data = jQuery('#id_data').val();
     var id_p3ke = jQuery('#id_p3ke').val();
     if(id_p3ke == ''){
-        return alert('Data id_p3ke tidak boleh kosong!');
+        return alert('Data ID P3KE tidak boleh kosong!');
     }
     var kode_kemendagri = jQuery('#kode_kemendagri').val();
     if(kode_kemendagri == ''){
-        return alert('Data kode_kemendagri tidak boleh kosong!');
+        return alert('Data Kode Kemendagri tidak boleh kosong!');
     }
     var nik = jQuery('#nik').val();
     if(nik == ''){
-        return alert('Data nik tidak boleh kosong!');
+        return alert('Data NIK tidak boleh kosong!');
     }
     var padan_dukcapil = jQuery('#padan_dukcapil').val();
     if(padan_dukcapil == ''){
-        return alert('Data padan_dukcapil tidak boleh kosong!');
+        return alert('Data Padan Dukcapil tidak boleh kosong!');
     }
-    var kepala_keluarga = jQuery('#kepala_keluarga').val();
-    if(kepala_keluarga == ''){
-        return alert('Data kepala_keluarga tidak boleh kosong!');
+    var hubungan_keluarga = jQuery('#hubungan_keluarga').val();
+    if(hubungan_keluarga == ''){
+        return alert('Data Hubungan Keluarga tidak boleh kosong!');
     }
     var jenis_kelamin = jQuery('#jenis_kelamin').val();
     if(jenis_kelamin == ''){
-        return alert('Data jenis_kelamin tidak boleh kosong!');
+        return alert('Data Jenis Kelamin tidak boleh kosong!');
     }
     var tanggal_lahir = jQuery('#tanggal_lahir').val();
     if(tanggal_lahir == ''){
-        return alert('Data tanggal_lahir tidak boleh kosong!');
+        return alert('Data Tanggal Lahir tidak boleh kosong!');
     }
     var provinsi = jQuery('#provinsi').val();
     if(provinsi == ''){
-        return alert('Data provinsi tidak boleh kosong!');
+        return alert('Data Provinsi tidak boleh kosong!');
     }
     var kabkot = jQuery('#kabkot').val();
     if(kabkot == ''){
-        return alert('Data kabkot tidak boleh kosong!');
+        return alert('Data Kabkot tidak boleh kosong!');
     }
     var kecamatan = jQuery('#kecamatan').val();
     if(kecamatan == ''){
-        return alert('Data kecamatan tidak boleh kosong!');
+        return alert('Data Kecamatan tidak boleh kosong!');
     }
     var desa = jQuery('#desa').val();
     if(desa == ''){
-        return alert('Data desa tidak boleh kosong!');
+        return alert('Data Desa tidak boleh kosong!');
     }
     var alamat = jQuery('#alamat').val();
     if(alamat == ''){
-        return alert('Data alamat tidak boleh kosong!');
+        return alert('Data Alamat tidak boleh kosong!');
     }
     var pekerjaan = jQuery('#pekerjaan').val();
     if(pekerjaan == ''){
-        return alert('Data pekerjaan tidak boleh kosong!');
+        return alert('Data Pekerjaan tidak boleh kosong!');
     }
     var pendidikan = jQuery('#pendidikan').val();
     if(pendidikan == ''){
-        return alert('Data pendidikan tidak boleh kosong!');
+        return alert('Data Pendidikan tidak boleh kosong!');
     }
-    var rumah = jQuery('#rumah').val();
-    if(rumah == ''){
-        return alert('Data rumah tidak boleh kosong!');
+    var usia_dibawah_7 = jQuery('#usia_dibawah_7').val();
+    if(usia_dibawah_7 == ''){
+        return alert('Data Usia Dibawah 7 tidak boleh kosong!');
     }
-    var punya_tabungan = jQuery('#punya_tabungan').val();
-    if(punya_tabungan == ''){
-        return alert('Data punya_tabungan tidak boleh kosong!');
+    var usia_7_12 = jQuery('#usia_7_12').val();
+    if(usia_7_12 == ''){
+        return alert('Data Usia 7 - 12 tidak boleh kosong!');
     }
     var jenis_desil = jQuery('#jenis_desil').val();
     if(jenis_desil == ''){
         return alert('Data jenis_desil tidak boleh kosong!');
     }
-    var jenis_atap = jQuery('#jenis_atap').val();
-    if(jenis_atap == ''){
-        return alert('Data jenis_atap tidak boleh kosong!');
+    var usia_13_15 = jQuery('#usia_13_15').val();
+    if(usia_13_15 == ''){
+        return alert('Data Usia 13 - 15 tidak boleh kosong!');
     }
-    var jenis_dinding = jQuery('#jenis_dinding').val();
-    if(jenis_dinding == ''){
-        return alert('Data jenis_dinding tidak boleh kosong!');
+    var usia_16_18 = jQuery('#usia_16_18').val();
+    if(usia_16_18 == ''){
+        return alert('Data Usia 16 - 18 tidak boleh kosong!');
     }
-    var jenis_lantai = jQuery('#jenis_lantai').val();
-    if(jenis_lantai == ''){
-        return alert('Data jenis_lantai tidak boleh kosong!');
+    var usia_19_21 = jQuery('#usia_19_21').val();
+    if(usia_19_21 == ''){
+        return alert('Data Usia 19 - 21 tidak boleh kosong!');
     }
-    var sumber_penerangan = jQuery('#sumber_penerangan').val();
-    if(sumber_penerangan == ''){
-        return alert('Data sumber_penerangan tidak boleh kosong!');
+    var usia_22_59 = jQuery('#usia_22_59').val();
+    if(usia_22_59 == ''){
+        return alert('Data Usia 22 - 59 tidak boleh kosong!');
     }
-    var bahan_bakar_memasak = jQuery('#bahan_bakar_memasak').val();
-    if(bahan_bakar_memasak == ''){
-        return alert('Data bahan_bakar_memasak tidak boleh kosong!');
-    }
-    var sumber_air_minum = jQuery('#sumber_air_minum').val();
-    if(sumber_air_minum == ''){
-        return alert('Data sumber_air_minum tidak boleh kosong!');
-    }
-    var fasilitas_bab = jQuery('#fasilitas_bab').val();
-    if(fasilitas_bab == ''){
-        return alert('Data fasilitas_bab tidak boleh kosong!');
+    var usia_60_keatas = jQuery('#usia_60_keatas').val();
+    if(usia_60_keatas == ''){
+        return alert('Data Usia 60 keatas tidak boleh kosong!');
     }
     var penerima_bpnt = jQuery('#penerima_bpnt').val();
     if(penerima_bpnt == ''){
-        return alert('Data penerima_bpnt tidak boleh kosong!');
+        return alert('Data Penerima bpnt tidak boleh kosong!');
     }
     var penerima_bpum = jQuery('#penerima_bpum').val();
     if(penerima_bpum == ''){
-        return alert('Data penerima_bpum tidak boleh kosong!');
+        return alert('Data Penerima bpum tidak boleh kosong!');
     }
     var penerima_bst = jQuery('#penerima_bst').val();
     if(penerima_bst == ''){
-        return alert('Data penerima_bst tidak boleh kosong!');
+        return alert('Data Penerima bst tidak boleh kosong!');
     }
     var penerima_pkh = jQuery('#penerima_pkh').val();
     if(penerima_pkh == ''){
-        return alert('Data penerima_pkh tidak boleh kosong!');
+        return alert('Data Penerima pkh tidak boleh kosong!');
     }
     var penerima_sembako = jQuery('#penerima_sembako').val();
     if(penerima_sembako == ''){
-        return alert('Data penerima_sembako tidak boleh kosong!');
+        return alert('Data Penerima sembako tidak boleh kosong!');
     }
     var resiko_stunting = jQuery('#resiko_stunting').val();
     if(resiko_stunting == ''){
-        return alert('Data resiko_stunting tidak boleh kosong!');
+        return alert('Data resiko stunting tidak boleh kosong!');
+    }
+    var nama = jQuery('#nama').val();
+    if(nama == ''){
+        return alert('Data Nama tidak boleh kosong!');
+    }
+    var id_individu = jQuery('#id_individu').val();
+    if(id_individu == ''){
+        return alert('Data ID Individu tidak boleh kosong!');
+    }
+    var status_kawin = jQuery('#status_kawin').val();
+    if(status_kawin == ''){
+        return alert('Data Status Kawin tidak boleh kosong!');
     }
 
     jQuery('#wrap-loading').show();
@@ -597,14 +614,14 @@ function submitTambahDataFormP3KE(){
         url: '<?php echo admin_url('admin-ajax.php'); ?>',
         dataType: 'json',
         data:{
-            'action': 'tambah_data_p3ke',
+            'action': 'tambah_data_p3ke_anggota_keluarga',
             'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
             'id_data': id_data,
             'id_p3ke': id_p3ke,
             'kode_kemendagri': kode_kemendagri,
             'nik': nik,
             'padan_dukcapil': padan_dukcapil,
-            'kepala_keluarga': kepala_keluarga,
+            'hubungan_keluarga': hubungan_keluarga,
             'jenis_kelamin': jenis_kelamin,
             'tanggal_lahir': tanggal_lahir,
             'provinsi': provinsi,
@@ -614,28 +631,29 @@ function submitTambahDataFormP3KE(){
             'alamat': alamat,
             'pekerjaan': pekerjaan,
             'pendidikan': pendidikan,
-            'rumah': rumah,
-            'punya_tabungan': punya_tabungan,
+            'usia_dibawah_7': usia_dibawah_7,
+            'usia_7_12': usia_7_12,
             'jenis_desil': jenis_desil,
-            'jenis_atap': jenis_atap,
-            'jenis_dinding': jenis_dinding,
-            'jenis_lantai': jenis_lantai,
-            'sumber_penerangan': sumber_penerangan,
-            'bahan_bakar_memasak': bahan_bakar_memasak,
-            'sumber_air_minum': sumber_air_minum,
-            'fasilitas_bab': fasilitas_bab,
+            'usia_13_15': usia_13_15,
+            'usia_16_18': usia_16_18,
+            'usia_19_21': usia_19_21,
+            'usia_22_59': usia_22_59,
+            'usia_60_keatas': usia_60_keatas,
             'penerima_bpnt': penerima_bpnt,
             'penerima_bpum': penerima_bpum,
             'penerima_bst': penerima_bst,
             'penerima_pkh': penerima_pkh,
             'penerima_sembako': penerima_sembako,
             'resiko_stunting': resiko_stunting,
+            'id_individu': id_individu,
+            'nama': nama,
+            'status_kawin': status_kawin,
         },
         success: function(res){
             alert(res.message);
-            jQuery('#modalTambahDataP3KE').modal('hide');
+            jQuery('#modalTambahDataP3KEAnggotaKeluarga').modal('hide');
             if(res.status == 'success'){
-                get_data_p3ke();
+                get_data_p3ke_anggota_keluarga();
             }else{
                 jQuery('#wrap-loading').hide();
             }

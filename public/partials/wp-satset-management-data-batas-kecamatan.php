@@ -133,11 +133,11 @@ function get_data_batas_kecamatan(){
                 }
             ]
         });
+    }else{
+        databatas_kecamatan.draw();
     }
-    // else{
-    //     databatasecamatan.update();
-    // }
 }
+
 
 function hapus_data(id){
     if(confirm('Apakah anda yakin untuk menghapus data ini?')){
@@ -162,30 +162,6 @@ function hapus_data(id){
         })
     }
 }
-// function hapus_data(id){
-//         let confirmDelete = confirm("Apakah anda yakin akan menghapus data ini?");
-//         if(confirmDelete){
-//             jQuery('#wrap-loading').show();
-//             jQuery.ajax({
-//                 url: '<?php echo admin_url('admin-ajax.php'); ?>',
-//                 type:'post',
-//                 data:{
-//                     'action' : 'hapus_data_batas_kecamatan_by_id',
-//                     'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
-//                     'id'     : id
-//                 },
-//                 dataType: 'json',
-//                 success:function(response){
-//                     jQuery('#wrap-loading').hide();
-//                     if(response.status == 'success'){
-//                         get_data_batas_kecamatan(); 
-//                     }else{
-//                         alert(`GAGAL! \n${response.message}`);
-//                     }
-//                 }
-//             });
-//         }
-//     }
 
 function edit_data(_id){
     jQuery('#wrap-loading').show();

@@ -157,6 +157,7 @@ class Wp_Satset_Admin {
 			'post_status' => 'publish'
 		));
 
+
 		$data_stunting = $this->functions->generatePage(array(
 			'nama_page' => 'Data Stunting', 
 			'content' => '[data_stunting]',
@@ -259,6 +260,13 @@ class Wp_Satset_Admin {
 			'show_header' => 1,
 			'no_key' => 1,
 			'post_status' => 'private'
+		));
+		$management_data_p3ke_anggota_keluarga = $this->functions->generatePage(array(
+			'nama_page' => 'Management Data P3KE Anggota Keluarga', 
+			'content' => '[management_data_p3ke_anggota_keluarga_satset]',
+        	'show_header' => 1,
+        	'no_key' => 1,
+			'post_status' => 'publish'
 		));
 		$management_data_stunting = $this->functions->generatePage(array(
 			'nama_page' => 'Management Data Stunting',
@@ -542,6 +550,7 @@ class Wp_Satset_Admin {
 					<h5>HALAMAN TERKAIT</h5>
 	            	<ol>
 	            		<li><a target="_blank" href="'.$management_data_p3ke['url'].'">'.$management_data_p3ke['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$management_data_p3ke_anggota_keluarga['url'].'">'.$management_data_p3ke_anggota_keluarga['title'].'</a></li>
 	            	</ol>
 		        	' ),
 		        Field::make( 'html', 'crb_p3ke_upload_html' )

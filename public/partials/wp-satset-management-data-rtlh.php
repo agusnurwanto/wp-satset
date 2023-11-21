@@ -196,34 +196,11 @@ function get_data_rtlh(){
             ]
         });
     }
-    // else{
-    //     datartlh.update();
-    // }
+    else{
+        datartlh.draw();
+    }
 }
 
-// function hapus_data(_id){
-//     if(confirm('Apakah anda yakin untuk menghapus data ini?')){
-//         jQuery('#wrap-loading').show();
-//         jQuery.ajax({
-//             method: 'post',
-//             url: '<?php echo admin_url('admin-ajax.php'); ?>',
-//             dataType: 'json',
-//             data:{
-//                 'action': 'hapus_data_p3ke_by_id',
-//                 'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
-//                 'id': _id
-//             },
-//             success: function(res){
-//                 alert(res.message);
-//                 if(res.status == 'success'){
-//                     get_data_rtlh();
-//                 }else{
-//                     jQuery('#wrap-loading').hide();
-//                 }
-//             }
-//         })
-//     }
-// }
 function hapus_data(id){
         let confirmDelete = confirm("Apakah anda yakin akan menghapus data ini?");
         if(confirmDelete){
