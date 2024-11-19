@@ -517,6 +517,48 @@ jQuery(document).ready(function(){
 		jQuery('#konfirmasi-desa tbody tr input[type="checkbox"][id_kec="'+id_kec+'"]').prop('checked', cek);
 	});
 
+
+    if (jQuery("#satset_load_ajax_carbon").length >= 1) {
+        jQuery("#wrap-loading").show();
+        jQuery.ajax({
+            url: ajaxurl,
+            type: "post",
+            data: {
+                action: "satset_load_ajax_carbon",
+                api_key: satset.api_key,
+                type: jQuery("#satset_load_ajax_carbon").attr("data-type"),
+            },
+            dataType: "json",
+            success: function (data) {
+                jQuery("#wrap-loading").hide();
+                if (data.status == "success") {
+                    jQuery("#satset_load_ajax_carbon").html(data.message);
+                } else {
+                    return alert(data.message);
+                }
+            },
+            error: function (e) {
+                console.log(e);
+                return alert(data.message);
+            },
+        });
+
+        jQuery("body").on("click", ".satset-header-tahun", function () {
+        var tahun = jQuery(this).attr("tahun");
+        if (jQuery(this).hasClass("active")) {
+            jQuery(this).removeClass("active");
+            jQuery('.satset-body-tahun[tahun="' + tahun + '"]').removeClass(
+                "active"
+            );
+        } else {
+            jQuery(this).addClass("active");
+            jQuery('.satset-body-tahun[tahun="' + tahun + '"]').addClass(
+                "active"
+            );
+        }
+    });
+    }
+
     jQuery("#generate_user_satset").on("click", function () {
         if (confirm("Apakah anda yakin akan menggenerate user SIPD!")) {
             jQuery("#wrap-loading").show();

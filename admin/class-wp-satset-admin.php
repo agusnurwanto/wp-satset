@@ -42,6 +42,7 @@ class Wp_Satset_Admin {
 	 * @var      string    $version    The current version of this plugin.
 	 */
 	private $version;
+	private $functions;
 
 	/**
 	 * Initialize the class and set its properties.
@@ -356,7 +357,7 @@ class Wp_Satset_Admin {
 					->set_default_value(date('Y'))
 					->set_help_text('Wajib diisi.'),
 				Field::make('html', 'crb_html_data_unit')
-					->set_html('<a href="#" class="button button-primary" onclick="get_data_unit_wpsipd(); return false;">Tarik Data Unit dari WP SIPD</a>')
+					->set_html('<a href="#" class="button button-primary" onclick="get_data_unit_wpsipd_satset(); return false;">Tarik Data Unit dari WP SIPD</a>')
 					->set_help_text('Tombol untuk menarik data Unit dari WP SIPD.'),
 				Field::make('html', 'crb_generate_user')
 					->set_html('<a id="generate_user_satset" onclick="return false;" href="#" class="button button-primary button-large">Generate User By DB Lokal</a>')
@@ -696,9 +697,10 @@ class Wp_Satset_Admin {
 		);
 
 		if (!empty($_POST)) {
-			// Tentukan tabel berdasarkan tipe_data
-			$table_data = ($_POST['tipe_data'] == 1) ? 'data_p3ke' : 'data_p3ke_anggota_keluarga';
-			
+			$table_data = 'data_p3ke';
+			if($_POST['tipe_data'] == 1){
+				$table_data = 'data_p3ke_anggota_keluarga';
+			}
 			// Jika update_active dan page = 1, set semua data active = 0
 			if (!empty($_POST['update_active']) && $_POST['page'] == 1) {
 				$wpdb->update($table_data, array('active' => 0));
@@ -717,8 +719,8 @@ class Wp_Satset_Admin {
 					$newData[trim(preg_replace('/\s+/', ' ', $kk))] = trim(preg_replace('/\s+/', ' ', $vv));
 				}
 
-				// Logika untuk kepala keluarga (tipe_data = 1)
-				if ($_POST['tipe_data'] == 1) {
+				// Logika untuk kepala keluarga (tipe_data = 0)
+				if ($_POST['tipe_data'] == 0) {
 					$data_db = array(
 						'id_p3ke' => $newData['id_p3ke'],
 						'provinsi' => $newData['provinsi'],
@@ -755,7 +757,7 @@ class Wp_Satset_Admin {
 						'tahun_anggaran' => $newData['tahun_anggaran']
 					);
 				} 
-				// Logika untuk anggota keluarga (tipe_data = 0)
+				// Logika untuk anggota keluarga (tipe_data = 1)
 				else {
 					$data_db = array(
 						'id_p3ke' => $newData['id_p3ke'],

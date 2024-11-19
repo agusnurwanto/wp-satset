@@ -57,6 +57,8 @@ class Wp_Satset {
 	 */
 	protected $version;
 
+	private $functions;
+
 	/**
 	 * Define the core functionality of the plugin.
 	 *
@@ -177,6 +179,7 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_get_data_unit_wpsipd_satset', $plugin_admin, 'get_data_unit_wpsipd_satset');
 		$this->loader->add_action('wp_ajax_get_api_param_wpsipd', $plugin_admin, 'get_api_param_wpsipd');
 		$this->loader->add_action('wp_ajax_generate_user_satset', $plugin_admin, 'generate_user_satset');
+		$this->loader->add_action('wp_ajax_satset_load_ajax_carbon', $plugin_admin, 'satset_load_ajax_carbon');
 
 	}
 

@@ -53,6 +53,7 @@ class Wp_Satset_Public {
 	 * @var      string    $version    The current version of this plugin.
 	 */
 	private $version;
+	private $functions;
 
 	/**
 	 * Initialize the class and set its properties.
