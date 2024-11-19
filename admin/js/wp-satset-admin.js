@@ -516,4 +516,67 @@ jQuery(document).ready(function(){
 		var id_kec = jQuery(this).val();
 		jQuery('#konfirmasi-desa tbody tr input[type="checkbox"][id_kec="'+id_kec+'"]').prop('checked', cek);
 	});
+
+    jQuery("#generate_user_satset").on("click", function () {
+        if (confirm("Apakah anda yakin akan menggenerate user SIPD!")) {
+            jQuery("#wrap-loading").show();
+            jQuery.ajax({
+                url: ajaxurl,
+                type: "POST",
+                data: {
+                    action: "generate_user_satset",
+                    api_key: satset.api_key,
+                    pass: prompt(
+                        "Masukan password default untuk User yang akan dibuat"
+                    ),
+                    update_pass: confirm(
+                        "Apakah anda mau mereset password user existing juga?"
+                    ),
+                },
+                dataType: "json",
+                success: function (data) {
+                    jQuery("#wrap-loading").hide();
+                    return alert(data.message);
+                },
+                error: function (e) {
+                    console.log(e);
+                    return alert(data.message);
+                },
+            });
+        }
+    });
 });
+
+function get_data_unit_wpsipd_satset() {
+    jQuery("#wrap-loading").show();
+    jQuery.ajax({
+        url: ajaxurl,
+        type: "post",
+        dataType: "json",
+        data: {
+            action: "get_data_unit_wpsipd_satset",
+            server: jQuery(
+                'input[name="carbon_fields_compact_input[_crb_url_server_satset]"]'
+            ).val(),
+            api_key: jQuery(
+                'input[name="carbon_fields_compact_input[_crb_apikey_wpsipd]"]'
+            ).val(),
+            tahun_anggaran: jQuery(
+                'input[name="carbon_fields_compact_input[_crb_tahun_wpsipd]"]'
+            ).val(),
+        },
+        success: function (data) {
+            jQuery("#wrap-loading").hide();
+            console.log(data.message);
+            if (data.status == "success") {
+                alert("Data berhasil disinkron");
+            } else {
+                alert(data.message);
+            }
+        },
+        error: function (e) {
+            console.log(e);
+            return alert(e);
+        },
+    });
+}

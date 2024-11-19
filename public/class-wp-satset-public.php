@@ -120,6 +120,7 @@ class Wp_Satset_Public {
 		wp_enqueue_script($this->plugin_name . 'datatables', plugin_dir_url(__FILE__) . 'js/jquery.dataTables.min.js', array('jquery'), $this->version, false);
 		wp_enqueue_script($this->plugin_name . 'chart', plugin_dir_url(__FILE__) . 'js/chart.min.js', array('jquery'), $this->version, false);
 		wp_localize_script( $this->plugin_name, 'ajax', array(
+			'api_key' => get_option(SATSET_APIKEY),
 		    'url' => admin_url( 'admin-ajax.php' )
 		));
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-satset-public.js', array( 'jquery' ), $this->version, false );

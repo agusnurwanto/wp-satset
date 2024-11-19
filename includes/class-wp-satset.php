@@ -173,7 +173,10 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_get_data_desa',  $plugin_admin, 'get_data_desa');
 		$this->loader->add_action('wp_ajax_get_data_batas_kecamatan',  $plugin_admin, 'get_data_batas_kecamatan');
 		$this->loader->add_action('wp_ajax_sql_migrate_satset',  $plugin_admin, 'sql_migrate_satset');
-		
+		$this->loader->add_action('wp_ajax_get_data_unit', $plugin_admin, 'get_data_unit');
+		$this->loader->add_action('wp_ajax_get_data_unit_wpsipd_satset', $plugin_admin, 'get_data_unit_wpsipd_satset');
+		$this->loader->add_action('wp_ajax_get_api_param_wpsipd', $plugin_admin, 'get_api_param_wpsipd');
+		$this->loader->add_action('wp_ajax_generate_user_satset', $plugin_admin, 'generate_user_satset');
 
 	}
 

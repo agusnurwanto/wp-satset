@@ -103,6 +103,9 @@ class Wp_Satset_Admin {
 		wp_enqueue_script( $this->plugin_name.'jszip', plugin_dir_url( __FILE__ ) . 'js/jszip.js', array( 'jquery' ), $this->version, false );
 		wp_enqueue_script( $this->plugin_name.'xlsx', plugin_dir_url( __FILE__ ) . 'js/xlsx.js', array( 'jquery' ), $this->version, false );
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-satset-admin.js', array( 'jquery' ), $this->version, false );
+		wp_localize_script($this->plugin_name, 'satset', array(
+			'api_key' => get_option(SATSET_APIKEY)
+		));
 
 	}
 
@@ -341,7 +344,23 @@ class Wp_Satset_Admin {
 	            	->set_help_text('Nama kabupaten dalam huruf besar dan tanpa awalan.'),
             	Field::make( 'html', 'crb_satset_sql_migrate' )
 	            	->set_html( '<a onclick="sql_migrate_satset(); return false" href="javascript:void(0);" class="button button-primary">SQL Migrate</a>' )
-	            	->set_help_text('Tombol ini untuk melakukan perbaikan struktur tabel database.')
+	            	->set_help_text('Tombol ini untuk melakukan perbaikan struktur tabel database.'),
+
+				Field::make('text', 'crb_url_server_satset', 'URL Server WP-SIPD')
+					->set_default_value(admin_url('admin-ajax.php'))
+					->set_required(true),
+				Field::make('text', 'crb_apikey_wpsipd', 'API KEY WP-SIPD')
+					->set_default_value($this->functions->generateRandomString())
+					->set_help_text('Wajib diisi. API KEY digunakan untuk integrasi data.'),
+				Field::make('text', 'crb_tahun_wpsipd', 'Tahun Anggaran WP-SIPD')
+					->set_default_value(date('Y'))
+					->set_help_text('Wajib diisi.'),
+				Field::make('html', 'crb_html_data_unit')
+					->set_html('<a href="#" class="button button-primary" onclick="get_data_unit_wpsipd(); return false;">Tarik Data Unit dari WP SIPD</a>')
+					->set_help_text('Tombol untuk menarik data Unit dari WP SIPD.'),
+				Field::make('html', 'crb_generate_user')
+					->set_html('<a id="generate_user_satset" onclick="return false;" href="#" class="button button-primary button-large">Generate User By DB Lokal</a>')
+					->set_help_text('Data user active yang ada di table data unit akan digenerate menjadi user wordpress.'),
 
             ) );
 
@@ -669,147 +688,139 @@ class Wp_Satset_Admin {
 	        ) );
 	}
 
-	function import_excel_p3ke(){
+	function import_excel_p3ke(){ 
 		global $wpdb;
 		$ret = array(
 			'status'	=> 'success',
 			'message'	=> 'Berhasil import excel!'
 		);
+
 		if (!empty($_POST)) {
-			$table_data = 'data_p3ke';
-			if($_POST['tipe_data'] == 1){
-				$table_data = 'data_p3ke_anggota_keluarga';
-			}
-			if(
-				!empty($_POST['update_active']) 
-				&& $_POST['page'] == 1
-			){
+			// Tentukan tabel berdasarkan tipe_data
+			$table_data = ($_POST['tipe_data'] == 1) ? 'data_p3ke' : 'data_p3ke_anggota_keluarga';
+			
+			// Jika update_active dan page = 1, set semua data active = 0
+			if (!empty($_POST['update_active']) && $_POST['page'] == 1) {
 				$wpdb->update($table_data, array('active' => 0));
 			}
+			
 			$ret['data'] = array(
 				'insert' => 0, 
 				'update' => 0,
 				'error' => array()
 			);
+
+			// Loop data
 			foreach ($_POST['data'] as $k => $data) {
 				$newData = array();
-				foreach($data as $kk => $vv){
+				foreach ($data as $kk => $vv) {
 					$newData[trim(preg_replace('/\s+/', ' ', $kk))] = trim(preg_replace('/\s+/', ' ', $vv));
 				}
-				// kepala keluarga
-				if($_POST['tipe_data'] == 0){
-					if(empty($newData['kepala_keluarga'])){
-						$ret['data']['error'][] = 'data kepala keluarga tidak boleh kosong!';
-						continue;
-					}
+
+				// Logika untuk kepala keluarga (tipe_data = 1)
+				if ($_POST['tipe_data'] == 1) {
 					$data_db = array(
 						'id_p3ke' => $newData['id_p3ke'],
-					    'provinsi' => $newData['provinsi'],
-					    'kabkot' => $newData['kabkot'],
-					    'kecamatan' => $newData['kecamatan'],
-					    'desa' => $newData['desa'],
-					    'kode_kemendagri' => $newData['kode_kemendagri'],
-					    'jenis_desil' => $newData['jenis_desil'],
-					    'alamat' => $newData['alamat'],
-					    'kepala_keluarga' => $newData['kepala_keluarga'],
-					    'nik' => $newData['nik'],
-					    'padan_dukcapil' => $newData['padan_dukcapil'],
-					    'jenis_kelamin' => $newData['jenis_kelamin'],
-					    'tanggal_lahir' => $newData['tanggal_lahir'],
-					    'pekerjaan' => $newData['pekerjaan'],
-					    'pendidikan' => $newData['pendidikan'],
-					    'rumah' => $newData['rumah'],
-					    'punya_tabungan' => $newData['punya_tabungan'],
-					    'jenis_atap' => $newData['jenis_atap'],
-					    'jenis_dinding' => $newData['jenis_dinding'],
-					    'jenis_lantai' => $newData['jenis_lantai'],
-					    'sumber_penerangan' => $newData['sumber_penerangan'],
-					    'bahan_bakar_memasak' => $newData['bahan_bakar_memasak'],
-					    'sumber_air_minum' => $newData['sumber_air_minum'],
-					    'fasilitas_bab' => $newData['fasilitas_bab'],
-					    'penerima_bpnt' => $newData['penerima_bpnt'],
-					    'penerima_bpum' => $newData['penerima_bpum'],
-					    'penerima_bst' => $newData['penerima_bst'],
-					    'penerima_pkh' => $newData['penerima_pkh'],
-					    'penerima_sembako' => $newData['penerima_sembako'],
-					    'resiko_stunting' => $newData['resiko_stunting'],
-					    'active' => 1,
-					    'update_at' => current_time('mysql'),
-					    'tahun_anggaran' => $newData['tahun_anggaran']
+						'provinsi' => $newData['provinsi'],
+						'kabkot' => $newData['kabkot'],
+						'kecamatan' => $newData['kecamatan'],
+						'desa' => $newData['desa'],
+						'kode_kemendagri' => $newData['kode_kemendagri'],
+						'jenis_desil' => $newData['jenis_desil'],
+						'alamat' => $newData['alamat'],
+						'kepala_keluarga' => $newData['kepala_keluarga'],
+						'nik' => $newData['nik'],
+						'padan_dukcapil' => $newData['padan_dukcapil'],
+						'jenis_kelamin' => $newData['jenis_kelamin'],
+						'tanggal_lahir' => $newData['tanggal_lahir'],
+						'pekerjaan' => $newData['pekerjaan'],
+						'pendidikan' => $newData['pendidikan'],
+						'rumah' => $newData['rumah'],
+						'punya_tabungan' => $newData['punya_tabungan'],
+						'jenis_atap' => $newData['jenis_atap'],
+						'jenis_dinding' => $newData['jenis_dinding'],
+						'jenis_lantai' => $newData['jenis_lantai'],
+						'sumber_penerangan' => $newData['sumber_penerangan'],
+						'bahan_bakar_memasak' => $newData['bahan_bakar_memasak'],
+						'sumber_air_minum' => $newData['sumber_air_minum'],
+						'fasilitas_bab' => $newData['fasilitas_bab'],
+						'penerima_bpnt' => $newData['penerima_bpnt'],
+						'penerima_bpum' => $newData['penerima_bpum'],
+						'penerima_bst' => $newData['penerima_bst'],
+						'penerima_pkh' => $newData['penerima_pkh'],
+						'penerima_sembako' => $newData['penerima_sembako'],
+						'resiko_stunting' => $newData['resiko_stunting'],
+						'active' => 1,
+						'update_at' => current_time('mysql'),
+						'tahun_anggaran' => $newData['tahun_anggaran']
 					);
-				// anggota keluarga
-				}else{
-					if(empty($newData['hubungan_keluarga'])){
-						$ret['data']['error'][] = 'data hubungan keluarga keluarga tidak boleh kosong!';
-						continue;
-					}
+				} 
+				// Logika untuk anggota keluarga (tipe_data = 0)
+				else {
 					$data_db = array(
 						'id_p3ke' => $newData['id_p3ke'],
-					    'provinsi' => $newData['provinsi'],
-					    'kabkot' => $newData['kabkot'],
-					    'kecamatan' => $newData['kecamatan'],
-					    'desa' => $newData['desa'],
-					    'kode_kemendagri' => $newData['kode_kemendagri'],
-					    'jenis_desil' => $newData['jenis_desil'],
-					    'alamat' => $newData['alamat'],
-					    'id_individu' => $newData['id_individu'],
-					    'nama' => $newData['nama'],
-					    'nik' => $newData['nik'],
-					    'padan_dukcapil' => $newData['padan_dukcapil'],
-					    'jenis_kelamin' => $newData['jenis_kelamin'],
-					    'hubungan_keluarga' => $newData['hubungan_keluarga'],
-					    'tanggal_lahir' => $newData['tanggal_lahir'],
-					    'status_kawin' => $newData['status_kawin'],
-					    'pekerjaan' => $newData['pekerjaan'],
-					    'pendidikan' => $newData['pendidikan'],
-					    'usia_dibawah_7' => $newData['usia_dibawah_7'],
-					    'usia_7_12' => $newData['usia_7_12'],
-					    'usia_13_15' => $newData['usia_13_15'],
-					    'usia_16_18' => $newData['usia_16_18'],
-					    'usia_19_21' => $newData['usia_19_21'],
-					    'usia_22_59' => $newData['usia_22_59'],
-					    'usia_60_keatas' => $newData['usia_60_keatas'],
-					    'penerima_bpnt' => $newData['penerima_bpnt'],
-					    'penerima_bpum' => $newData['penerima_bpum'],
-					    'penerima_bst' => $newData['penerima_bst'],
-					    'penerima_pkh' => $newData['penerima_pkh'],
-					    'penerima_sembako' => $newData['penerima_sembako'],
-					    'resiko_stunting' => $newData['resiko_stunting'],
-					    'active' => 1,
-					    'update_at' => current_time('mysql'),
-					    'tahun_anggaran' => $newData['tahun_anggaran']
+						'provinsi' => $newData['provinsi'],
+						'kabkot' => $newData['kabkot'],
+						'kecamatan' => $newData['kecamatan'],
+						'desa' => $newData['desa'],
+						'kode_kemendagri' => $newData['kode_kemendagri'],
+						'jenis_desil' => $newData['jenis_desil'],
+						'alamat' => $newData['alamat'],
+						'id_individu' => $newData['id_individu'],
+						'nama' => $newData['nama'],
+						'nik' => $newData['nik'],
+						'padan_dukcapil' => $newData['padan_dukcapil'],
+						'jenis_kelamin' => $newData['jenis_kelamin'],
+						'hubungan_keluarga' => $newData['hubungan_keluarga'],
+						'tanggal_lahir' => $newData['tanggal_lahir'],
+						'status_kawin' => $newData['status_kawin'],
+						'pekerjaan' => $newData['pekerjaan'],
+						'pendidikan' => $newData['pendidikan'],
+						'usia_dibawah_7' => $newData['usia_dibawah_7'],
+						'usia_7_12' => $newData['usia_7_12'],
+						'usia_13_15' => $newData['usia_13_15'],
+						'usia_16_18' => $newData['usia_16_18'],
+						'usia_19_21' => $newData['usia_19_21'],
+						'usia_22_59' => $newData['usia_22_59'],
+						'usia_60_keatas' => $newData['usia_60_keatas'],
+						'penerima_bpnt' => $newData['penerima_bpnt'],
+						'penerima_bpum' => $newData['penerima_bpum'],
+						'penerima_bst' => $newData['penerima_bst'],
+						'penerima_pkh' => $newData['penerima_pkh'],
+						'penerima_sembako' => $newData['penerima_sembako'],
+						'resiko_stunting' => $newData['resiko_stunting'],
+						'active' => 1,
+						'update_at' => current_time('mysql'),
+						'tahun_anggaran' => $newData['tahun_anggaran']
 					);
 				}
-				$wpdb->last_error = "";
-				if(empty($newData['nik'])){
+
+				// Cek data di database
+				if (empty($newData['nik'])) {
 					$cek_id = $wpdb->get_var($wpdb->prepare("
-						SELECT 
-							id 
-						from $table_data 
-						where kode_kemendagri=%s
-							and id_p3ke=%s
-							and nik is null"
-						, $newData['kode_kemendagri'], $newData['id_p3ke']));
-				}else{
+						SELECT id FROM $table_data 
+						WHERE kode_kemendagri = %s AND id_p3ke = %s AND nik IS NULL",
+						$newData['kode_kemendagri'], $newData['id_p3ke']
+					));
+				} else {
 					$cek_id = $wpdb->get_var($wpdb->prepare("
-						SELECT 
-							id 
-						from $table_data 
-						where kode_kemendagri=%s
-							and id_p3ke=%s
-							and nik=%s"
-						, $newData['kode_kemendagri'], $newData['id_p3ke'], $newData['nik']));
+						SELECT id FROM $table_data 
+						WHERE kode_kemendagri = %s AND id_p3ke = %s AND nik = %s",
+						$newData['kode_kemendagri'], $newData['id_p3ke'], $newData['nik']
+					));
 				}
-				if(empty($cek_id)){
+
+				// Insert atau Update data
+				if (empty($cek_id)) {
 					$wpdb->insert($table_data, $data_db);
 					$ret['data']['insert']++;
-				}else{
-					$wpdb->update($table_data, $data_db, array(
-						"id" => $cek_id
-					));
+				} else {
+					$wpdb->update($table_data, $data_db, array('id' => $cek_id));
 					$ret['data']['update']++;
 				}
-				if(!empty($wpdb->last_error)){
+
+				// Handle error
+				if (!empty($wpdb->last_error)) {
 					$ret['data']['error'][] = array($wpdb->last_error, $data_db);
 				};
 			}
@@ -817,8 +828,10 @@ class Wp_Satset_Admin {
 			$ret['status'] = 'error';
 			$ret['message'] = 'Format Salah!';
 		}
+
 		die(json_encode($ret));
 	}
+
 
 	function import_excel_stunting(){
 		global $wpdb;
@@ -1319,6 +1332,293 @@ class Wp_Satset_Admin {
 			$ret['message'] = 'Format Salah!';
 		}
 		die(json_encode($ret));
+	}
+
+	function get_data_unit_wpsipd_satset()
+	{
+		global $wpdb;
+
+		if (empty($_POST['server'])) {
+			$data = array(
+				'status' => 'error',
+				'message' => 'URL Server Tidak Boleh Kosong'
+			);
+			$response = json_encode($data);
+			die($response);
+		} else if (empty($_POST['tahun_anggaran'])) {
+			$data = array(
+				'status' => 'error',
+				'message' => 'Tahun Tidak Boleh Kosong'
+			);
+			$response = json_encode($data);
+			die($response);
+		} else if (empty($_POST['api_key'])) {
+			$data = array(
+				'status' => 'error',
+				'message' => 'API Key Tidak Boleh Kosong'
+			);
+			$response = json_encode($data);
+			die($response);
+		}
+
+		// data to send in our API request
+		$api_params = array(
+			'action' => 'get_skpd',
+			'api_key'	=> $_POST['api_key'],
+			'tahun_anggaran' => $_POST['tahun_anggaran']
+		);
+
+		$response = wp_remote_post($_POST['server'], array('timeout' => 1000, 'sslverify' => false, 'body' => $api_params));
+
+		$response = wp_remote_retrieve_body($response);
+
+		$data = json_decode($response);
+
+		$satset_data_unit = $data->data;
+
+		if ($data->status == 'success' && !empty($satset_data_unit)) {
+			$wpdb->update('satset_data_unit', array('active' => 0), array('tahun_anggaran' => $api_params['tahun_anggaran']));
+			foreach ($satset_data_unit as $vdata) {
+				$cek = $wpdb->get_var($wpdb->prepare(
+					'
+					select 
+						id 
+					from satset_data_unit 
+					where id_skpd = %d
+						and tahun_anggaran = %d',
+					$vdata->id_skpd,
+					$vdata->tahun_anggaran
+				));
+				$opsi = array(
+					'id_setup_unit' => $vdata->id_setup_unit,
+					'id_unit' => $vdata->id_unit,
+					'is_skpd' => $vdata->is_skpd,
+					'kode_skpd' => $vdata->kode_skpd,
+					'kunci_skpd' => $vdata->kunci_skpd,
+					'nama_skpd' => $vdata->nama_skpd,
+					'posisi' => $vdata->posisi,
+					'status' => $vdata->status,
+					'id_skpd' => $vdata->id_skpd,
+					'bidur_1' => $vdata->bidur_1,
+					'bidur_2' => $vdata->bidur_2,
+					'bidur_3' => $vdata->bidur_3,
+					'idinduk' => $vdata->idinduk,
+					'ispendapatan' => $vdata->ispendapatan,
+					'isskpd' => $vdata->isskpd,
+					'kode_skpd_1' => $vdata->kode_skpd_1,
+					'kode_skpd_2' => $vdata->kode_skpd_2,
+					'kodeunit' => $vdata->kodeunit,
+					'komisi' => $vdata->komisi,
+					'namabendahara' => $vdata->namabendahara,
+					'namakepala' => $vdata->namakepala,
+					'namaunit' => $vdata->namaunit,
+					'nipbendahara' => $vdata->nipbendahara,
+					'nipkepala' => $vdata->nipkepala,
+					'pangkatkepala' => $vdata->pangkatkepala,
+					'setupunit' => $vdata->setupunit,
+					'statuskepala' => $vdata->statuskepala,
+					'update_at' => $vdata->update_at,
+					'tahun_anggaran' => $vdata->tahun_anggaran,
+					'active' => $vdata->active
+				);
+				if (empty($cek)) {
+					$wpdb->insert('satset_data_unit', $opsi);
+				} else {
+					$wpdb->update('satset_data_unit', $opsi, array('id' => $cek));
+				}
+			}
+		}
+
+		$response = json_encode($data);
+
+		die($response);
+	}
+
+
+	function generate_user_satset()
+	{
+		global $wpdb;
+		$ret = array();
+		$ret['status'] = 'success';
+		$ret['message'] = 'Berhasil Generate User Wordpress dari DB Lokal';
+		if (!empty($_POST)) {
+			if (!empty($_POST['api_key']) && $_POST['api_key'] == get_option('_crb_apikey_satset')) {
+				$users_pa = $wpdb->get_results(
+					$wpdb->prepare("
+						SELECT 
+						* 
+						FROM satset_data_unit 
+						WHERE active=1
+						"),
+					ARRAY_A
+				);
+				$update_pass = false;
+				if (
+					!empty($_POST['update_pass'])
+					&& $_POST['update_pass'] == 'true'
+				) {
+					$update_pass = true;
+				}
+				if (!empty($users_pa)) {
+					foreach ($users_pa as $k => $user) {
+						$user['pass'] = $_POST['pass'];
+						$user['loginname'] = $user['nipkepala'];
+						$user['jabatan'] = $user['statuskepala'];
+						$user['nama'] = $user['namakepala'];
+						$user['id_sub_skpd'] = $user['id_skpd'];
+						$user['nip'] = $user['nipkepala'];
+						$this->gen_user_satset($user, $update_pass);
+					}
+
+					// admin bappeda
+					$args = array(
+						'role'    => 'admin_bappeda',
+						'orderby' => 'user_nicename',
+						'order'   => 'ASC'
+					);
+					$users_bappeda = get_users($args);
+					$user_data = array();
+					$user_data['pass'] = $_POST['pass'];
+					$user_data['jabatan'] = 'admin_bappeda';
+					if (empty($user_exist)) {
+						$user_data['loginname'] = 'admin_perencanaan';
+						$user_data['nama'] = 'Admin Perencanaan';
+						$this->gen_user_satset($user_data, $update_pass);
+					} else {
+						foreach ($users_bappeda as $user_exist) {
+							$user_data['loginname'] = $user_exist->user_login;
+							$user_data['nama'] = $user_exist->display_name;
+						}
+						$this->gen_user_satset($user_data, $update_pass);
+					}
+
+					// admin review
+					$args = array(
+						'role'    => 'admin_panrb',
+						'orderby' => 'user_nicename',
+						'order'   => 'ASC'
+					);
+					$users_fanrb = get_users($args);
+					$user_data = array();
+					$user_data['pass'] = $_POST['pass'];
+					$user_data['jabatan'] = 'admin_panrb';
+					if (empty($user_exist)) {
+						$user_data['loginname'] = 'admin_panrb';
+						$user_data['nama'] = 'Admin Review';
+						$this->gen_user_satset($user_data, $update_pass);
+					} else {
+						foreach ($users_fanrb as $user_exist) {
+							$user_data['loginname'] = $user_exist->user_login;
+							$user_data['nama'] = $user_exist->display_name;
+						}
+						$this->gen_user_satset($user_data, $update_pass);
+					}
+
+					// admin ortala
+					$args = array(
+						'role'    => 'admin_ortala',
+						'orderby' => 'user_nicename',
+						'order'   => 'ASC'
+					);
+					$users_ortala = get_users($args);
+					$user_data = array();
+					$user_data['pass'] = $_POST['pass'];
+					$user_data['jabatan'] = 'admin_ortala';
+					if (empty($user_exist)) {
+						$user_data['loginname'] = 'admin_organisasi';
+						$user_data['nama'] = 'Admin Organisasi';
+						$this->gen_user_satset($user_data, $update_pass);
+					} else {
+						foreach ($users_ortala as $user_exist) {
+							$user_data['loginname'] = $user_exist->user_login;
+							$user_data['nama'] = $user_exist->display_name;
+						}
+						$this->gen_user_satset($user_data, $update_pass);
+					}
+				} else {
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data user PA/KPA kosong. Harap lakukan singkronisasi data Perangkat Daerah dulu!';
+				}
+			} else {
+				$ret['status'] = 'error';
+				$ret['message'] = 'APIKEY tidak sesuai!';
+			}
+		} else {
+			$ret['status'] = 'error';
+			$ret['message'] = 'Format Salah!';
+		}
+		die(json_encode($ret));
+	}
+
+	function gen_user_satset($user = array(), $update_pass = false)
+	{
+		global $wpdb;
+		if (!empty($user)) {
+			$username = $user['loginname'];
+			if (!empty($user['emailteks'])) {
+				$email = $user['emailteks'];
+			} else {
+				$email = $username . '@sakiplocal.com';
+			}
+			$user['jabatan'] = strtolower($user['jabatan']);
+			$role = get_role($user['jabatan']);
+			if (empty($role)) {
+				add_role($user['jabatan'], $user['jabatan'], array(
+					'read' => true,
+					'edit_posts' => false,
+					'delete_posts' => false
+				));
+			}
+			$insert_user = username_exists($username);
+			if (!$insert_user) {
+				$option = array(
+					'user_login' => $username,
+					'user_pass' => $user['pass'],
+					'user_email' => $email,
+					'first_name' => $user['nama'],
+					'display_name' => $user['nama'],
+					'role' => $user['jabatan']
+				);
+				$insert_user = wp_insert_user($option);
+
+				if (is_wp_error($insert_user)) {
+					return $insert_user;
+				}
+			} else {
+				$user_meta = get_userdata($insert_user);
+				if (!in_array($user['jabatan'], $user_meta->roles)) {
+					$user_meta->add_role($user['jabatan']);
+				}
+			}
+
+			if (!empty($update_pass)) {
+				wp_set_password($user['pass'], $insert_user);
+			}
+
+			$meta = array(
+				'description' => 'User dibuat dari generate sistem aplikasi WP-Eval-SAKIP'
+			);
+			if (!empty($user['nip'])) {
+				$meta['nip'] = $user['nip'];
+			}
+			if (!empty($user['id_sub_skpd'])) {
+				$skpd = $wpdb->get_var(
+					$wpdb->prepare("
+						SELECT nama_skpd 
+						FROM satset_data_unit 
+						WHERE id_skpd=" . $user['id_sub_skpd'] . " 
+						  AND active=1")
+				);
+				$meta['_crb_nama_skpd'] = $skpd;
+				$meta['_id_sub_skpd'] = $user['id_sub_skpd'];
+			}
+			if (!empty($user['iduser'])) {
+				$meta['id_user_sipd'] = $user['iduser'];
+			}
+			foreach ($meta as $key => $val) {
+				update_user_meta($insert_user, $key, $val);
+			}
+		}
 	}
 
 }

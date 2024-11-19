@@ -33,6 +33,7 @@ if ( ! defined( 'WPINC' ) ) {
 define( 'SATSET_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'SATSET_PLUGIN_PATH', plugin_dir_path(__FILE__) );
 define( 'SATSET_APIKEY', '_crb_apikey_satset' );
+define( 'ESAKIP_URL_WPSIPD', '_crb_url_server_satset' );
 
 // ============== https://carbonfields.net/ ================
 if(!defined('Carbon_Fields_Plugin\PLUGIN_FILE')){
