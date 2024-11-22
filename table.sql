@@ -71,7 +71,7 @@ CREATE TABLE `data_p3ke` (
     `resiko_stunting` VARCHAR(30) DEFAULT NULL,
     `active` tinyint(4) DEFAULT 1,
     `update_at` datetime DEFAULT current_timestamp,
-    `tahun_anggaran` year(4) NOT NULL DEFAULT '2023',
+    `tahun_anggaran` year(4) DEFAULT NULL,
     PRIMARY KEY  (id)
 );
 
@@ -110,7 +110,7 @@ CREATE TABLE `data_p3ke_anggota_keluarga` (
     `resiko_stunting` VARCHAR(30) DEFAULT NULL,
     `active` tinyint(4) DEFAULT 1,
     `update_at` datetime DEFAULT current_timestamp,
-    `tahun_anggaran` year(4) NOT NULL DEFAULT '2023',
+    `tahun_anggaran` year(4) DEFAULT NULL,
     PRIMARY KEY  (id)
 );
 
@@ -150,7 +150,7 @@ CREATE TABLE `data_stunting` (
     `kia` VARCHAR(100) DEFAULT NULL,
     `active` tinyint(4) DEFAULT 1,
     `update_at` datetime DEFAULT current_timestamp,
-    `tahun_anggaran` year(4) NOT NULL DEFAULT '2023',
+    `tahun_anggaran` year(4) DEFAULT NULL,
     PRIMARY KEY  (id)
 );
 
@@ -176,7 +176,7 @@ CREATE TABLE `data_tbc` (
     `keterangan` TEXT DEFAULT NULL,
     `active` tinyint(4) DEFAULT 1,
     `update_at` datetime DEFAULT current_timestamp,
-    `tahun_anggaran` year(4) NOT NULL DEFAULT '2023',
+    `tahun_anggaran` year(4) DEFAULT NULL,
     PRIMARY KEY  (id)
 );
 
@@ -197,7 +197,7 @@ CREATE TABLE `data_rtlh` (
     `sumber_dana` TEXT DEFAULT NULL,
     `active` tinyint(4) DEFAULT 1,
     `update_at` datetime DEFAULT current_timestamp,
-    `tahun_anggaran` year(4) NOT NULL DEFAULT '2023',
+    `tahun_anggaran` year(4) DEFAULT NULL,
     PRIMARY KEY  (id)
 );
 
@@ -250,7 +250,7 @@ CREATE TABLE `data_dtks_satset` (
     `verifyid` TEXT DEFAULT NULL,
     `active` tinyint(4) DEFAULT 1,
     `update_at` datetime DEFAULT current_timestamp,
-    `tahun_anggaran` year(4) NOT NULL DEFAULT '2023',
+    `tahun_anggaran` year(4) DEFAULT NULL,
     PRIMARY KEY  (id),
     INDEX(`id_desa`)
 );
@@ -291,7 +291,7 @@ CREATE TABLE `satset_data_unit` (
   `is_ppkd` tinyint(4) DEFAULT NULL,
   `set_input` tinyint(4) DEFAULT NULL,
   `update_at` datetime DEFAULT NULL,
-  `tahun_anggaran` year(4) NOT NULL DEFAULT '2021',
+  `tahun_anggaran` year(4) DEFAULT NULL,
   `active` tinyint(4) NOT NULL DEFAULT '1',
   PRIMARY KEY  (id)
 );
