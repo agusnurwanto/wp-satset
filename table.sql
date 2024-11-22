@@ -150,6 +150,7 @@ CREATE TABLE `data_stunting` (
     `kia` VARCHAR(100) DEFAULT NULL,
     `active` tinyint(4) DEFAULT 1,
     `update_at` datetime DEFAULT current_timestamp,
+    `tahun_anggaran` year(4) NOT NULL DEFAULT '2023',
     PRIMARY KEY  (id)
 );
 
@@ -175,6 +176,7 @@ CREATE TABLE `data_tbc` (
     `keterangan` TEXT DEFAULT NULL,
     `active` tinyint(4) DEFAULT 1,
     `update_at` datetime DEFAULT current_timestamp,
+    `tahun_anggaran` year(4) NOT NULL DEFAULT '2023',
     PRIMARY KEY  (id)
 );
 
@@ -195,6 +197,7 @@ CREATE TABLE `data_rtlh` (
     `sumber_dana` TEXT DEFAULT NULL,
     `active` tinyint(4) DEFAULT 1,
     `update_at` datetime DEFAULT current_timestamp,
+    `tahun_anggaran` year(4) NOT NULL DEFAULT '2023',
     PRIMARY KEY  (id)
 );
 
@@ -247,6 +250,7 @@ CREATE TABLE `data_dtks_satset` (
     `verifyid` TEXT DEFAULT NULL,
     `active` tinyint(4) DEFAULT 1,
     `update_at` datetime DEFAULT current_timestamp,
+    `tahun_anggaran` year(4) NOT NULL DEFAULT '2023',
     PRIMARY KEY  (id),
     INDEX(`id_desa`)
 );

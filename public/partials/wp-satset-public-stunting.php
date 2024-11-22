@@ -1,4 +1,14 @@
 <?php
+global $wpdb;
+
+if (!defined('WPINC')) {
+    die;
+}
+if (!empty($_GET) && !empty($_GET['tahun_anggaran'])) {
+    $tahun_anggaran = $_GET['tahun_anggaran'];
+} else {
+    $tahun_anggaran = get_option('_crb_tahun_satset');
+}
 $center = $this->get_center();
 $maps_all = $this->get_polygon();
 $stunting_all = $this->get_stunting();
@@ -90,8 +100,30 @@ foreach($maps_all as $i => $desa){
     ";
     $total_all += $total_stunting;
 }
+
+$tahun = $wpdb->get_results('
+    SELECT 
+        tahun_anggaran 
+    from satset_data_unit
+    group by tahun_anggaran 
+    order by tahun_anggaran ASC
+', ARRAY_A);
+$select_tahun = "";
+foreach($tahun as $tahun_value){
+    $select = $tahun_value['tahun_anggaran'] == $tahun_anggaran ? 'selected' : '';
+    $select_tahun .= "<option value='".$tahun_value['tahun_anggaran']."' ".$select.">".$tahun_value['tahun_anggaran']."</option>";
+}
 ?>
 <h1 class="text-center">Peta Sebaran Stunting<br><?php echo $this->getNamaDaerah(); ?></h1>
+<div id="wrap-action"></div>
+    <div class="text-center" style="margin-top: 30px;">
+        <label style="margin-left: 10px;" for="tahun_anggaran">Tahun Anggaran : </label>
+        <select style="width: 400px;" name="tahun_anggaran" id="tahun_anggaran">
+            <?php echo $select_tahun; ?>
+        </select>
+        <button style="margin-left: 10px; height: 45px; width: 75px;"onclick="sumbitTahun();" class="btn btn-sm btn-primary">Cari</button>
+    </div>
+</div>
 <div style="width: 95%; margin: 0 auto; min-height: 90vh; padding-bottom: 75px;">
     <div id="map-canvas" style="width: 100%; height: 400px;"></div>
     <h3 style="margin-top: 20px;">Keterangan</h3>
@@ -137,5 +169,14 @@ foreach($maps_all as $i => $desa){
             [5, 'desc']
         ]
     });
+    function sumbitTahun(){
+        var tahun_anggaran = jQuery('#tahun_anggaran').val();
+        if(tahun_anggaran == ''){
+            return alert('Tahun tidak boleh kosong!');
+        }
+        var url = window.location.href;
+        url = url.split('?')[0]+'?tahun_anggaran='+tahun_anggaran;
+        location.href = url;
+    }
 </script>
 <script async defer src="<?php echo $this->get_map_url(); ?>"></script>

@@ -1,4 +1,14 @@
 <?php
+global $wpdb;
+
+if (!defined('WPINC')) {
+    die;
+}
+if (!empty($_GET) && !empty($_GET['tahun_anggaran'])) {
+    $tahun_anggaran = $_GET['tahun_anggaran'];
+} else {
+    $tahun_anggaran = get_option('_crb_tahun_satset');
+}
 $center = $this->get_center();
 $maps_all = $this->get_polygon();
 

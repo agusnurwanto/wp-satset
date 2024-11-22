@@ -253,7 +253,7 @@ class Wp_Satset_Public {
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-filter-data-irisan.php';
 	}
 
-	function management_data_p3ke_satset(){
+	function management_data_p3ke_satset($atts){
 		// untuk disable render shortcode di halaman edit page/post
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
@@ -261,7 +261,7 @@ class Wp_Satset_Public {
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-p3ke.php';
 	}
 
-	function management_data_p3ke_anggota_keluarga(){
+	function management_data_p3ke_anggota_keluarga($atts){
 		// untuk disable render shortcode di halaman edit page/post
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
@@ -586,23 +586,39 @@ public function getNamaDaerah($value=''){
 		return $text;
 	}
 
-	function get_p3ke(){
-		global $wpdb;
-		$prov = get_option('_crb_prov_satset');
-		$where = " provinsi='$prov'";
-		$kab = get_option('_crb_kab_satset');
-		if(!empty($kab)){
-			$where .= " and kabkot='$kab'";
-		}
-		$data = $wpdb->get_results("
-			SELECT 
-				* 
-			FROM data_p3ke 
-			WHERE $where
-			ORDER BY provinsi, kabkot, kecamatan
-		", ARRAY_A);
-		return $data;
+	function get_p3ke() {
+	    global $wpdb;
+	    
+	    $prov = get_option('_crb_prov_satset');
+	    $kab = get_option('_crb_kab_satset');
+
+	    $where = "provinsi='$prov'";
+	    if (!empty($kab)) {
+	        $where .= " AND kabkot='$kab'";
+	    }
+
+	    if (!empty($_GET['tahun_anggaran'])) {
+	        $tahun_anggaran = $_GET['tahun_anggaran'];
+	    } else {
+	        $tahun_anggaran = get_option('_crb_tahun_satset'); 
+	    }
+
+	    $data = $wpdb->get_results(
+	        $wpdb->prepare("
+	            SELECT 
+	                * 
+	            FROM data_p3ke 
+	            WHERE $where
+	            AND tahun_anggaran=%d
+	            AND active=1
+	            ORDER BY provinsi, kabkot, kecamatan
+	        ", $tahun_anggaran), 
+	        ARRAY_A
+	    );
+
+	    return $data;
 	}
+
 
 	function get_stunting(){
 		global $wpdb;
@@ -612,13 +628,24 @@ public function getNamaDaerah($value=''){
 		if(!empty($kab)){
 			$where .= " and kabkot='$kab'";
 		}
-		$data = $wpdb->get_results("
+
+	    if (!empty($_GET['tahun_anggaran'])) {
+	        $tahun_anggaran = $_GET['tahun_anggaran'];
+	    } else {
+	        $tahun_anggaran = get_option('_crb_tahun_satset'); 
+	    }
+		$data = $wpdb->get_results(
+	        $wpdb->prepare("
 			SELECT 
 				* 
 			FROM data_stunting 
 			WHERE $where
+	            AND tahun_anggaran=%d
+	            AND active=1
 			ORDER BY provinsi, kabkot, kecamatan
-		", ARRAY_A);
+		", $tahun_anggaran), 
+	        ARRAY_A
+	    );
 		return $data;
 	}
 
@@ -630,13 +657,24 @@ public function getNamaDaerah($value=''){
 		if(!empty($kab)){
 			$where .= " and kabkot='$kab'";
 		}
-		$data = $wpdb->get_results("
+
+	    if (!empty($_GET['tahun_anggaran'])) {
+	        $tahun_anggaran = $_GET['tahun_anggaran'];
+	    } else {
+	        $tahun_anggaran = get_option('_crb_tahun_satset'); 
+	    }
+		$data = $wpdb->get_results(
+	        $wpdb->prepare("
 			SELECT 
 				* 
 			FROM data_tbc 
 			WHERE $where
+	            AND tahun_anggaran=%d
+	            AND active=1
 			ORDER BY provinsi, kabkot, kecamatan
-		", ARRAY_A);
+		", $tahun_anggaran), 
+	        ARRAY_A
+	    );
 		return $data;
 	}
 
@@ -648,14 +686,27 @@ public function getNamaDaerah($value=''){
 		if(!empty($kab)){
 			$where .= " and kabkot='$kab'";
 		}
-		$data = $wpdb->get_results("
-			SELECT 
-				* 
-			FROM data_rtlh 
-			WHERE $where
-			ORDER BY provinsi, kabkot, kecamatan
-		", ARRAY_A);
-		return $data;
+
+	    if (!empty($_GET['tahun_anggaran'])) {
+	        $tahun_anggaran = $_GET['tahun_anggaran'];
+	    } else {
+	        $tahun_anggaran = get_option('_crb_tahun_satset'); 
+	    }
+
+	    $data = $wpdb->get_results(
+	        $wpdb->prepare("
+	            SELECT 
+	                * 
+	            FROM data_rtlh 
+	            WHERE $where
+	            AND tahun_anggaran=%d
+	            AND active=1
+	            ORDER BY provinsi, kabkot, kecamatan
+	        ", $tahun_anggaran), 
+	        ARRAY_A
+	    );
+
+	    return $data;
 	}
 
 	function get_dtks(){
@@ -666,7 +717,14 @@ public function getNamaDaerah($value=''){
 		if(!empty($kab)){
 			$where .= " and kabkot='$kab'";
 		}
-		$data = $wpdb->get_results("
+
+	    if (!empty($_GET['tahun_anggaran'])) {
+	        $tahun_anggaran = $_GET['tahun_anggaran'];
+	    } else {
+	        $tahun_anggaran = get_option('_crb_tahun_satset'); 
+	    }
+		$data = $wpdb->get_results(
+	        $wpdb->prepare("
 			SELECT 
 				provinsi, 
 				kabkot, 
@@ -682,9 +740,12 @@ public function getNamaDaerah($value=''){
 			WHERE $where
 				AND is_nonaktif is null
 				AND active=1
+	            AND tahun_anggaran=%d
 			GROUP BY provinsi, kabkot, kecamatan, desa, BLT, BLT_BBM, BPNT, PKH, PBI
 			ORDER BY provinsi, kabkot, kecamatan
-		", ARRAY_A);
+		", $tahun_anggaran), 
+	        ARRAY_A
+	    );
 		return $data;
 	}
 
@@ -1298,34 +1359,44 @@ public function get_datatable_p3ke(){
 			            27	=> 'penerima_pkh',
 			            28	=> 'penerima_sembako',
 			            29	=> 'resiko_stunting',
-				 		30  => 'id'	 
+			            30	=> 'tahun_anggaran',
+				 		31  => 'id'	 
 	 			);
 	 			$where = $sqlTot = $sqlRec = "";
 
-	 			// check search value exist
-	 			if( !empty($params['search']['value']) ) {
-	 				$where .=" AND ( id_p3ke LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");    
-	 				$where .=" OR nik LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
-	 				$where .=" OR kepala_keluarga LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
-	 				$where .=" OR alamat LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%");
-	 			}
+	            if (empty($params['tahun_anggaran'])) {
+	                die(json_encode(array(
+	                    'status' => 'error',
+	                    'message' => 'Parameter tahun anggaran diperlukan!'
+	                )));
+	            }
 
-	 			// getting total number records without any search
-	 			$sql_tot = "SELECT count(id) as jml FROM `data_p3ke`";
-	 			$sql = "SELECT ".implode(', ', $columns)." FROM `data_p3ke`";
-	 			$where_first = " WHERE 1=1 AND active = 1";
-	 			$sqlTot .= $sql_tot.$where_first;
-	 			$sqlRec .= $sql.$where_first;
-	 			if(isset($where) && $where != '') {
-	 				$sqlTot .= $where;
-	 				$sqlRec .= $where;
-	 			}
+	            $tahun_anggaran = $params['tahun_anggaran'];
 
-	 			$limit = '';
-	 			if($params['length'] != -1){
-	 				$limit = "  LIMIT ".$wpdb->prepare('%d', $params['start'])." ,".$wpdb->prepare('%d', $params['length']);
-	 			}
-	 		 	$sqlRec .=  " ORDER BY ". $columns[$params['order'][0]['column']]."   ".$params['order'][0]['dir'].$limit;
+	            if (!empty($params['search']['value'])) {
+	                $where .= " AND (nik LIKE " . $wpdb->prepare('%s', "%" . $params['search']['value'] . "%");
+	                $where .= " OR alamat LIKE " . $wpdb->prepare('%s', "%" . $params['search']['value'] . "%");
+	                $where .= ")";
+	            }
+
+	            $where .= " AND tahun_anggaran = " . $wpdb->prepare('%s', $tahun_anggaran);
+
+	            $sql_tot = "SELECT count(id) as jml FROM `data_p3ke`";
+	            $sql = "SELECT " . implode(', ', $columns) . " FROM `data_p3ke`";
+	            $where_first = " WHERE 1=1 AND active = 1";
+	            $sqlTot .= $sql_tot . $where_first;
+	            $sqlRec .= $sql . $where_first;
+
+	            if (isset($where) && $where != '') {
+	                $sqlTot .= $where;
+	                $sqlRec .= $where;
+	            }
+	            // print_r($sqlRec); die($wpdb->last_query);
+	            $limit = '';
+	            if ($params['length'] != -1) {
+	                $limit = " LIMIT " . $wpdb->prepare('%d', $params['start']) . " ," . $wpdb->prepare('%d', $params['length']);
+	            }
+	            $sqlRec .= " ORDER BY " . $columns[$params['order'][0]['column']] . " " . $params['order'][0]['dir'] . $limit;
 
 	 			$queryTot = $wpdb->get_results($sqlTot, ARRAY_A);
 	 			$totalRecords = $queryTot[0]['jml'];
@@ -3213,33 +3284,44 @@ public function get_datatable_batas_kecamatan(){
 			           28 	=> 'penerima_pkh',
 			           29 	=> 'penerima_sembako',
 			           30 	=> 'resiko_stunting',
-				 	   31  => 'id'	 
+				 	   31  => 'tahun_anggaran',	 
+				 	   32  => 'id'	 
 	 			);
 	 			$where = $sqlTot = $sqlRec = "";
 
-	 			// check search value exist
-	 			if( !empty($params['search']['value']) ) {
-					$where .=" AND ( id_p3ke LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%").")";    
-	 				$where .=" OR nik LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%").")";
-	 				$where .=" OR alamat LIKE ".$wpdb->prepare('%s', "%".$params['search']['value']."%").")";
-	 			}
+	            if (empty($params['tahun_anggaran'])) {
+	                die(json_encode(array(
+	                    'status' => 'error',
+	                    'message' => 'Parameter tahun anggaran diperlukan!'
+	                )));
+	            }
 
-	 			// getting total number records without any search
-	 			$sql_tot = "SELECT count(id) as jml FROM `data_p3ke_anggota_keluarga`";
-	 			$sql = "SELECT ".implode(', ', $columns)." FROM `data_p3ke_anggota_keluarga`";
-	 			$where_first = " WHERE 1=1 AND active = 1";
-	 			$sqlTot .= $sql_tot.$where_first;
-	 			$sqlRec .= $sql.$where_first;
-	 			if(isset($where) && $where != '') {
-	 				$sqlTot .= $where;
-	 				$sqlRec .= $where;
-	 			}
+	            $tahun_anggaran = $params['tahun_anggaran'];
 
-	 			$limit = '';
-	 			if($params['length'] != -1){
-	 				$limit = "  LIMIT ".$wpdb->prepare('%d', $params['start'])." ,".$wpdb->prepare('%d', $params['length']);
-	 			}
-	 		 	$sqlRec .=  " ORDER BY ". $columns[$params['order'][0]['column']]."   ".$params['order'][0]['dir'].$limit;
+	            if (!empty($params['search']['value'])) {
+	                $where .= " AND (nik LIKE " . $wpdb->prepare('%s', "%" . $params['search']['value'] . "%");
+	                $where .= " OR alamat LIKE " . $wpdb->prepare('%s', "%" . $params['search']['value'] . "%");
+	                $where .= ")";
+	            }
+
+	            $where .= " AND tahun_anggaran = " . $wpdb->prepare('%s', $tahun_anggaran);
+
+	            $sql_tot = "SELECT count(id) as jml FROM `data_p3ke_anggota_keluarga`";
+	            $sql = "SELECT " . implode(', ', $columns) . " FROM `data_p3ke_anggota_keluarga`";
+	            $where_first = " WHERE 1=1 AND active = 1";
+	            $sqlTot .= $sql_tot . $where_first;
+	            $sqlRec .= $sql . $where_first;
+
+	            if (isset($where) && $where != '') {
+	                $sqlTot .= $where;
+	                $sqlRec .= $where;
+	            }
+
+	            $limit = '';
+	            if ($params['length'] != -1) {
+	                $limit = " LIMIT " . $wpdb->prepare('%d', $params['start']) . " ," . $wpdb->prepare('%d', $params['length']);
+	            }
+	            $sqlRec .= " ORDER BY " . $columns[$params['order'][0]['column']] . " " . $params['order'][0]['dir'] . $limit;
 
 	 			$queryTot = $wpdb->get_results($sqlTot, ARRAY_A);
 	 			$totalRecords = $queryTot[0]['jml'];
