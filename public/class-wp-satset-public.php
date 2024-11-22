@@ -1240,6 +1240,12 @@ public function tambah_data_p3ke(){
 				// 	$ret['status'] = 'error';
 				// 	$ret['message'] = 'Data Resiko Stunting tidak boleh kosong!';
 				}
+				if($ret['status'] != 'error' && !empty($_POST['tahun_anggaran'])){
+					$tahun_anggaran = $_POST['tahun_anggaran'];
+				// }else{
+				// 	$ret['status'] = 'error';
+				// 	$ret['message'] = 'Data Resiko Stunting tidak boleh kosong!';
+				}
 				if($ret['status'] != 'error'){
 					$data = array(
 						'id_p3ke' => $id_p3ke,
@@ -1272,6 +1278,7 @@ public function tambah_data_p3ke(){
 			            'penerima_pkh' => $penerima_pkh,
 			            'penerima_sembako' => $penerima_sembako,
 			            'resiko_stunting' => $resiko_stunting,
+			            'tahun_anggaran' => $tahun_anggaran,
 						'active' => 1,
 						'update_at' => current_time('mysql')
 					);

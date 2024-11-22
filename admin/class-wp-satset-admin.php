@@ -1153,6 +1153,7 @@ class Wp_Satset_Admin {
 				    'lpj' => $newData['lpj'],
 				    'tgl_lpj' => $newData['tgl_lpj'],
 				    'sumber_dana' => $newData['sumber_dana'],
+				    'tahun_anggaran' => $newData['tahun_anggaran'],
 				);
 				// print_r($data_db); die();
 				$wpdb->last_error = "";
@@ -1166,8 +1167,9 @@ class Wp_Satset_Admin {
 							and kabkot=%s
 							and kecamatan=%s
 							and desa=%s
+							and tahun_anggaran=%s
 							and nik is null"
-						, $newData['nama'], $newData['provinsi'], $newData['kabkot'], $newData['kecamatan'], $newData['desa']));
+						, $newData['nama'], $newData['provinsi'], $newData['kabkot'], $newData['kecamatan'], $newData['desa'], $newData['tahun_anggaran']));
 				}else{
 					$cek_id = $wpdb->get_var($wpdb->prepare("
 						SELECT 
@@ -1178,8 +1180,9 @@ class Wp_Satset_Admin {
 							and kabkot=%s
 							and kecamatan=%s
 							and desa=%s
+							and tahun_anggaran=%s
 							and nik=%s"
-						, $newData['nama'], $newData['provinsi'], $newData['kabkot'], $newData['kecamatan'], $newData['desa'], $newData['nik']));
+						, $newData['nama'], $newData['provinsi'], $newData['kabkot'], $newData['kecamatan'], $newData['desa'], $newData['tahun_anggaran'], $newData['nik']));
 				}
 				if(empty($cek_id)){
 					$wpdb->insert("data_rtlh", $data_db);

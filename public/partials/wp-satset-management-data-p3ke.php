@@ -102,6 +102,10 @@ foreach($tahun as $tahun_value){
             <div class="modal-body">
                 <input type='hidden' id='id_data' name="id_data" placeholder=''>
                 <div class="form-group">
+                    <label for='tahun_anggaran' style='display:inline-block'>Tahun Anggaran</label>
+                    <input type='text' id='tahun_anggaran' name="tahun_anggaran" class="form-control" value ="<?php echo $tahun_anggaran; ?>" disabled>
+                </div> 
+                <div class="form-group">
                     <label for='id_p3ke' style='display:inline-block'>Id P3KE</label>
                     <input type='text' id='id_p3ke' name="id_p3ke" class="form-control" placeholder=''>
                 </div> 
@@ -461,6 +465,7 @@ function edit_data(_id){
                 jQuery('#penerima_pkh').val(res.data.penerima_pkh);
                 jQuery('#penerima_sembako').val(res.data.penerima_sembako);
                 jQuery('#resiko_stunting').val(res.data.resiko_stunting);
+                jQuery('#tahun_anggaran').val(res.data.tahun_anggaran);
                 jQuery('#modalTambahDataP3KE').modal('show');
             }else{
                 alert(res.message);
@@ -503,6 +508,7 @@ function tambah_data_p3ke(){
     jQuery('#penerima_pkh').val('');
     jQuery('#penerima_sembako').val('');
     jQuery('#resiko_stunting').val('');
+    jQuery('#tahun_anggaran').val('');
     jQuery('#modalTambahDataP3KE').modal('show');
 }
 
@@ -628,6 +634,10 @@ function submitTambahDataFormP3KE(){
     if(resiko_stunting == ''){
         return alert('Data resiko_stunting tidak boleh kosong!');
     }
+    var tahun_anggaran = jQuery('#tahun_anggaran').val();
+    if(tahun_anggaran == ''){
+        return alert('Data tahun_anggaran tidak boleh kosong!');
+    }
 
     jQuery('#wrap-loading').show();
     jQuery.ajax({
@@ -668,6 +678,7 @@ function submitTambahDataFormP3KE(){
             'penerima_pkh': penerima_pkh,
             'penerima_sembako': penerima_sembako,
             'resiko_stunting': resiko_stunting,
+            'tahun_anggaran': tahun_anggaran,
         },
         success: function(res){
             alert(res.message);
