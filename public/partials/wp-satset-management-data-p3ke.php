@@ -7,6 +7,8 @@ if (!defined('WPINC')) {
 
 if (!empty($_GET) && !empty($_GET['tahun_anggaran'])) {
     $tahun_anggaran = $_GET['tahun_anggaran'];
+} else {
+    $tahun_anggaran = get_option('_crb_tahun_satset');
 }
 $tahun = $wpdb->get_results('
     SELECT 
@@ -678,13 +680,14 @@ function submitTambahDataFormP3KE(){
             'penerima_pkh': penerima_pkh,
             'penerima_sembako': penerima_sembako,
             'resiko_stunting': resiko_stunting,
-            'tahun_anggaran': tahun_anggaran,
+            'tahun_anggaran': <?php echo $tahun_anggaran; ?>,
         },
         success: function(res){
             alert(res.message);
             jQuery('#modalTambahDataP3KE').modal('hide');
             if(res.status == 'success'){
                 get_data_p3ke();
+                location.reload(); 
             }else{
                 jQuery('#wrap-loading').hide();
             }

@@ -1,3 +1,28 @@
+<?php
+global $wpdb;
+
+if (!defined('WPINC')) {
+    die;
+}
+
+if (!empty($_GET) && !empty($_GET['tahun_anggaran'])) {
+    $tahun_anggaran = $_GET['tahun_anggaran'];
+} else {
+    $tahun_anggaran = get_option('_crb_tahun_satset');
+}
+$tahun = $wpdb->get_results('
+    SELECT 
+        tahun_anggaran 
+    from satset_data_unit
+    group by tahun_anggaran 
+    order by tahun_anggaran ASC
+', ARRAY_A);
+$select_tahun = "";
+foreach($tahun as $tahun_value){
+    $select = $tahun_value['tahun_anggaran'] == $tahun_anggaran ? 'selected' : '';
+    $select_tahun .= "<option value='".$tahun_value['tahun_anggaran']."' ".$select.">".$tahun_value['tahun_anggaran']."</option>";
+}
+?>
 <style type="text/css">
     .wrap-table{
         overflow: auto;
@@ -9,12 +34,21 @@
 <div class="cetak">
     <div style="padding: 10px;margin:0 0 3rem 0;">
         <input type="hidden" value="<?php echo get_option( '_crb_api_key_extension' ); ?>" id="api_key">
-    <h1 class="text-center" style="margin:3rem;">Manajemen Data TBC</h1>
+        <h1 class="text-center" style="margin:3rem;">Manajemen Data TBC</h1>
+        <div id="wrap-action"></div>
+            <div class="text-center" style="margin-top: 30px;">
+                <label style="margin-left: 10px;" for="tahun_anggaran">Tahun Anggaran : </label>
+                <select style="width: 400px;" name="tahun_anggaran" id="tahun_anggaran">
+                    <?php echo $select_tahun; ?>
+                </select>
+                <button style="margin-left: 10px; height: 45px; width: 75px;"onclick="sumbitTahun();" class="btn btn-sm btn-primary">Cari</button>
+            </div>
+        </div>
         <div style="margin-bottom: 25px;">
             <button class="btn btn-primary" onclick="tambah_data_tbc();"><i class="dashicons dashicons-plus"></i> Tambah Data TBC</button>
         </div>
         <div class="wrap-table">
-        <table id="management_data_table" cellpadding="2" cellspacing="0" style="font-family:\'Open Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif; border-collapse: collapse; width:100%; overflow-wrap: break-word;" class="table table-bordered">
+        <table id="management_data_table" class="table table-bordered">
             <thead>
                 <tr>
                     <th class="text-center">Tanggal Register</th>
@@ -31,6 +65,7 @@
                     <th class="text-center">Hasil Akhir Pengobatan</th>
                     <th class="text-center">Status Pengobatan</th>
                     <th class="text-center">Keterangan</th>
+                    <th class="text-center">Tahun Anggaran</th>
                     <th class="text-center" style="width: 150px;">Aksi</th>
                 </tr>
             </thead>
@@ -52,6 +87,10 @@
             </div>
             <div class="modal-body">
                 <input type='hidden' id='id_data' name="id_data" placeholder=''>
+                <div class="form-group">
+                    <label for='tahun_anggaran' style='display:inline-block'>Tahun Anggaran</label>
+                    <input type='text' id='tahun_anggaran' name="tahun_anggaran" class="form-control" value ="<?php echo $tahun_anggaran; ?>" disabled>
+                </div> 
                 <div class="form-group">
                 <div class="form-group">
                     <label for='tanggal_register' style='display:inline-block'>Tanggal Register</label>
@@ -135,6 +174,7 @@ function get_data_tbc(){
                 data:{
                     'action': 'get_datatable_tbc',
                     'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
+                    'tahun_anggaran': '<?php echo $tahun_anggaran; ?>',
                 }
             },
             lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
@@ -197,6 +237,10 @@ function get_data_tbc(){
                 },
                 {
                     "data": 'keterangan',
+                    className: "text-center"
+                },
+                {
+                    "data": 'tahun_anggaran',
                     className: "text-center"
                 },
                 {
@@ -264,6 +308,7 @@ function edit_data(_id){
                 jQuery('#hasil_akhir_pengobatan').val(res.data.hasil_akhir_pengobatan);
                 jQuery('#status_pengobatan').val(res.data.status_pengobatan);
                 jQuery('#keterangan').val(res.data.keterangan);
+                jQuery('#tahun_anggaran').val(res.data.tahun_anggaran);
                 jQuery('#modalTambahDataTBC').modal('show');
             }else{
                 alert(res.message);
@@ -290,6 +335,7 @@ function tambah_data_tbc(){
     jQuery('#hasil_akhir_pengobatan').val('');
     jQuery('#status_pengobatan').val('');
     jQuery('#keterangan').val('');
+    jQuery('#tahun_anggaran').val('');
     jQuery('#modalTambahDataTBC').modal('show');
 }
 
@@ -347,6 +393,10 @@ function submitTambahDataFormTBC(){
     if(status_pengobatan == ''){
         return alert('Data status_pengobatan tidak boleh kosong!');
     }
+    var tahun_anggaran = jQuery('#tahun_anggaran').val();
+    if(tahun_anggaran == ''){
+        return alert('Data tahun_anggaran tidak boleh kosong!');
+    }
     var keterangan = jQuery('#keterangan').val();
 
     jQuery('#wrap-loading').show();
@@ -371,6 +421,7 @@ function submitTambahDataFormTBC(){
             'tanggal_mulai_pengobatan': tanggal_mulai_pengobatan,
             'hasil_akhir_pengobatan': hasil_akhir_pengobatan,
             'status_pengobatan': status_pengobatan,
+            'tahun_anggaran': <?php echo $tahun_anggaran; ?>,
             'keterangan': keterangan,
         },
         success: function(res){
@@ -378,10 +429,20 @@ function submitTambahDataFormTBC(){
             jQuery('#modalTambahDataTBC').modal('hide');
             if(res.status == 'success'){
                 get_data_tbc();
+                location.reload(); 
             }else{
                 jQuery('#wrap-loading').hide();
             }
         }
     });
+}
+function sumbitTahun(){
+    var tahun_anggaran = jQuery('#tahun_anggaran').val();
+    if(tahun_anggaran == ''){
+        return alert('Tahun tidak boleh kosong!');
+    }
+    var url = window.location.href;
+    url = url.split('?')[0]+'?tahun_anggaran='+tahun_anggaran;
+    location.href = url;
 }
 </script>

@@ -418,12 +418,12 @@ class Wp_Satset_Admin {
 	            Field::make( 'text', 'crb_kab_satset', 'Nama Kabupaten/Kota' )
 	            	->set_default_value( 'MAGETAN' )
 	            	->set_help_text('Nama kabupaten dalam huruf besar dan tanpa awalan.'),
+				Field::make('text', 'crb_tahun_satset', 'Tahun Anggaran')
+					->set_default_value(date('Y'))
+					->set_help_text('Tahun anggaran diatas digunakan untuk default filter tahun.'),
             	Field::make( 'html', 'crb_satset_sql_migrate' )
 	            	->set_html( '<a onclick="sql_migrate_satset(); return false" href="javascript:void(0);" class="button button-primary">SQL Migrate</a>' )
 	            	->set_help_text('Tombol ini untuk melakukan perbaikan struktur tabel database.'),
-				Field::make('text', 'crb_tahun_satset', 'Tahun Anggaran SATSET')
-					->set_default_value(date('Y'))
-					->set_help_text('Tahun anggaran diatas digunakan untuk default filter tahun.'),
 
 				Field::make('text', 'crb_url_server_satset', 'URL Server WP-SIPD')
 					->set_default_value(admin_url('admin-ajax.php'))
@@ -633,42 +633,53 @@ class Wp_Satset_Admin {
         			->set_default_value(SATSET_PLUGIN_URL.'public/images/lokasi.png')
 	        ) );
 
+		$pilih_tahun = '<option value="">Pilih Tahun</option>';
+		$tahun = $wpdb->get_results(
+			$wpdb->prepare("
+				SELECT 
+					tahun_anggaran 
+				FROM satset_data_unit 
+				GROUP BY tahun_anggaran
+				ORDER BY tahun_anggaran DESC
+			"),
+			ARRAY_A
+		);
+		$tahun_default = get_option('_crb_tahun_satset');
+		foreach ($tahun as $tahun_item) {
+			$selected = '';
+			if($tahun_item['tahun_anggaran'] == $tahun_default){
+				$selected = "selected";
+			}
+			$pilih_tahun .= '<option value="'.$tahun_item['tahun_anggaran'].'" '.$selected.'>'.$tahun_item['tahun_anggaran'].'</option>';
+		}
+
 		Container::make( 'theme_options', __( 'Data P3KE' ) )
-		    ->set_page_parent( $basic_options_container )
-		    ->add_fields($this->get_ajax_field(array('type' => 'data_p3ke')) )
-
-		   ->add_fields(array( Field::make( 'html', 'crb_p3ke_upload_html' )
-		            ->set_html( '<h3>Import EXCEL data P3KE</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePickedSatset(event);"><br>Contoh format file excel untuk <b>Kepala Keluarga P3KE</b> bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_p3ke.xlsx">download di sini</a>.<br>Contoh format file excel <b>Anggota Keluarga P3KE</b> bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_p3ke_keluarga.xlsx">download di sini</a>.<br>Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
+			->set_page_parent( $basic_options_container )
+			->add_fields( array(
+		    	Field::make( 'html', 'crb_p3ke_hide_sidebar' )
+		        	->set_html( '
+		        		<style>
+		        			.postbox-container { display: none; }
+		        			#poststuff #post-body.columns-2 { margin: 0 !important; }
+		        		</style>
+		        	' ), 
+			Field::make( 'html', 'crb_satset_halaman_terkait_p3ke' )
+		        	->set_html( '
+					<h5>HALAMAN TERKAIT</h5>
+	            	<ol>
+	            		<li><a target="_blank" href="'.$management_data_p3ke['url'].'">'.$management_data_p3ke['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$management_data_p3ke_anggota_keluarga['url'].'">'.$management_data_p3ke_anggota_keluarga['title'].'</a></li>
+	            	</ol>
+		        	' ),
+		        Field::make( 'html', 'crb_p3ke_upload_html' )
+	            	->set_html( '<h3>Import EXCEL data P3KE</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePickedSatset(event);"><br>Contoh format file excel untuk <b>Kepala Keluarga P3KE</b> bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_p3ke.xlsx">download di sini</a>.<br>Contoh format file excel <b>Anggota Keluarga P3KE</b> bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_p3ke_keluarga.xlsx">download di sini</a>.<br>Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
 		        Field::make( 'html', 'crb_p3ke_satset' )
-		            ->set_html( 'Data JSON : <textarea id="data-excel" class="cf-select__input"></textarea>' ),
+	            	->set_html( 'Data JSON : <textarea id="data-excel" class="cf-select__input"></textarea>' ),
+		        Field::make( 'html', 'crb_p3ke_satset_tahun' )
+	            	->set_html( 'Pilih Tahun Anggaran : <select id="data-tahun-p3ke" class="cf-select__input">'.$pilih_tahun.'</select>' ),
 		        Field::make( 'html', 'crb_p3ke_save_button' )
-		            ->set_html( '<a onclick="import_excel_p3ke(); return false" href="javascript:void(0);" class="button button-primary">Import P3KE Kepala Keluarga</a><a style="margin-left: 20px;" onclick="import_excel_p3ke(1); return false" href="javascript:void(0);" class="button button-primary">Import P3KE Anggota Keluarga</a>' )));	
-
-		// Container::make( 'theme_options', __( 'Data P3KE' ) )
-		// 	->set_page_parent( $basic_options_container )
-		// 	->add_fields( array(
-		//     	Field::make( 'html', 'crb_p3ke_hide_sidebar' )
-		//         	->set_html( '
-		//         		<style>
-		//         			.postbox-container { display: none; }
-		//         			#poststuff #post-body.columns-2 { margin: 0 !important; }
-		//         		</style>
-		//         	' ), 
-		// 	Field::make( 'html', 'crb_satset_halaman_terkait_p3ke' )
-		//         	->set_html( '
-		// 			<h5>HALAMAN TERKAIT</h5>
-	    //         	<ol>
-	    //         		<li><a target="_blank" href="'.$management_data_p3ke['url'].'">'.$management_data_p3ke['title'].'</a></li>
-	    //         		<li><a target="_blank" href="'.$management_data_p3ke_anggota_keluarga['url'].'">'.$management_data_p3ke_anggota_keluarga['title'].'</a></li>
-	    //         	</ol>
-		//         	' ),
-		//         Field::make( 'html', 'crb_p3ke_upload_html' )
-	    //         	->set_html( '<h3>Import EXCEL data P3KE</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePickedSatset(event);"><br>Contoh format file excel untuk <b>Kepala Keluarga P3KE</b> bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_p3ke.xlsx">download di sini</a>.<br>Contoh format file excel <b>Anggota Keluarga P3KE</b> bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_p3ke_keluarga.xlsx">download di sini</a>.<br>Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
-		//         Field::make( 'html', 'crb_p3ke_satset' )
-	    //         	->set_html( 'Data JSON : <textarea id="data-excel" class="cf-select__input"></textarea>' ),
-		//         Field::make( 'html', 'crb_p3ke_save_button' )
-	    //         	->set_html( '<a onclick="import_excel_p3ke(); return false" href="javascript:void(0);" class="button button-primary">Import P3KE Kepala Keluarga</a><a style="margin-left: 20px;" onclick="import_excel_p3ke(1); return false" href="javascript:void(0);" class="button button-primary">Import P3KE Anggota Keluarga</a>' )
-	    //     ) );
+	            	->set_html( '<a onclick="import_excel_p3ke(); return false" href="javascript:void(0);" class="button button-primary">Import P3KE Kepala Keluarga</a><a style="margin-left: 20px;" onclick="import_excel_p3ke(1); return false" href="javascript:void(0);" class="button button-primary">Import P3KE Anggota Keluarga</a>' )
+	        ) );
 
 		Container::make( 'theme_options', __( 'Data Stunting' ) )
 			->set_page_parent( $basic_options_container )
@@ -691,6 +702,8 @@ class Wp_Satset_Admin {
 	            	->set_html( '<h3>Import EXCEL data stunting</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePickedSatset(event);"><br>Contoh format file excel bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_stunting.xlsx">download di sini</a>. Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
 		        Field::make( 'html', 'crb_stunting_satset' )
 	            	->set_html( 'Data JSON : <textarea id="data-excel" class="cf-select__input"></textarea>' ),
+		        Field::make( 'html', 'crb_p3ke_satset_tahun' )
+	            	->set_html( 'Pilih Tahun Anggaran : <select id="data-tahun-stunting" class="cf-select__input">'.$pilih_tahun.'</select>' ),
 		        Field::make( 'html', 'crb_stunting_save_button' )
 	            	->set_html( '<a onclick="import_excel_stunting(); return false" href="javascript:void(0);" class="button button-primary">Import WP</a>' )
 	        ) );
@@ -786,13 +799,23 @@ class Wp_Satset_Admin {
 		);
 
 		if (!empty($_POST)) {
+			if(empty($_POST['data'])){
+				die(json_encode(array('status' => 'error', 'message' => 'Data tidak boleh kosong!')));
+			}
+			if(empty($_POST['tahun_anggaran'])){
+				die(json_encode(array('status' => 'error', 'message' => 'Tahun anggaran tidak boleh kosong!')));
+			}
+
 			$table_data = 'data_p3ke';
 			if($_POST['tipe_data'] == 1){
 				$table_data = 'data_p3ke_anggota_keluarga';
 			}
 			// Jika update_active dan page = 1, set semua data active = 0
 			if (!empty($_POST['update_active']) && $_POST['page'] == 1) {
-				$wpdb->update($table_data, array('active' => 0));
+				$wpdb->update($table_data, array('active' => 0), array(
+					'active' => 1,
+					'tahun_anggaran' => $_POST['tahun_anggaran']
+				));
 			}
 			
 			$ret['data'] = array(
@@ -888,14 +911,14 @@ class Wp_Satset_Admin {
 				if (empty($newData['nik'])) {
 					$cek_id = $wpdb->get_var($wpdb->prepare("
 						SELECT id FROM $table_data 
-						WHERE kode_kemendagri = %s AND id_p3ke = %s AND nik IS NULL",
-						$newData['kode_kemendagri'], $newData['id_p3ke']
+						WHERE kode_kemendagri = %s AND id_p3ke = %s AND id_p3ke = %d AND nik IS NULL",
+						$newData['kode_kemendagri'], $newData['id_p3ke'], $newData['tahun_anggaran']
 					));
 				} else {
 					$cek_id = $wpdb->get_var($wpdb->prepare("
 						SELECT id FROM $table_data 
-						WHERE kode_kemendagri = %s AND id_p3ke = %s AND nik = %s",
-						$newData['kode_kemendagri'], $newData['id_p3ke'], $newData['nik']
+						WHERE kode_kemendagri = %s AND id_p3ke = %s AND nik = %s AND nik = %s",
+						$newData['kode_kemendagri'], $newData['id_p3ke'], $newData['nik'], $newData['tahun_anggaran']
 					));
 				}
 
@@ -927,6 +950,19 @@ class Wp_Satset_Admin {
 			'message'	=> 'Berhasil import excel!'
 		);
 		if (!empty($_POST)) {
+			if(empty($_POST['data'])){
+				die(json_encode(array('status' => 'error', 'message' => 'Data tidak boleh kosong!')));
+			}
+			if(empty($_POST['tahun_anggaran'])){
+				die(json_encode(array('status' => 'error', 'message' => 'Tahun anggaran tidak boleh kosong!')));
+			}
+			// Jika update_active dan page = 1, set semua data active = 0
+			if (!empty($_POST['update_active']) && $_POST['page'] == 1) {
+				$wpdb->update("data_stunting", array('active' => 0), array(
+					'active' => 1,
+					'tahun_anggaran' => $_POST['tahun_anggaran']
+				));
+			}
 			$ret['data'] = array(
 				'insert' => 0, 
 				'update' => 0,
@@ -970,6 +1006,19 @@ class Wp_Satset_Admin {
 				    'jml_vit_a' => $newData['jml_vit_a'],
 				    'kpsp' => $newData['kpsp'],
 				    'kia' => $newData['kia'],
+				    'tahun_anggaran' => $newData['tahun_anggaran'],
+				    'no_kk' => $newData['no_kk'],
+				    'tanggal_tindakan' => $newData['tanggal_tindakan'],
+				    'jenis_tindakan' => $newData['jenis_tindakan'],
+				    'jkn_bps' => $newData['jkn_bps'],	
+					'air_bersih' => $newData['air_bersih'],	
+					'kecacingan' => $newData['kecacingan'],
+					'jamban_sehat' => $newData['jamban_sehat'],	
+					'imunisasi' => $newData['imunisasi'],	
+					'keluarga_merokok' => $newData['keluarga_merokok'],	
+					'riwayat_ibu_hamil' => $newData['riwayat_ibu_hamil'],	
+					'penyakit_penyerta' => $newData['penyakit_penyerta'],
+
 				);
 				$wpdb->last_error = "";
 				if(empty($newData['nik'])){
@@ -982,8 +1031,9 @@ class Wp_Satset_Admin {
 							and kabkot=%s
 							and kecamatan=%s
 							and desa=%s
+							and tahun_anggaran=%d
 							and nik is null"
-						, $newData['nama'], $newData['provinsi'], $newData['kabkot'], $newData['kecamatan'], $newData['desa']));
+						, $newData['nama'], $newData['provinsi'], $newData['kabkot'], $newData['kecamatan'], $newData['desa'], $newData['tahun_anggaran']));
 				}else{
 					$cek_id = $wpdb->get_var($wpdb->prepare("
 						SELECT 
@@ -994,8 +1044,9 @@ class Wp_Satset_Admin {
 							and kabkot=%s
 							and kecamatan=%s
 							and desa=%s
-							and nik=%s"
-						, $newData['nama'], $newData['provinsi'], $newData['kabkot'], $newData['kecamatan'], $newData['desa'], $newData['nik']));
+							and nik=%s
+							and tahun_anggaran=%d"
+						, $newData['nama'], $newData['provinsi'], $newData['kabkot'], $newData['kecamatan'], $newData['desa'], $newData['nik'], $newData['tahun_anggaran']));
 				}
 				if(empty($cek_id)){
 					$wpdb->insert("data_stunting", $data_db);

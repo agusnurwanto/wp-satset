@@ -116,7 +116,7 @@ foreach($tahun as $tahun_value){
         <button style="margin-left: 10px; height: 45px; width: 75px;"onclick="sumbitTahun();" class="btn btn-sm btn-primary">Cari</button>
     </div>
 </div>
-<div style="width: 95%; margin: 0 auto; padding-bottom: 75px; padding-top: 75px; overflow: auto;">
+<div style="width: 95%; margin: 0 auto; padding-bottom: 75px; padding-top: 50px; overflow: auto;">
     <div id="map-canvas" style="width: 100%; height: 90vh;"></div>
     <h3 style="margin-top: 20px;">Keterangan</h3>
     <ol>

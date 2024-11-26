@@ -98,6 +98,10 @@ function sql_migrate_satset(){
 
 function import_excel_p3ke(tipe_data=0){
     var data = jQuery('#data-excel').val();
+    var tahun_anggaran = jQuery('#data-tahun-p3ke').val();
+    if (!tahun_anggaran.match(/^\d{4}$/)) {
+        return alert('Tahun anggaran tidak valid!');
+    }
     if(!data){
         return alert('Excel Data can not empty!');
     }else{
@@ -132,6 +136,7 @@ function import_excel_p3ke(tipe_data=0){
                             data: current_data,
                             page: page,
                             tipe_data: tipe_data,
+                            tahun_anggaran: tahun_anggaran,
                             update_active: update_active
                         },
                         success: function(res){
@@ -165,10 +170,15 @@ function import_excel_p3ke(tipe_data=0){
 }
 
 function import_excel_stunting(){
+    var tahun_anggaran = jQuery('#data-tahun-stunting').val();
+    if (!tahun_anggaran.match(/^\d{4}$/)) {
+        return alert('Tahun anggaran tidak valid!');
+    }
     var data = jQuery('#data-excel').val();
     if(!data){
         return alert('Excel Data can not empty!');
     }else{
+        var update_active = prompt("Apakah anda mau menonaktifkan data sebelumnya? ketik 1 jika iya dan kosongkan saja jika tidak.");
         data = JSON.parse(data);
         jQuery('#wrap-loading').show();
 
@@ -185,16 +195,20 @@ function import_excel_stunting(){
         if(data_sementara.length > 0){
             data_all.push(data_sementara);
         }
+        var page = 0;
         var last = data_all.length - 1;
         data_all.reduce(function(sequence, nextData){
             return sequence.then(function(current_data){
                 return new Promise(function(resolve_reduce, reject_reduce){
+                    page++;
                     relayAjax({
                         url: ajaxurl,
                         type: 'post',
                         data: {
                             action: 'import_excel_stunting',
-                            data: current_data
+                            data: current_data,
+                            tahun_anggaran: tahun_anggaran,
+                            update_active: update_active
                         },
                         success: function(res){
                             resolve_reduce(nextData);

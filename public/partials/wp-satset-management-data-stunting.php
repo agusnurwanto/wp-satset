@@ -1,3 +1,28 @@
+<?php
+global $wpdb;
+
+if (!defined('WPINC')) {
+    die;
+}
+
+if (!empty($_GET) && !empty($_GET['tahun_anggaran'])) {
+    $tahun_anggaran = $_GET['tahun_anggaran'];
+} else {
+    $tahun_anggaran = get_option('_crb_tahun_satset');
+}
+$tahun = $wpdb->get_results('
+    SELECT 
+        tahun_anggaran 
+    from satset_data_unit
+    group by tahun_anggaran 
+    order by tahun_anggaran ASC
+', ARRAY_A);
+$select_tahun = "";
+foreach($tahun as $tahun_value){
+    $select = $tahun_value['tahun_anggaran'] == $tahun_anggaran ? 'selected' : '';
+    $select_tahun .= "<option value='".$tahun_value['tahun_anggaran']."' ".$select.">".$tahun_value['tahun_anggaran']."</option>";
+}
+?>
 <style type="text/css">
     .wrap-table{
         overflow: auto;
@@ -9,12 +34,21 @@
 <div class="cetak">
     <div style="padding: 10px;margin:0 0 3rem 0;">
         <input type="hidden" value="<?php echo get_option( '_crb_api_key_extension' ); ?>" id="api_key">
-    <h1 class="text-center" style="margin:3rem;">Manajemen Data Stunting</h1>
+        <h1 class="text-center" style="margin:3rem;">Manajemen Data Stunting <br>Tahun Anggaran <?php echo $tahun_anggaran; ?></h1>
+        <div id="wrap-action"></div>
+            <div class="text-center" style="margin-top: 30px;">
+                <label style="margin-left: 10px;" for="tahun_anggaran">Tahun Anggaran : </label>
+                <select style="width: 400px;" name="tahun_anggaran" id="tahun_anggaran">
+                    <?php echo $select_tahun; ?>
+                </select>
+                <button style="margin-left: 10px; height: 45px; width: 75px;"onclick="sumbitTahun();" class="btn btn-sm btn-primary">Cari</button>
+            </div>
+        </div>
         <div style="margin-bottom: 25px;">
             <button class="btn btn-primary" onclick="tambah_data_stunting();"><i class="dashicons dashicons-plus"></i> Tambah Data Stunting</button>
         </div>
         <div class="wrap-table">
-        <table id="management_data_table" cellpadding="2" cellspacing="0" style="font-family:\'Open Sans\',-apple-system,BlinkMacSystemFont,\'Segoe UI\',sans-serif; border-collapse: collapse; width:100%; overflow-wrap: break-word;" class="table table-bordered">
+        <table id="management_data_table" class="table table-bordered">
             <thead>
                 <tr>
                     <th class="text-center">NIK</th>
@@ -49,6 +83,7 @@
                     <th class="text-center">Jumlah Vitamin A</th>
                     <th class="text-center">KPSP</th>
                     <th class="text-center">KIA</th>
+                    <th class="text-center">Tahun Anggaran</th>
                     <th class="text-center" style="width: 150px;">Aksi</th>
                 </tr>
             </thead>
@@ -70,6 +105,10 @@
             </div>
             <div class="modal-body">
                 <input type='hidden' id='id_data' name="id_data" placeholder=''>
+                <div class="form-group">
+                    <label for='tahun_anggaran' style='display:inline-block'>Tahun Anggaran</label>
+                    <input type='text' id='tahun_anggaran' name="tahun_anggaran" class="form-control" value ="<?php echo $tahun_anggaran; ?>" disabled>
+                </div> 
                 <div class="form-group">
                     <label for='nik' style='display:inline-block'>NIK</label>
                     <input type='text' id='nik' name="nik" class="form-control" placeholder=''>
@@ -225,6 +264,7 @@ function get_data_stunting(){
                 data:{
                     'action': 'get_datatable_stunting',
                     'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
+                    'tahun_anggaran': '<?php echo $tahun_anggaran; ?>',
                 }
             },
             lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
@@ -361,6 +401,10 @@ function get_data_stunting(){
                     className: "text-center"
                 },
                 {
+                    "data": 'tahun_anggaran',
+                    className: "text-center"
+                },
+                {
                     "data": 'aksi',
                     className: "text-center"
                 }
@@ -443,6 +487,7 @@ function edit_data(_id){
                 jQuery('#jml_vit_a').val(res.data.jml_vit_a);
                 jQuery('#kpsp').val(res.data.kpsp);
                 jQuery('#kia').val(res.data.kia);
+                jQuery('#tahun_anggaran').val(res.data.tahun_anggaran);
             }else{
                 alert(res.message);
             }
@@ -486,6 +531,7 @@ function tambah_data_stunting(){
     jQuery('#jml_vit_a').val('');
     jQuery('#kpsp').val('');
     jQuery('#kia').val('');
+    jQuery('#tahun_anggaran').val('');
     jQuery('#modalTambahDataStunting').modal('show');
 }
 
@@ -619,6 +665,14 @@ function submitTambahDataFormStunting(){
     if(kia == ''){
         return alert('Data kia tidak boleh kosong!');
     }
+    var pmt_diterima_per_kg = jQuery('#pmt_diterima_per_kg').val();
+    if(pmt_diterima_per_kg == ''){
+        return alert('Data pmt_diterima_per_kg tidak boleh kosong!');
+    }
+    var tahun_anggaran = jQuery('#tahun_anggaran').val();
+    if(tahun_anggaran == ''){
+        return alert('Data tahun anggaran tidak boleh kosong!');
+    }
 
     jQuery('#wrap-loading').show();
     jQuery.ajax({
@@ -652,6 +706,7 @@ function submitTambahDataFormStunting(){
             'tinggi': tinggi,
             'lingkar_lengan_atas': lingkar_lengan_atas,
             'bb_per_u': bb_per_u,
+            'pmt_diterima_per_kg': pmt_diterima_per_kg,
             'zs_bb_per_u': zs_bb_per_u,
             'tb_per_u': tb_per_u,
             'zs_tb_per_u': zs_tb_per_u,
@@ -661,16 +716,28 @@ function submitTambahDataFormStunting(){
             'jml_vit_a': jml_vit_a,
             'kpsp': kpsp,
             'kia': kia,
+            'tahun_anggaran': <?php echo $tahun_anggaran; ?>,
         },
         success: function(res){
             alert(res.message);
             jQuery('#modalTambahDataStunting').modal('hide');
             if(res.status == 'success'){
                 get_data_stunting();
+                location.reload(); 
             }else{
                 jQuery('#wrap-loading').hide();
             }
         }
     });
+}
+
+function sumbitTahun(){
+    var tahun_anggaran = jQuery('#tahun_anggaran').val();
+    if(tahun_anggaran == ''){
+        return alert('Tahun tidak boleh kosong!');
+    }
+    var url = window.location.href;
+    url = url.split('?')[0]+'?tahun_anggaran='+tahun_anggaran;
+    location.href = url;
 }
 </script>
