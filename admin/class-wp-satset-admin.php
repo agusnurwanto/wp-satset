@@ -729,6 +729,8 @@ class Wp_Satset_Admin {
 	            	->set_html( '<h3>Import EXCEL data tbc</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePickedSatset(event);"><br>Contoh format file excel bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_tbc.xlsx">download di sini</a>. Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
 		        Field::make( 'html', 'crb_tbc_satset' )
 	            	->set_html( 'Data JSON : <textarea id="data-excel" class="cf-select__input"></textarea>' ),
+		        Field::make( 'html', 'crb_p3ke_satset_tahun' )
+	            	->set_html( 'Pilih Tahun Anggaran : <select id="data-tahun-tbc" class="cf-select__input">'.$pilih_tahun.'</select>' ),
 		        Field::make( 'html', 'crb_tbc_save_button' )
 	            	->set_html( '<a onclick="import_excel_tbc(); return false" href="javascript:void(0);" class="button button-primary">Import WP</a>' )
 	        ) );
@@ -754,6 +756,8 @@ class Wp_Satset_Admin {
 	            	->set_html( '<h3>Import EXCEL data rtlh</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePickedSatset(event);"><br>Contoh format file excel bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_rtlh.xlsx">download di sini</a>. Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
 		        Field::make( 'html', 'crb_rtlh_satset' )
 	            	->set_html( 'Data JSON : <textarea id="data-excel" class="cf-select__input"></textarea>' ),
+		        Field::make( 'html', 'crb_p3ke_satset_tahun' )
+	            	->set_html( 'Pilih Tahun Anggaran : <select id="data-tahun-rtlh" class="cf-select__input">'.$pilih_tahun.'</select>' ),
 		        Field::make( 'html', 'crb_rtlh_save_button' )
 	            	->set_html( '<a onclick="import_excel_rtlh(); return false" href="javascript:void(0);" class="button button-primary">Import WP</a>' )
 	        ) );
@@ -1018,6 +1022,7 @@ class Wp_Satset_Admin {
 					'keluarga_merokok' => $newData['keluarga_merokok'],	
 					'riwayat_ibu_hamil' => $newData['riwayat_ibu_hamil'],	
 					'penyakit_penyerta' => $newData['penyakit_penyerta'],
+					'tahun_anggaran' => $newData['tahun_anggaran'],
 
 				);
 				$wpdb->last_error = "";
@@ -1124,6 +1129,7 @@ class Wp_Satset_Admin {
 				    'hasil_akhir_pengobatan' => $newData['hasil_akhir_pengobatan'],
 				    'status_pengobatan' => $newData['status_pengobatan'],
 				    'keterangan' => $newData['keterangan'],
+				    'tahun_anggaran' => $newData['tahun_anggaran'],
 				);
 				// print_r($data_db); die();
 				$wpdb->last_error = "";
@@ -1137,8 +1143,9 @@ class Wp_Satset_Admin {
 							and kabkot=%s
 							and kecamatan=%s
 							and desa=%s
+							and tahun_anggaran=%d
 							and nik is null"
-						, $newData['nama'], $newData['provinsi'], $newData['kabkot'], $newData['kecamatan'], $newData['desa']));
+						, $newData['nama'], $newData['provinsi'], $newData['kabkot'], $newData['kecamatan'], $newData['desa'], $newData['tahun_anggaran']));
 				}else{
 					$cek_id = $wpdb->get_var($wpdb->prepare("
 						SELECT 
@@ -1149,8 +1156,9 @@ class Wp_Satset_Admin {
 							and kabkot=%s
 							and kecamatan=%s
 							and desa=%s
-							and nik=%s"
-						, $newData['nama'], $newData['provinsi'], $newData['kabkot'], $newData['kecamatan'], $newData['desa'], $newData['nik']));
+							and nik=%s
+							and tahun_anggaran=%d"
+						, $newData['nama'], $newData['provinsi'], $newData['kabkot'], $newData['kecamatan'], $newData['desa'], $newData['nik'], $newData['tahun_anggaran']));
 				}
 				if(empty($cek_id)){
 					$wpdb->insert("data_tbc", $data_db);
@@ -1180,6 +1188,16 @@ class Wp_Satset_Admin {
 			'message'	=> 'Berhasil import excel!'
 		);
 		if (!empty($_POST)) {
+			if(empty($_POST['tahun_anggaran'])){
+				die(json_encode(array('status' => 'error', 'message' => 'Tahun anggaran tidak boleh kosong!')));
+			}
+			// Jika update_active dan page = 1, set semua data active = 0
+			if (!empty($_POST['update_active']) && $_POST['page'] == 1) {
+				$wpdb->update("data_stunting", array('active' => 0), array(
+					'active' => 1,
+					'tahun_anggaran' => $_POST['tahun_anggaran']
+				));
+			}
 			$ret['data'] = array(
 				'insert' => 0, 
 				'update' => 0,

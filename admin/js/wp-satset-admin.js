@@ -241,10 +241,15 @@ function import_excel_stunting(){
 }
 
 function import_excel_tbc(){
+    var tahun_anggaran = jQuery('#data-tahun-tbc').val();
+    if (!tahun_anggaran.match(/^\d{4}$/)) {
+        return alert('Tahun anggaran tidak valid!');
+    }
     var data = jQuery('#data-excel').val();
     if(!data){
         return alert('Excel Data can not empty!');
     }else{
+        var update_active = prompt("Apakah anda mau menonaktifkan data sebelumnya? ketik 1 jika iya dan kosongkan saja jika tidak.");
         data = JSON.parse(data);
         jQuery('#wrap-loading').show();
 
@@ -261,6 +266,7 @@ function import_excel_tbc(){
         if(data_sementara.length > 0){
             data_all.push(data_sementara);
         }
+        var page = 0;
         var last = data_all.length - 1;
         data_all.reduce(function(sequence, nextData){
             return sequence.then(function(current_data){
@@ -270,7 +276,9 @@ function import_excel_tbc(){
                         type: 'post',
                         data: {
                             action: 'import_excel_tbc',
-                            data: current_data
+                            data: current_data,
+                            tahun_anggaran: tahun_anggaran,
+                            update_active: update_active
                         },
                         success: function(res){
                             resolve_reduce(nextData);
@@ -303,10 +311,15 @@ function import_excel_tbc(){
 }
 
 function import_excel_rtlh(){
+    var tahun_anggaran = jQuery('#data-tahun-rtlh').val();
+    if (!tahun_anggaran.match(/^\d{4}$/)) {
+        return alert('Tahun anggaran tidak valid!');
+    }
     var data = jQuery('#data-excel').val();
     if(!data){
         return alert('Excel Data can not empty!');
     }else{
+        var update_active = prompt("Apakah anda mau menonaktifkan data sebelumnya? ketik 1 jika iya dan kosongkan saja jika tidak.");
         data = JSON.parse(data);
         jQuery('#wrap-loading').show();
 
@@ -323,6 +336,7 @@ function import_excel_rtlh(){
         if(data_sementara.length > 0){
             data_all.push(data_sementara);
         }
+        var page = 0;
         var last = data_all.length - 1;
         data_all.reduce(function(sequence, nextData){
             return sequence.then(function(current_data){
@@ -332,7 +346,9 @@ function import_excel_rtlh(){
                         type: 'post',
                         data: {
                             action: 'import_excel_rtlh',
-                            data: current_data
+                            data: current_data,
+                            tahun_anggaran: tahun_anggaran,
+                            update_active: update_active
                         },
                         success: function(res){
                             resolve_reduce(nextData);
