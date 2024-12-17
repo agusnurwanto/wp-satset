@@ -138,15 +138,13 @@ class Wp_Satset_Admin {
 				if (
 					!empty($_POST['type'])
 				) {
-					$tahun = $wpdb->get_results(
-						$wpdb->prepare("
+					$tahun = $wpdb->get_results("
 							SELECT 
 								tahun_anggaran 
 							FROM satset_data_unit 
 							GROUP BY tahun_anggaran
 							ORDER BY tahun_anggaran DESC
-						"),
-						ARRAY_A
+						", ARRAY_A
 					);
 					foreach ($tahun as $tahun_item) {
 						if (!empty($_POST['type']) && $_POST['type'] == 'data_p3ke') {
@@ -634,15 +632,13 @@ class Wp_Satset_Admin {
 	        ) );
 
 		$pilih_tahun = '<option value="">Pilih Tahun</option>';
-		$tahun = $wpdb->get_results(
-			$wpdb->prepare("
+		$tahun = $wpdb->get_results("
 				SELECT 
 					tahun_anggaran 
 				FROM satset_data_unit 
 				GROUP BY tahun_anggaran
 				ORDER BY tahun_anggaran DESC
-			"),
-			ARRAY_A
+			", ARRAY_A
 		);
 		$tahun_default = get_option('_crb_tahun_satset');
 		foreach ($tahun as $tahun_item) {

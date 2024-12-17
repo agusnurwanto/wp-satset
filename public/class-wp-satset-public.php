@@ -768,35 +768,37 @@ public function cari_data_satset(){
 					FROM data_p3ke
 					WHERE nik like %s
 						OR kepala_keluarga like %s
-				", '%'.$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
+						AND tahun_anggaran=%d
+				", '%'.$_POST['nik'].'%', '%'.$_POST['nik'].'%', $_POST['tahun_anggaran']));
+				print_r($data); die($wpdb->last_query);
 				$data_stunting = $wpdb->get_results($wpdb->prepare("
 					SELECT
 						*
 					FROM data_stunting
 					WHERE nik like %s
 						OR nama like %s
-				", '%' .$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
+				", '%' .$_POST['nik'].'%', '%'.$_POST['nik'].'%', $_POST['tahun_anggaran']));
 				$data_tbc = $wpdb->get_results($wpdb->prepare("
 					SELECT
 						*
 					FROM data_tbc
 					WHERE nik like %s
 						OR nama like %s
-				", '%' .$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
+				", '%' .$_POST['nik'].'%', '%'.$_POST['nik'].'%', $_POST['tahun_anggaran']));
 				$data_rtlh = $wpdb->get_results($wpdb->prepare("
 					SELECT
 						*
 					FROM data_rtlh
 					WHERE nik like %s
 						OR nama like %s
-				", '%' .$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
+				", '%' .$_POST['nik'].'%', '%'.$_POST['nik'].'%', $_POST['tahun_anggaran']));
 				$data_dtks = $wpdb->get_results($wpdb->prepare("
 					SELECT
 						*
 					FROM data_dtks_satset
 					WHERE nik like %s
 						OR nama like %s
-				", '%' .$_POST['nik'].'%', '%'.$_POST['nik'].'%'));
+				", '%' .$_POST['nik'].'%', '%'.$_POST['nik'].'%', $_POST['tahun_anggaran']));
 				$data_batas_desa = $wpdb->get_results($wpdb->prepare("
 					SELECT
 						*
@@ -834,6 +836,9 @@ public function cari_data_filter_satset(){
 				}
 				if(!empty($_POST['desa'])){
 					$where .= $wpdb->prepare(" and desa = %s", $_POST['desa']);
+				}
+				if(!empty($_POST['tahun_anggaran'])){
+					$where .= $wpdb->prepare(" and tahun_anggaran = %s", $_POST['tahun_anggaran']);
 				}
 				$all_nik = array(
 					'nik' => array(),

@@ -1,3 +1,27 @@
+<?php
+global $wpdb;
+
+if (!defined('WPINC')) {
+    die;
+}
+if (!empty($_GET) && !empty($_GET['tahun_anggaran'])) {
+    $tahun_anggaran = $_GET['tahun_anggaran'];
+} else {
+    $tahun_anggaran = get_option('_crb_tahun_satset');
+}
+$tahun = $wpdb->get_results('
+    SELECT 
+        tahun_anggaran 
+    from satset_data_unit
+    group by tahun_anggaran 
+    order by tahun_anggaran ASC
+', ARRAY_A);
+$select_tahun = "";
+foreach($tahun as $tahun_value){
+    $select = $tahun_value['tahun_anggaran'] == $tahun_anggaran ? 'selected' : '';
+    $select_tahun .= "<option value='".$tahun_value['tahun_anggaran']."' ".$select.">".$tahun_value['tahun_anggaran']."</option>";
+}
+?>
 <style type="text/css">
     .wrap-pesan{
         padding: 10px; 
@@ -20,10 +44,16 @@
         <label for="nik">Masukan NIK / Nama</label>
         <div class="input-group">
             <input type="text" class="form-control" id="nik" placeholder="xxxxxxxxxxx">
-            <div class="input-group-append">
-                <span class="btn btn-primary" type="button" onclick="return false" id="cari" style="display: flex; align-items: center;">Cari Data</span>
-            </div>
         </div>
+    </div>
+    <div class="form-group">
+        <label>Pilih Tahun Anggaran</label>
+        <select class="form-control" id="tahun_anggaran">
+            <?php echo $select_tahun; ?>
+        </select>
+    </div>
+    <div class="input-group-append">
+        <span class="btn btn-primary" type="button" onclick="return false" id="cari" style="display: flex; align-items: center;">Cari Data</span>
     </div>
 </form>
 <div class="wrap-pesan">
@@ -55,6 +85,7 @@
         if(nik.length < 3){
             return alert("Minimal 3 karakter!");
         }
+        var tahun_anggaran = jQuery('#tahun_anggaran').val();
         jQuery('#wrap-loading').show();
         jQuery.ajax({
             method: 'post',
@@ -63,6 +94,7 @@
             data:{
                 'action': 'cari_data_satset',
                 'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
+                'tahun_anggaran': tahun_anggaran,
                 'nik': nik
             },
             success: function(response) {
@@ -107,7 +139,7 @@
                             html +='</tr>';
                         })
                         var pesan = ''
-                            +'<h3 class="text-center">Data P3KE</h3>'
+                            +'<h3 class="text-center">Data P3KE<br>Tahun Anggaran '+tahun_anggaran+'</h3>'
                             +'<div class="wrap-table">'
                                 +'<table class="table table-bordered">'
                                     +'<thead>'
@@ -196,7 +228,7 @@
                             data_all +='</tr>';
                         })
                         var pesan1 = ''
-                            +'<h3 class="text-center">Data Stunting</h3>'
+                            +'<h3 class="text-center">Data Stunting<br>Tahun Anggaran '+tahun_anggaran+'</h3>'
                             +'<div class="wrap-table">'
                                 +'<table class="table table-bordered">'
                                     +'<thead>'
@@ -270,7 +302,7 @@
                             data_tbc +='</tr>';
                         })
                         var pesan2 = ''
-                            +'<h3 class="text-center">Data TBC</h3>'
+                            +'<h3 class="text-center">Data TBC<br>Tahun Anggaran '+tahun_anggaran+'</h3>'
                             +'<div class="wrap-table">'
                                 +'<table class="table table-bordered">'
                                     +'<thead>'
@@ -325,7 +357,7 @@
                             data_rtlh +='</tr>';
                         })
                         var pesan3 = ''
-                            +'<h3 class="text-center">Data RTLH</h3>'
+                            +'<h3 class="text-center">Data RTLH<br>Tahun Anggaran '+tahun_anggaran+'</h3>'
                             +'<div class="wrap-table">'
                                 +'<table class="table table-bordered">'
                                     +'<thead>'
@@ -410,7 +442,7 @@
                             data_dtks +='</tr>';
                         })
                         var pesan4 = ''
-                            +'<h4 class="text-center">Data DTKS</h4>'
+                            +'<h4 class="text-center">Data DTKS<br>Tahun Anggaran '+tahun_anggaran+'</h4>'
                             +'<div class="wrap-table">'
                                 +'<table class="table table-bordered">'
                                     +'<thead>'

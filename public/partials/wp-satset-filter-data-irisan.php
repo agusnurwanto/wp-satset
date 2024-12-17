@@ -1,6 +1,11 @@
 <?php
 global $wpdb;
 
+if (!empty($_GET) && !empty($_GET['tahun_anggaran'])) {
+    $tahun_anggaran = $_GET['tahun_anggaran'];
+} else {
+    $tahun_anggaran = get_option('_crb_tahun_satset');
+}
 $login = false;
 if(is_user_logged_in()){
     $current_user = wp_get_current_user();
@@ -21,6 +26,19 @@ $data_desa = $wpdb->get_results("select desa, id2012, id, kecamatan from data_ba
 $desa = "<option value='-1'>Semua Desa</option>";
 foreach($data_desa as $val){
     $desa .= "<option value='$val[desa]'>($val[id2012]) $val[desa]</option>";
+}
+
+$tahun = $wpdb->get_results('
+    SELECT 
+        tahun_anggaran 
+    from satset_data_unit
+    group by tahun_anggaran 
+    order by tahun_anggaran ASC
+', ARRAY_A);
+$select_tahun = "";
+foreach($tahun as $tahun_value){
+    $select = $tahun_value['tahun_anggaran'] == $tahun_anggaran ? 'selected' : '';
+    $select_tahun .= "<option value='".$tahun_value['tahun_anggaran']."' ".$select.">".$tahun_value['tahun_anggaran']."</option>";
 }
 ?>
 <style type="text/css">
@@ -63,6 +81,12 @@ foreach($data_desa as $val){
         <label>Pilih Desa</label>
         <select class="form-control" id="desa">
             <?php echo $desa; ?>
+        </select>
+    </div>
+    <div class="form-group">
+        <label>Pilih Tahun Anggaran</label>
+        <select class="form-control" id="tahun_anggaran">
+            <?php echo $select_tahun; ?>
         </select>
     </div>
     <div class="row">
@@ -129,6 +153,7 @@ foreach($data_desa as $val){
 
     function cari_data_filter_satset(irisan) {
         var desa = jQuery('#desa').val();
+        var tahun_anggaran = jQuery('#tahun_anggaran').val();
         if(desa == '-1'){
             desa = '';
         }
@@ -164,6 +189,7 @@ foreach($data_desa as $val){
             data:{
                 'action': 'cari_data_filter_satset',
                 'api_key': '<?php echo get_option( SATSET_APIKEY ); ?>',
+                'tahun_anggaran': tahun_anggaran,
                 'desa': desa,
                 'kec': kec,
                 'p3ke': p3ke,
@@ -214,7 +240,7 @@ foreach($data_desa as $val){
                             html +='</tr>';
                         })
                         var pesan = ''
-                            +'<h3 class="text-center">Data P3KE</h3>'
+                            +'<h3 class="text-center">Data P3KE<br>Tahun Anggaran '+tahun_anggaran+'</h3>'
                             +'<div class="wrap-table">'
                                 +'<table class="table table-bordered">'
                                     +'<thead>'
@@ -303,7 +329,7 @@ foreach($data_desa as $val){
                             data_all +='</tr>';
                         })
                         var pesan1 = ''
-                            +'<h3 class="text-center">Data Stunting</h3>'
+                            +'<h3 class="text-center">Data Stunting<br>Tahun Anggaran '+tahun_anggaran+'</h3>'
                             +'<div class="wrap-table">'
                                 +'<table class="table table-bordered">'
                                     +'<thead>'
@@ -377,7 +403,7 @@ foreach($data_desa as $val){
                             data_tbc +='</tr>';
                         })
                         var pesan2 = ''
-                            +'<h3 class="text-center">Data TBC</h3>'
+                            +'<h3 class="text-center">Data TBC<br>Tahun Anggaran '+tahun_anggaran+'</h3>'
                             +'<div class="wrap-table">'
                                 +'<table class="table table-bordered">'
                                     +'<thead>'
@@ -432,7 +458,7 @@ foreach($data_desa as $val){
                             data_rtlh +='</tr>';
                         })
                         var pesan3 = ''
-                            +'<h3 class="text-center">Data RTLH</h3>'
+                            +'<h3 class="text-center">Data RTLH<br>Tahun Anggaran '+tahun_anggaran+'</h3>'
                             +'<div class="wrap-table">'
                                 +'<table class="table table-bordered">'
                                     +'<thead>'
@@ -517,7 +543,7 @@ foreach($data_desa as $val){
                             data_dtks +='</tr>';
                         })
                         var pesan4 = ''
-                            +'<h4 class="text-center">Data DTKS</h4>'
+                            +'<h4 class="text-center">Data DTKS<br>Tahun Anggaran '+tahun_anggaran+'</h4>'
                             +'<div class="wrap-table">'
                                 +'<table class="table table-bordered">'
                                     +'<thead>'
