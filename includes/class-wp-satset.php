@@ -172,6 +172,8 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_import_excel_tbc',  $plugin_admin, 'import_excel_tbc');
 		$this->loader->add_action('wp_ajax_import_excel_rtlh',  $plugin_admin, 'import_excel_rtlh');
 		$this->loader->add_action('wp_ajax_get_data_dtks',  $plugin_admin, 'get_data_dtks');
+		$this->loader->add_action('wp_ajax_get_data_dtsen',  $plugin_admin, 'get_data_dtsen');
+		$this->loader->add_action('wp_ajax_get_data_dtsen_ajax',  $plugin_admin, 'get_data_dtsen_ajax');
 		$this->loader->add_action('wp_ajax_get_data_desa',  $plugin_admin, 'get_data_desa');
 		$this->loader->add_action('wp_ajax_get_data_batas_kecamatan',  $plugin_admin, 'get_data_batas_kecamatan');
 		$this->loader->add_action('wp_ajax_sql_migrate_satset',  $plugin_admin, 'sql_migrate_satset');
@@ -248,6 +250,7 @@ class Wp_Satset {
 		add_shortcode('data_tbc', array($plugin_public, 'data_tbc'));
 		add_shortcode('data_rtlh', array($plugin_public, 'data_rtlh'));
 		add_shortcode('data_dtks', array($plugin_public, 'data_dtks'));
+		add_shortcode('data_dtsen', array($plugin_public, 'data_dtsen'));
 		add_shortcode('data_batas_desa', array($plugin_public, 'data_batas_desa'));
 		add_shortcode('data_batas_kecamatan', array($plugin_public, 'data_batas_kecamatan'));
 

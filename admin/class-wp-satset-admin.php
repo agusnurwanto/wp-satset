@@ -267,6 +267,14 @@ class Wp_Satset_Admin {
 			'post_status' => 'publish'
 		));
 
+		$data_dtsen = $this->functions->generatePage(array(
+			'nama_page' => 'Data DTSEN', 
+			'content' => '[data_dtsen]',
+        	'show_header' => 1,
+        	'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
 		$data_batas_desa = $this->functions->generatePage(array(
 			'nama_page' => 'Data Desa', 
 			'content' => '[data_batas_desa]',
@@ -401,6 +409,7 @@ class Wp_Satset_Admin {
 	            		<li><a target="_blank" href="'.$data_tbc['url'].'">'.$data_tbc['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_rtlh['url'].'">'.$data_rtlh['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_dtks['url'].'">'.$data_dtks['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$data_dtsen['url'].'">'.$data_dtsen['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$petunjuk_penggunaan['url'].'">'.$petunjuk_penggunaan['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$dokumentasi_sistem['url'].'">'.$dokumentasi_sistem['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$tanggapan_publik['url'].'">'.$tanggapan_publik['title'].'</a></li>
@@ -766,6 +775,15 @@ class Wp_Satset_Admin {
 		        Field::make( 'text', 'crb_dtks_satset_api_key', 'API KEY WP-SIKS' ),
 		        Field::make( 'html', 'crb_dtks_save_button' )
 	            	->set_html( '<div id="pilih-desa"></div><div style="text-align: center; margin: 10px;"><a onclick="get_data_dtks(); return false" href="javascript:void(0);" class="button button-primary">Singkronisasi Data</a></div>' )
+	        ) );
+		Container::make( 'theme_options', __( 'Data DTSEN' ) )
+			->set_page_parent( $basic_options_container )
+			->add_fields( array(
+		        Field::make( 'text', 'crb_dtsen_satset_server', 'Alamat server WP-SIKS' )
+		        	->set_default_value(site_url().'/wp-admin/admin-ajax.php'),
+		        Field::make( 'text', 'crb_dtsen_satset_api_key', 'API KEY WP-SIKS' ),
+		        Field::make( 'html', 'crb_dtsen_save_button' )
+	            	->set_html( '<div id="pilih-desa"></div><div style="text-align: center; margin: 10px;"><a onclick="get_data_dtsen(); return false" href="javascript:void(0);" class="button button-primary">Singkronisasi Data</a></div>' )
 	        ) );
 		Container::make( 'theme_options', __( 'Data Desa' ) )
 			->set_page_parent( $basic_options_container )
@@ -1487,6 +1505,109 @@ class Wp_Satset_Admin {
 			$ret['message'] = 'Format Salah!';
 		}
 		die(json_encode($ret));
+	}
+
+	public function get_data_dtsen()
+	{
+		global $wpdb;
+
+		$url = trim(get_option('_crb_dtsen_satset_server'));
+		$api_key = trim(get_option('_crb_dtsen_satset_api_key'));
+		if (empty($url)) {
+			wp_send_json([
+				'status' => 'error',
+				'message' => 'URL server SIKS kosong!'
+			]);
+		}
+
+		if (empty($api_key)) {
+			wp_send_json([
+				'status' => 'error',
+				'message' => 'API KEY kosong!'
+			]);
+		}
+
+		if (empty($_POST['desa'])) {
+			wp_send_json([
+				'status' => 'error',
+				'message' => 'Data desa tidak dikirim!'
+			]);
+		}
+
+		$desa = json_decode(stripslashes($_POST['desa']), true);
+
+		if (empty($desa['desa_kelurahan'])) {
+			wp_send_json([
+				'status' => 'error',
+				'message' => 'desa_kelurahan kosong!'
+			]);
+		}
+
+		$ret_dtsen = $this->functions->curl_post([
+			'url' => $url,
+			'data' => [
+				'action' => 'get_data_dtsen_ajax',
+				'api_key' => $api_key,
+				'desa' => $desa['desa_kelurahan']
+			]
+		]);
+		$dtsen = json_decode($ret_dtsen, true);
+
+		if (empty($dtsen['status']) || empty($dtsen['data'])) {
+			wp_send_json([
+				'status' => 'error',
+				'message' => 'Data tidak ditemukan dari SIKS',
+				'response' => $dtsen
+			]);
+		}
+		// DEBUG
+		//wp_send_json($dtsen['data'][0]);
+		foreach ($dtsen['data'] as $orang) {
+
+			if (empty($orang['nik'])) continue;
+
+			$nik = sanitize_text_field($orang['nik']);
+
+			$cek = $wpdb->get_var($wpdb->prepare("
+				SELECT id FROM data_dtsen_satset WHERE nik = %s
+			", $nik));
+
+			$data = [
+				'alamat' => sanitize_text_field($orang['alamat'] ?? ''),
+				'desil_nasional' => $orang['desil_nasional'] ?? '',
+				'id_keluarga' => $orang['id_keluarga'] ?? null,
+				'id_wilayah' => $orang['id_wilayah'] ?? null,
+				'nama_kepala_keluarga' => sanitize_text_field($orang['nama'] ?? ''),
+				'no_kk' => $orang['no_kk'] ?? '',
+				'peringkat_nasional' => $orang['peringkat_nasional'] ?? null,
+				'kabupaten' => $orang['kabupaten'] ?? '',
+				'kecamatan' => $orang['kecamatan'] ?? '',
+				'kelurahan' => $orang['kelurahan'] ?? '',
+				'rt' => $orang['rt'] ?? '',
+				'rw' => $orang['rw'] ?? '',
+				'nik' => $nik,
+				'provinsi' => $orang['provinsi'] ?? '',
+				'percentile_nasional' => $orang['percentile_nasional'] ?? null,
+				'peringkat_kab_kota' => $orang['peringkat_kab_kota'] ?? null,
+				'peringkat_provinsi' => $orang['peringkat_provinsi'] ?? null,
+				'status_nonaktif' => $orang['status_nonaktif'] ?? null,
+				'padan_bulan_ini' => $orang['padan_bulan_ini'] ?? null,
+				'update_at' => current_time('mysql'),
+				'active' => 1
+			];
+
+			if (empty($cek)) {
+				$wpdb->insert('data_dtsen_satset', $data);
+			} else {
+				$wpdb->update('data_dtsen_satset', $data, ['nik' => $nik]);
+			}
+		}
+
+		wp_send_json([
+			'status' => 'success',
+			'message' => 'Sinkronisasi berhasil!',
+			'count' => count($dtsen['data'])
+		]);
 	}
 
 	function get_data_unit_wpsipd_satset()

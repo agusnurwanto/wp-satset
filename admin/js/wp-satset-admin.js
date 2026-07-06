@@ -502,6 +502,79 @@ function get_data_dtks(argument) {
 	}
 }
 
+function get_data_dtsen() {
+    var selected = [];
+
+    jQuery('#konfirmasi-desa tbody tr input[type="checkbox"]').each(function(i, b) {
+        var checkbox = jQuery(b);
+
+        if (checkbox.is(':checked')) {
+            var id_kec = checkbox.attr('id_kec');
+
+            if (id_kec) {
+                var tr = checkbox.closest('tr');
+
+                selected.push({
+                    provinsi: checkbox.attr('provinsi') || '',
+                    kabkot: checkbox.attr('kabkot') || '',
+                    kecamatan: tr.find('td').eq(1).text().trim(),
+                    desa_kelurahan: tr.find('td').eq(2).text().trim(),
+                    id_kec: id_kec,
+                    
+                });
+            }
+        }
+    });
+
+    if (selected.length === 0) {
+        alert('Pilih desa dulu!');
+        return;
+    }
+
+    show_loading();
+
+    selected.reduce(function(sequence, currentData, index) {
+        return sequence.then(function() {
+            return new Promise(function(resolve) {
+
+                pesan_loading(
+                    'Sinkronisasi data: ' +
+                    currentData.desa_kelurahan +
+                    ' (' + (index + 1) + '/' + selected.length + ')'
+                );
+
+                relayAjax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {
+                        action: 'get_data_dtsen',
+                        desa: JSON.stringify(currentData)
+                    },
+                    success: function(res) {
+                        console.log(res);
+                        resolve();
+                    },
+                    error: function(err) {
+                        console.error(err);
+                        resolve();
+                    }
+                });
+
+            });
+        });
+    }, Promise.resolve())
+    .then(function() {
+        hide_loading();
+        alert('Sinkronisasi DTSEN selesai!');
+    })
+    .catch(function(err) {
+        console.error(err);
+        hide_loading();
+        alert('Error sinkronisasi!');
+    });
+}
+
 function show_loading(){
 	jQuery('#wrap-loading').show();
 	jQuery('#persen-loading').html('');

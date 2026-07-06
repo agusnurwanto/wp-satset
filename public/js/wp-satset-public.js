@@ -65,8 +65,20 @@ function initMap() {
     var mapOptions = {
         zoom: 13,
         center: lokasi_aset,
-        mapTypeId: google.maps.MapTypeId.HYBRID
-    };
+        mapTypeId: google.maps.MapTypeId.ROADMAP,
+        styles: [
+        {
+            featureType: "all",
+            elementType: "labels",
+            stylers: [{ visibility: "off" }]
+        },
+        {
+            featureType: "administrative",
+            elementType: "labels",
+            stylers: [{ visibility: "on" }]
+        }
+    ]
+};
     // Membuat Map
     window.map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
     window.chartWindow = {};
