@@ -182,14 +182,25 @@ foreach ($maps_all as $i => $desa) {
     ';
 
     $search = $this->getSearchLocation($desa['data']);
-
+    $detail_url = add_query_arg(
+        'id_wilayah',
+        $id_wilayah,
+        home_url('/detail-dtsen/')
+    );
     $body .= "
         <tr>
             <td class='text-center'>" . $id_wilayah . "</td>
             <td class='text-center'>" . $desa['data']['provinsi'] . "</td>
             <td class='text-center'>" . $desa['data']['kab_kot'] . "</td>
             <td class='text-center'>" . $desa['data']['kecamatan'] . "</td>
-            <td class='text-center'>" . $desa['data']['desa'] . "</td>
+            <td class='text-center'>
+                <a
+                    href='" . $detail_url . "'
+                    target='_blank'
+                    rel='noopener noreferrer'>
+                    " . $desa['data']['desa'] . "
+                </a>
+            </td>
             <td class='text-center'>" . $this->number_format($total_dtsen) . "</td>
             <td class='text-center'>" . $this->number_format($total_desil) . "</td>
             <td class='text-center'>

@@ -251,6 +251,7 @@ class Wp_Satset {
 		add_shortcode('data_rtlh', array($plugin_public, 'data_rtlh'));
 		add_shortcode('data_dtks', array($plugin_public, 'data_dtks'));
 		add_shortcode('data_dtsen', array($plugin_public, 'data_dtsen'));
+		add_shortcode('data_detail_dtsen', array($plugin_public, 'data_detail_dtsen'));
 		add_shortcode('data_batas_desa', array($plugin_public, 'data_batas_desa'));
 		add_shortcode('data_batas_kecamatan', array($plugin_public, 'data_batas_kecamatan'));
 

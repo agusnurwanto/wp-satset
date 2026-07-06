@@ -275,6 +275,14 @@ class Wp_Satset_Admin {
 			'post_status' => 'publish'
 		));
 
+		$data_detail_dtsen = $this->functions->generatePage(array(
+			'nama_page'   => 'Detail DTSEN',
+			'content'     => '[data_detail_dtsen]',
+			'show_header' => 1,
+			'no_key'      => 1,
+			'post_status' => 'publish'
+		));
+
 		$data_batas_desa = $this->functions->generatePage(array(
 			'nama_page' => 'Data Desa', 
 			'content' => '[data_batas_desa]',
