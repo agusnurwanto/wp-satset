@@ -121,9 +121,10 @@ function initMap() {
                             return;
                         }
 
-                        console.log('index, chartWindow[index]', index, chartWindow[index]);
+                        console.log('index =', index);
+                        console.log('chartWindow =', JSON.stringify(chartWindow[index], null, 2));
                         chartRenderWindow[id] = new Chart(document.getElementById(id).getContext('2d'), {
-                            type: "pie",
+                            type: chartWindow[index].type || "pie",
                             data: {
                                 labels: chartWindow[index].label,
                                 datasets: [
