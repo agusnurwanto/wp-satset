@@ -189,6 +189,14 @@ class Wp_Satset_Public {
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-detail-dtsen.php';
 	}
 
+	function data_detail_kk_dtsen(){
+		// untuk disable render shortcode di halaman edit page/post
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-detail-kk-dtsen.php';
+	}
+
 	function data_stunting(){
 		// untuk disable render shortcode di halaman edit page/post
 		if(!empty($_GET) && !empty($_GET['post'])){
@@ -3254,5 +3262,128 @@ public function get_datatable_batas_kecamatan(){
 			);
 		}
 		die(json_encode($return));
+	}
+
+	public function get_table_kepala_keluarga() {
+		global $wpdb;
+
+		if (empty($_POST['api_key']) || $_POST['api_key'] != get_option(SATSET_APIKEY)) {
+			wp_send_json(array(
+				'status' => 'error',
+				'message' => 'API Key tidak valid!'
+			));
+		}
+
+		$id_wilayah = !empty($_POST['id_wilayah']) ? intval($_POST['id_wilayah']) : 0;
+
+		if (empty($id_wilayah)) {
+			wp_send_json(array(
+				'status' => 'error',
+				'message' => 'ID Wilayah tidak ditemukan!'
+			));
+		}
+
+		$data = $wpdb->get_results(
+			$wpdb->prepare("
+				SELECT
+					*
+				FROM data_dtsen_satset
+				WHERE active = 1
+				AND id_wilayah = %d
+				ORDER BY nama_kepala_keluarga ASC
+			", $id_wilayah),
+			ARRAY_A
+		);
+
+		$body = '';
+		$no = 1;
+
+		foreach ($data as $value) {
+
+			$body .= '
+			<tr>
+				<td class="text-center">'.$no++.'</td>
+				<td>'.$value['no_kk'].'</td>
+				<td>'.$value['nik'].'</td>
+				<td>'.$value['nama_kepala_keluarga'].'</td>
+				<td>'.$value['alamat'].'</td>
+				<td class="text-center">'.$value['rt'].'/'.$value['rw'].'</td>
+				<td class="text-center">'.$value['desil_nasional'].'</td>
+				<td class="text-center">'.$value['peringkat_nasional'].'</td>
+				<td class="text-center">'.$value['peringkat_provinsi'].'</td>
+				<td class="text-center">'.$value['peringkat_kab_kota'].'</td>
+				<td class="text-center">'.$value['percentile_nasional'].'</td>
+				<td class="text-center">'.$value['status_nonaktif'].'</td>
+				<td class="text-center">'.$value['padan_bulan_ini'].'</td>
+				<td class="text-center">'.$value['update_at'].'</td>
+				<td class="text-center">
+					<a href="'.home_url('/detail-dtsen-per-kepala-keluarga/?no_kk='.urlencode($value['no_kk'])).'" 
+					target="_blank"
+					class="btn btn-sm btn-primary">
+						Detail
+					</a>
+				</td>
+			</tr>';
+		}
+
+		wp_send_json(array(
+			'status' => 'success',
+			'data' => $body
+		));
+	}
+
+	public function get_table_anggota_keluarga_dtsen()
+	{
+		$nik = sanitize_text_field($_POST['nik'] ?? '');
+
+		if(empty($nik)){
+			wp_send_json([
+				'status'=>'error',
+				'message'=>'NIK kosong'
+			]);
+		}
+		$url = trim(get_option('_crb_dtsen_satset_server'));
+		$api_key = trim(get_option('_crb_dtsen_satset_api_key'));
+
+		if(empty($url)){
+			wp_send_json([
+				'status'=>'error',
+				'message'=>'URL server SIKS kosong!'
+			]);
+		}
+
+		if(empty($api_key)){
+			wp_send_json([
+				'status'=>'error',
+				'message'=>'API KEY SIKS kosong!'
+			]);
+		}
+
+		$ret = $this->functions->curl_post([
+			'url'=>$url,
+			'data'=>[
+				'action'=>'search_dtsen_by_nik',
+				'api_key'=>$api_key,
+				'nik'=>$nik
+			]
+		]);
+
+		$data = json_decode($ret, true);
+
+		if(empty($data['status']) || $data['status'] != 'ok'){
+
+			wp_send_json([
+				'status'=>'error',
+				'message'=>'Data tidak ditemukan dari SIKS',
+				'response'=>$data
+			]);
+
+		}
+
+		wp_send_json([
+			'status'=>'success',
+			'data'=>$data
+		]);
+
 	}
 }

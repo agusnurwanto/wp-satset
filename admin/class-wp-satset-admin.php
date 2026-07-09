@@ -283,6 +283,14 @@ class Wp_Satset_Admin {
 			'post_status' => 'publish'
 		));
 
+		$data_detail_kk_dtsen = $this->functions->generatePage(array(
+			'nama_page'   => 'Detail DTSEN per Kepala Keluarga',
+			'content'     => '[data_detail_kk_dtsen]',
+			'show_header' => 1,
+			'no_key'      => 1,
+			'post_status' => 'publish'
+		));
+
 		$data_batas_desa = $this->functions->generatePage(array(
 			'nama_page' => 'Data Desa', 
 			'content' => '[data_batas_desa]',
@@ -1560,7 +1568,7 @@ class Wp_Satset_Admin {
 			]
 		]);
 		$dtsen = json_decode($ret_dtsen, true);
-
+		
 		if (empty($dtsen['status']) || empty($dtsen['data'])) {
 			wp_send_json([
 				'status' => 'error',
@@ -1572,22 +1580,32 @@ class Wp_Satset_Admin {
 		//wp_send_json($dtsen['data'][0]);
 		foreach ($dtsen['data'] as $orang) {
 
-			if (empty($orang['nik'])) continue;
+			if (empty($orang['nik'])) {
+				continue;
+			}
+
+			//1. Hanya Kepala Keluarga masuk data_dtsen_satset
+			
+			if (strcasecmp(trim($orang['hub_kepala_keluarga']), 'Kepala Keluarga') !== 0) {
+				continue;
+			}
 
 			$nik = sanitize_text_field($orang['nik']);
 
 			$cek = $wpdb->get_var($wpdb->prepare("
-				SELECT id FROM data_dtsen_satset WHERE nik = %s
+				SELECT id
+				FROM data_dtsen_satset
+				WHERE nik = %s
 			", $nik));
 
 			$data = [
 				'alamat' => sanitize_text_field($orang['alamat'] ?? ''),
 				'desil_nasional' => $orang['desil_nasional'] ?? '',
-				'id_keluarga' => $orang['id_keluarga'] ?? null,
-				'id_wilayah' => $orang['id_wilayah'] ?? null,
-				'nama_kepala_keluarga' => sanitize_text_field($orang['nama'] ?? ''),
+				'id_keluarga' => $orang['id_keluarga'] ?? '',
+				'id_wilayah' => $orang['id_wilayah'] ?? '',
+				'nama_kepala_keluarga' => $orang['nama'] ?? '',
 				'no_kk' => $orang['no_kk'] ?? '',
-				'peringkat_nasional' => $orang['peringkat_nasional'] ?? null,
+				'peringkat_nasional' => $orang['peringkat_nasional'] ?? '',
 				'kabupaten' => $orang['kabupaten'] ?? '',
 				'kecamatan' => $orang['kecamatan'] ?? '',
 				'kelurahan' => $orang['kelurahan'] ?? '',
@@ -1595,19 +1613,26 @@ class Wp_Satset_Admin {
 				'rw' => $orang['rw'] ?? '',
 				'nik' => $nik,
 				'provinsi' => $orang['provinsi'] ?? '',
-				'percentile_nasional' => $orang['percentile_nasional'] ?? null,
-				'peringkat_kab_kota' => $orang['peringkat_kab_kota'] ?? null,
-				'peringkat_provinsi' => $orang['peringkat_provinsi'] ?? null,
-				'status_nonaktif' => $orang['status_nonaktif'] ?? null,
-				'padan_bulan_ini' => $orang['padan_bulan_ini'] ?? null,
-				'update_at' => current_time('mysql'),
-				'active' => 1
+				'percentile_nasional' => $orang['percentile_nasional'] ?? '',
+				'peringkat_kab_kota' => $orang['peringkat_kab_kota'] ?? '',
+				'peringkat_provinsi' => $orang['peringkat_provinsi'] ?? '',
+				'status_nonaktif' => $orang['status_nonaktif'] ?? '',
+				'padan_bulan_ini' => $orang['padan_bulan_ini'] ?? '',
+				'active' => 1,
+				'update_at' => current_time('mysql')
 			];
 
-			if (empty($cek)) {
-				$wpdb->insert('data_dtsen_satset', $data);
+			if ($cek) {
+				$wpdb->update(
+					'data_dtsen_satset',
+					$data,
+					['nik' => $nik]
+				);
 			} else {
-				$wpdb->update('data_dtsen_satset', $data, ['nik' => $nik]);
+				$wpdb->insert(
+					'data_dtsen_satset',
+					$data
+				);
 			}
 		}
 

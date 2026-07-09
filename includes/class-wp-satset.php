@@ -228,6 +228,11 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_hapus_data_batas_kecamatan_by_id', $plugin_public, 'hapus_data_batas_kecamatan_by_id');
 		$this->loader->add_action('wp_ajax_get_data_batas_kecamatan_by_id', $plugin_public, 'get_data_batas_kecamatan_by_id');
 		$this->loader->add_action('wp_ajax_tambah_data_batas_kecamatan', $plugin_public, 'tambah_data_batas_kecamatan');
+		$this->loader->add_action('wp_ajax_get_table_kepala_keluarga', $plugin_public, 'get_table_kepala_keluarga');
+		$this->loader->add_action('wp_ajax_generate_detail_kk_dtsen', $plugin_public, 'generate_detail_kk_dtsen');
+		$this->loader->add_action('wp_ajax_nopriv_generate_detail_kk_dtsen', $plugin_public, 'generate_detail_kk_dtsen');
+		$this->loader->add_action('wp_ajax_get_table_anggota_keluarga_dtsen', $plugin_public, 'get_table_anggota_keluarga_dtsen');
+
 
 		add_shortcode('satset_homepage', array($plugin_public, 'satset_homepage'));
 		add_shortcode('conversi_peta_satset', array($plugin_public, 'conversi_peta_satset'));
@@ -252,6 +257,7 @@ class Wp_Satset {
 		add_shortcode('data_dtks', array($plugin_public, 'data_dtks'));
 		add_shortcode('data_dtsen', array($plugin_public, 'data_dtsen'));
 		add_shortcode('data_detail_dtsen', array($plugin_public, 'data_detail_dtsen'));
+		add_shortcode('data_detail_kk_dtsen', array($plugin_public, 'data_detail_kk_dtsen'));
 		add_shortcode('data_batas_desa', array($plugin_public, 'data_batas_desa'));
 		add_shortcode('data_batas_kecamatan', array($plugin_public, 'data_batas_kecamatan'));
 
