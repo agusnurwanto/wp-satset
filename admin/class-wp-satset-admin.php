@@ -1343,6 +1343,7 @@ class Wp_Satset_Admin {
 				$data_kec[$desa['kecamatan']]['desa'][] = $desa;
 			}
 			$ret['data'] = $data_kec;
+			$ret['sql'] = $wpdb->last_query;
 		} else {
 			$ret['status'] = 'error';
 			$ret['message'] = 'Format Salah!';
@@ -1559,13 +1560,15 @@ class Wp_Satset_Admin {
 			]);
 		}
 
+		$data = [
+			'action' => 'get_data_dtsen_ajax',
+			'api_key' => $api_key,
+			'desa' => $desa['desa_kelurahan']
+		];
+
 		$ret_dtsen = $this->functions->curl_post([
 			'url' => $url,
-			'data' => [
-				'action' => 'get_data_dtsen_ajax',
-				'api_key' => $api_key,
-				'desa' => $desa['desa_kelurahan']
-			]
+			'data' => $data
 		]);
 		$dtsen = json_decode($ret_dtsen, true);
 		
@@ -1573,7 +1576,9 @@ class Wp_Satset_Admin {
 			wp_send_json([
 				'status' => 'error',
 				'message' => 'Data tidak ditemukan dari SIKS',
-				'response' => $dtsen
+				'response' => $dtsen,
+				'body' => $data,
+				'url' => $url
 			]);
 		}
 		// DEBUG
