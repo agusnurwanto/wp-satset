@@ -396,18 +396,19 @@ function get_data_desa(argument) {
             }else{
 				var body = '';
 				for(var b in res.data){
-					var id_kec = res.data[b].kec.provno+res.data[b].kec.kabkotno+res.data[b].kec.kecno;
+					var id_kec = res.data[b].kec.kecno;
 					body += ''
 						+'<tr style="background: #ebbcbc;">'
 							+'<td style="text-align: center;"><input class="data-kecamatan" type="checkbox" value="'+id_kec+'"></td>'
-							+'<td colspan="2">'+res.data[b].kec.kecamatan+'</td>'
+							+'<td colspan="3">'+res.data[b].kec.kecamatan+'</td>'
 						+'</tr>';
 					res.data[b].desa.map(function(bb, ii){
 						body += ''
 							+'<tr>'
-								+'<td style="text-align: center;"><input provinsi="'+bb.provinsi+'" kabkot="'+bb.kab_kot+'" type="checkbox" id_kec="'+id_kec+'" value="'+id_kec+bb.desano+'"></td>'
+								+'<td style="text-align: center;"><input provinsi="'+bb.provinsi+'" kabkot="'+bb.kab_kot+'" kd_wil="'+bb.id2012+'" type="checkbox" id_kec="'+id_kec+'" value="'+id_kec+bb.desano+'"></td>'
 								+'<td>'+bb.kecamatan+'</td>'
 								+'<td>'+bb.desa+'</td>'
+								+'<td>'+bb.id2012+'</td>'
 							+'</tr>';
 					});
 				};
@@ -419,6 +420,7 @@ function get_data_desa(argument) {
 				          		+'<th class="text-white"><input type="checkbox" id="modal_cek_all"></th>'
 				          		+'<th class="text-white" width="300">Kecamatan</th>'
 				          		+'<th class="text-white">Desa</th>'
+				          		+'<th class="text-white">Kode Wilayah</th>'
 				        	+'</tr>'
 				      	+'</thead>'
 				      	+'<tbody>'+body+'</tbody>'
@@ -520,7 +522,7 @@ function get_data_dtsen() {
                     kecamatan: tr.find('td').eq(1).text().trim(),
                     desa_kelurahan: tr.find('td').eq(2).text().trim(),
                     id_kec: id_kec,
-                    
+                    kd_wil: checkbox.attr('kd_wil') || '',
                 });
             }
         }

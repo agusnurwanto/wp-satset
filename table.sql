@@ -1,6 +1,6 @@
 CREATE TABLE `data_batas_desa` (
     `id` int(11) NOT NULL auto_increment,
-    `id_desa` int(11) DEFAULT NULL,
+    `id_desa` VARCHAR(10) DEFAULT NULL,
     `desa` TEXT DEFAULT NULL,
     `kecamatan` TEXT DEFAULT NULL,
     `kab_kot` TEXT DEFAULT NULL,

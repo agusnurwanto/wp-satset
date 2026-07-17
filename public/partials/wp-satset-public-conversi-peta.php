@@ -13,8 +13,72 @@ $opsi3 = array(
     'file' => SATSET_PLUGIN_PATH.'public/media/kecamatan_no/Magetan_Kec.shp',
     'type' => 'kecamatan'
 );
-$maps_all = $this->read_shapefile($opsi1);
+// $maps_all = $this->read_shapefile($opsi1);
 $center = $this->get_center();
+
+/**
+ * Import GeoJSON boundary data for desa.
+ * Reads the file public/media/GeoJson/Magetan_Administrasi_Desa.geojson
+ * and upserts each feature into the data_batas_desa table.
+ */
+function import_geojson_desa() {
+    $geojson_path = SATSET_PLUGIN_PATH . 'public/media/GeoJson/Magetan_Administrasi_Desa.geojson';
+    if (!file_exists($geojson_path)) {
+        return;
+    }
+    $content = file_get_contents($geojson_path);
+    $geo = json_decode($content, true);
+    if (empty($geo['features']) || !is_array($geo['features'])) {
+        return;
+    }
+    global $wpdb;
+    foreach ($geo['features'] as $feature) {
+        $props = $feature['properties'];
+        $geom = $feature['geometry'];
+        // Build coordinate array (lat,lng) from geometry.
+        $coords = array();
+        if ($geom['type'] === 'Polygon') {
+            foreach ($geom['coordinates'][0] as $pair) {
+                // GeoJSON: [lng, lat, ...]
+                $coords[] = array('lat' => $pair[1], 'lng' => $pair[0]);
+            }
+        } elseif ($geom['type'] === 'MultiPolygon') {
+            foreach ($geom['coordinates'] as $polygon) {
+                foreach ($polygon[0] as $pair) {
+                    $coords[] = array('lat' => $pair[1], 'lng' => $pair[0]);
+                }
+            }
+        }
+        $polygon_json = json_encode($coords);
+        // Prepare data for insertion / update.
+        $id_wilayah = $props['KDEPUM'] ? str_replace('.', '', $props['KDEPUM']): null;
+        $data = array(
+            'desa'      => $props['NAMOBJ'] ?? null,
+            'kecamatan' => $props['WADMKC'] ?? null,
+            'kab_kot'   => $props['WADMKK'] ?? null,
+            'provinsi'  => $props['WADMPR'] ?? null,
+            'provno'    => $props['KDPPUM'] ?? null,
+            'kabkotno'  => $props['KDPKAB'] ? str_replace('.', '', $props['KDPKAB']): null,
+            'kecno'     => $props['KDCPUM'] ? str_replace('.', '', $props['KDCPUM']): null,
+            'desano'    => $id_wilayah,
+            'id_desa'   => $id_wilayah,
+            'id2012'    => $id_wilayah,
+            'polygon'   => $polygon_json,
+        );
+        // Check if record already exists.
+        $existing_id = $wpdb->get_var($wpdb->prepare(
+            "SELECT id FROM data_batas_desa WHERE desa = %s AND kecamatan = %s AND kab_kot = %s AND provinsi = %s",
+            $data['desa'], $data['kecamatan'], $data['kab_kot'], $data['provinsi']
+        ));
+        if ($existing_id) {
+            $wpdb->update('data_batas_desa', $data, array('id' => $existing_id));
+        } else {
+            $wpdb->insert('data_batas_desa', $data);
+        }
+    }
+}
+import_geojson_desa();
+
 ?>
 <h1 class="text-center">Conversi File SHP ke Google Maps</h1>
 <div style="width: 95%; margin: 0 auto; height: 90vh; padding-bottom: 75px;">

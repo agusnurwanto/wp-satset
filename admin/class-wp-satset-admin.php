@@ -1326,7 +1326,8 @@ class Wp_Satset_Admin {
 					provinsi,
 					kab_kot,
 					kecamatan,
-					desa 
+					desa,
+					id2012
 				FROM data_batas_desa 
 				WHERE $where
 					AND kecno is not null
@@ -1563,7 +1564,8 @@ class Wp_Satset_Admin {
 		$data = [
 			'action' => 'get_data_dtsen_ajax',
 			'api_key' => $api_key,
-			'desa' => $desa['desa_kelurahan']
+			'desa' => $desa['desa_kelurahan'],
+			'kd_wil' => $desa['kd_wil']
 		];
 
 		$ret_dtsen = $this->functions->curl_post([
