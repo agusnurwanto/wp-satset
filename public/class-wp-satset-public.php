@@ -794,7 +794,6 @@ public function cari_data_satset(){
 						OR kepala_keluarga like %s
 						AND tahun_anggaran=%d
 				", '%'.$_POST['nik'].'%', '%'.$_POST['nik'].'%', $_POST['tahun_anggaran']));
-				print_r($data); die($wpdb->last_query);
 				$data_stunting = $wpdb->get_results($wpdb->prepare("
 					SELECT
 						*
