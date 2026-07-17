@@ -315,54 +315,68 @@ class SATSET_Functions
 	}
 
     function curl_post($options){
-		$curl = curl_init();
-		set_time_limit(0);
-		$req = http_build_query($options['data']);
-		$url = $options['url'];
-		if (empty($url)) {
-			return false;
-		}
-		// Default headers to bypass firewall
-		if (empty($options['header'])) {
-			$options['header'] = [
-				'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
-				'Accept: */*',
-				'Content-Type: application/x-www-form-urlencoded',
-			];
-		}
-		$opsi_curl = array(
-			CURLOPT_URL => $url,
-			CURLOPT_RETURNTRANSFER => true,
-			CURLOPT_ENCODING => "",
-			CURLOPT_MAXREDIRS => 10,
-			CURLOPT_TIMEOUT => 30,
-			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-			CURLOPT_CUSTOMREQUEST => "POST",
-			CURLOPT_POSTFIELDS => $req,
-			CURLOPT_SSL_VERIFYPEER => false,
-			CURLOPT_SSL_VERIFYHOST => false,
-			CURLOPT_CONNECTTIMEOUT => 0,
-			CURLOPT_TIMEOUT => 10000,
-			CURLOPT_FOLLOWLOCATION => true,
-			CURLOPT_HTTPHEADER => $options['header'],
-			CURLOPT_COOKIEJAR => sys_get_temp_dir() . '/curl_cookie.txt',
-			CURLOPT_COOKIEFILE => sys_get_temp_dir() . '/curl_cookie.txt',
-		);
-		curl_setopt_array($curl, $opsi_curl);
-		$response = curl_exec($curl);
-		$err = curl_error($curl);
-		curl_close($curl);
-		if ($err) {
-			$msg = "cURL Error #:" . $err . " (" . $url . ")";
-			if (!empty($options['debug']) && $options['debug'] == 1) {
-				die($msg);
-			} else {
-				return $msg;
-			}
-		} else {
-			return $response;
-		}
-	}
+        $url = $options['url'] ?? '';
+        if (empty($url)) {
+            return false;
+        }
+        // Default headers to bypass firewall
+        if (empty($options['header'])) {
+            $options['header'] = [
+                'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36',
+                'Accept: */*',
+                'Content-Type: application/x-www-form-urlencoded',
+            ];
+        }
+        $req = http_build_query($options['data']);
+        // Temporary cookie jar for session persistence (helps with firewall challenge)
+        $cookieJar = sys_get_temp_dir() . '/curl_cookie_' . uniqid() . '.txt';
+        $curlOpts = [
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => $req,
+            CURLOPT_SSL_VERIFYPEER => false,
+            CURLOPT_SSL_VERIFYHOST => false,
+            CURLOPT_CONNECTTIMEOUT => 0,
+            CURLOPT_TIMEOUT => 10000,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTPHEADER => $options['header'],
+            CURLOPT_COOKIEJAR => $cookieJar,
+            CURLOPT_COOKIEFILE => $cookieJar,
+        ];
+        // First request
+        $curl = curl_init();
+        curl_setopt_array($curl, $curlOpts);
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        // Detect firewall challenge and retry after injecting cookie
+        if (!$err && strpos($response, 'Checking your browser') !== false) {
+            $host = parse_url($url, PHP_URL_HOST);
+            $fh = @fopen($cookieJar, 'a');
+            if ($fh) {
+                fwrite($fh, $host . "\tFALSE\t/\tFALSE\t0\thc_js_gate\t1\n");
+                fclose($fh);
+            }
+            $curl = curl_init();
+            curl_setopt_array($curl, $curlOpts);
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+            curl_close($curl);
+        }
+        if ($err) {
+            $msg = "cURL Error #:" . $err . " (" . $url . ")";
+            if (!empty($options['debug']) && $options['debug'] == 1) {
+                die($msg);
+            }
+            return $msg;
+        }
+        return $response;
+    }
 
     function send_tg($options){
 		$login = false;

@@ -1568,20 +1568,10 @@ class Wp_Satset_Admin {
 			'kd_wil' => $desa['kd_wil']
 		];
 
-		$response = wp_remote_post($url,array(
-    		'body' => $data
-		));
-
-		if (is_wp_error($response)) {
-			wp_send_json([
-				'status' => 'error',
-				'message' => 'Error : '.$response->get_error_message(),
-				'body' => $data,
-				'url' => $url
-			]);
-		} else {
-			$ret_dtsen = wp_remote_retrieve_body($response);
-		}
+		$ret_dtsen = $this->functions->curl_post([
+			'url' => $url,
+			'data' => $data
+		]);
 		$dtsen = json_decode($ret_dtsen, true);
 		
 		if (empty($dtsen['status']) || empty($dtsen['data'])) {
