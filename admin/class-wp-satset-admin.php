@@ -1586,19 +1586,7 @@ class Wp_Satset_Admin {
 		// DEBUG
 		//wp_send_json($dtsen['data'][0]);
 		foreach ($dtsen['data'] as $orang) {
-
-			if (empty($orang['nik'])) {
-				continue;
-			}
-
-			//1. Hanya Kepala Keluarga masuk data_dtsen_satset
-			
-			if (strcasecmp(trim($orang['hub_kepala_keluarga']), 'Kepala Keluarga') !== 0) {
-				continue;
-			}
-
 			$nik = sanitize_text_field($orang['nik']);
-
 			$cek = $wpdb->get_var($wpdb->prepare("
 				SELECT id
 				FROM data_dtsen_satset
