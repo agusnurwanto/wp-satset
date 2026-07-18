@@ -3327,7 +3327,8 @@ public function get_datatable_batas_kecamatan(){
 
 		wp_send_json(array(
 			'status' => 'success',
-			'data' => $body
+			'data' => $body,
+			'total' => count($data)
 		));
 	}
 

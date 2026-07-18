@@ -32,20 +32,24 @@ function import_geojson_desa() {
         return;
     }
     global $wpdb;
+    $all_data = array();
+    $default_color = get_option('_crb_warna_p3ke_satset');
     foreach ($geo['features'] as $feature) {
         $props = $feature['properties'];
         $geom = $feature['geometry'];
         // Build coordinate array (lat,lng) from geometry.
         $coords = array();
         if ($geom['type'] === 'Polygon') {
+            $coords[0] = array();
             foreach ($geom['coordinates'][0] as $pair) {
                 // GeoJSON: [lng, lat, ...]
-                $coords[] = array('lat' => $pair[1], 'lng' => $pair[0]);
+                $coords[0][] = array('lat' => $pair[1], 'lng' => $pair[0]);
             }
         } elseif ($geom['type'] === 'MultiPolygon') {
-            foreach ($geom['coordinates'] as $polygon) {
+            foreach ($geom['coordinates'] as $i => $polygon) {
+                $coords[$i] = array();
                 foreach ($polygon[0] as $pair) {
-                    $coords[] = array('lat' => $pair[1], 'lng' => $pair[0]);
+                    $coords[$i][] = array('lat' => $pair[1], 'lng' => $pair[0]);
                 }
             }
         }
@@ -65,6 +69,12 @@ function import_geojson_desa() {
             'id2012'    => $id_wilayah,
             'polygon'   => $polygon_json,
         );
+        $all_data[] = array(
+            'coor' => $coords,
+            'data' => $data,
+            'html' => json_encode($data),
+            'color' => $default_color
+        );
         // Check if record already exists.
         $existing_id = $wpdb->get_var($wpdb->prepare(
             "SELECT id FROM data_batas_desa WHERE desa = %s AND kecamatan = %s AND kab_kot = %s AND provinsi = %s",
@@ -76,8 +86,9 @@ function import_geojson_desa() {
             $wpdb->insert('data_batas_desa', $data);
         }
     }
+    return $all_data;
 }
-import_geojson_desa();
+$maps_all = import_geojson_desa();
 
 ?>
 <h1 class="text-center">Conversi File SHP ke Google Maps</h1>

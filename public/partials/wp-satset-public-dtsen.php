@@ -25,6 +25,7 @@ $dtsen = $wpdb->get_results(
         TRIM(kecamatan) AS kecamatan,
         TRIM(kelurahan) AS kelurahan
     FROM data_dtsen_satset
+    WHERE active = 1
     ",
     ARRAY_A
 );
@@ -146,12 +147,6 @@ foreach ($maps_all as $i => $desa) {
         $maps_all[$i]['color'] = '#0cbf00';
     }
 
-    $total_dtsen = 
-    ($dtsen_wilayah[$id_wilayah][1] ?? 0) +
-    ($dtsen_wilayah[$id_wilayah][2] ?? 0) +
-    ($dtsen_wilayah[$id_wilayah][3] ?? 0) +
-    ($dtsen_wilayah[$id_wilayah][4] ?? 0);
-
     $maps_all[$i]['index'] = $i;
     $maps_all[$i]['chart'] = $chart_dtsen;
     $maps_all[$i]['chart']['type'] = 'doughnut';
@@ -167,7 +162,7 @@ foreach ($maps_all as $i => $desa) {
                             Prov. '.$desa['data']['provinsi'].'
                         </p>
 
-                        <p><b>Total DTSEN : '.$this->number_format($total_dtsen).' orang</b></p>
+                        <p><b>Total DTSEN : '.$this->number_format($total_dtsen).' Keluarga</b></p>
 
                         '.(
                             $total_dtsen > 0
@@ -349,17 +344,16 @@ $last_update_text =
     <div id="map-canvas" style="width: 100%; height: 400px;"></div>
     <h3 style="margin-top: 20px;">Keterangan</h3>
     <ol>
-        <li>Warna hijau berarti jumlah DTSEN kurang dari 100 orang.</li>
-        <li>Warna kuning berarti jumlah DTSEN antara 100 sampai 200 orang.</li>
-        <li>Warna merah berarti jumlah DTSEN lebih dari 200 orang.</li>
+        <li>Warna hijau berarti jumlah DTSEN kurang dari 100 Keluarga.</li>
+        <li>Warna kuning berarti jumlah DTSEN antara 100 sampai 200 Keluarga.</li>
+        <li>Warna merah berarti jumlah DTSEN lebih dari 200 Keluarga.</li>
     </ol>
     <h2 class="text-center">
         Tabel Data DTSEN<br>
-        Total DTSEN: <?php echo $this->number_format($total_dtsen_all); ?> Orang<br>
-        <?php echo $desil_header; ?>: <?php echo $this->number_format($selected_desil_total); ?> Orang
+        Total DTSEN: <b><?php echo $this->number_format($total_dtsen_all); ?> Keluarga</b><br>
+        <?php echo $desil_header; ?>: <b><?php echo $this->number_format($selected_desil_total); ?> Keluarga</b>
         <p class="text-center" style="margin-top:10px; margin-bottom:20px;">
-            <b>Update Terakhir:</b>
-            <?php echo $last_update_text; ?>
+            Update Terakhir: <b><?php echo $last_update_text; ?></b>
         </p>
     </h2>
     <div style="width: 100%; overflow: auto; height: 100vh;">
