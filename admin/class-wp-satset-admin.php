@@ -1717,21 +1717,43 @@ class Wp_Satset_Admin {
 		// DEBUG
 		//wp_send_json($ats['data'][0]);
 		foreach ($ats['data'] as $orang) {
-			$nik = sanitize_text_field($orang['nik']);
-			$cek = $wpdb->get_var($wpdb->prepare("
-				SELECT id
+			$cek_id = $wpdb->get_var($wpdb->prepare("
+				SELECT
+					id
 				FROM data_ats_satset
-				WHERE nik = %s
-			", $nik));
+				WHERE nisn = %s
+					AND nama = %s
+			", $orang['nisn'], $orang['nama']));
 
-			$data = [
-			];
+			$data = array(
+				'nisn'               => $orang['nisn'],
+				'nama'               => $orang['nama'],
+				'jenis_kelamin'      => $orang['jenis_kelamin'],
+				'usia'               => $orang['usia'],
+				'nama_ayah'          => $orang['nama_ayah'],
+				'nama_ibu'           => $orang['nama_ibu'],
+				'alamat'             => $orang['alamat'],
+				'npsn'               => $orang['npsn'],
+				'nama_sekolah'       => $orang['nama_sekolah'],
+				'tingkat_pendidikan' => $orang['tingkat_pendidikan'],
+				'status'             => $orang['status'],
+				'alasan_verifikasi'  => $orang['alasan_verifikasi'],
+				'alasan_lainnya'     => $orang['alasan_lainnya'],
+				'keterangan'         => $orang['Keterangan'],
+				'provinsi'           => $orang['provinsi'],
+				'kab_kot'            => $orang['kab_kot'],
+				'kecamatan'          => $orang['kecamatan'],
+				'desa'               => $orang['desa'],
+				'kode'           => $orang['kode'],
+				'update_at'          => date('Y-m-d H:i:s'),
+				'active'             => 1
+			);
 
-			if ($cek) {
+			if ($cek_id) {
 				$wpdb->update(
 					'data_ats_satset',
 					$data,
-					['nik' => $nik]
+					['id' => $cek_id]
 				);
 			} else {
 				$wpdb->insert(

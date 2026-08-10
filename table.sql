@@ -510,3 +510,32 @@ CREATE TABLE `data_rekap_jumlah_dtsen` (
     PRIMARY KEY (`id`),  
     INDEX(`kdwil`)  
 );
+
+CREATE TABLE `data_ats_satset` (
+    `id` int(11) NOT NULL auto_increment,
+    `nisn` VARCHAR(50) DEFAULT NULL,
+    `nama` VARCHAR(255) DEFAULT NULL,
+    `jenis_kelamin` VARCHAR(10) DEFAULT NULL,
+    `usia` INT(11) DEFAULT NULL,
+    `nama_ayah` VARCHAR(255) DEFAULT NULL,
+    `nama_ibu` VARCHAR(255) DEFAULT NULL,
+    `alamat` TEXT DEFAULT NULL,
+    `npsn` VARCHAR(50) DEFAULT NULL,
+    `nama_sekolah` VARCHAR(255) DEFAULT NULL,
+    `tingkat_pendidikan` VARCHAR(255) DEFAULT NULL,
+    `status` VARCHAR(50) DEFAULT NULL,
+    `alasan_verifikasi` TEXT DEFAULT NULL,
+    `alasan_lainnya` TEXT DEFAULT NULL,
+    `keterangan` TEXT DEFAULT NULL,
+    `provinsi` VARCHAR(100) DEFAULT NULL,
+    `kab_kot` VARCHAR(100) DEFAULT NULL,
+    `kecamatan` VARCHAR(100) DEFAULT NULL,
+    `desa` VARCHAR(100) DEFAULT NULL,
+    `kode` VARCHAR(100) DEFAULT NULL,
+    `active` tinyint(4) DEFAULT 1,
+    `update_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    INDEX(`nisn`),
+    INDEX(`nama`),
+    INDEX(`active`)
+);
