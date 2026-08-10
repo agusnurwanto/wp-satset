@@ -267,6 +267,14 @@ class Wp_Satset_Admin {
 			'post_status' => 'publish'
 		));
 
+		$data_ats = $this->functions->generatePage(array(
+			'nama_page' => 'Data ATS', 
+			'content' => '[data_ats]',
+        	'show_header' => 1,
+        	'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
 		$data_dtsen = $this->functions->generatePage(array(
 			'nama_page' => 'Data DTSEN', 
 			'content' => '[data_dtsen]',
@@ -426,6 +434,7 @@ class Wp_Satset_Admin {
 	            		<li><a target="_blank" href="'.$data_rtlh['url'].'">'.$data_rtlh['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_dtks['url'].'">'.$data_dtks['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_dtsen['url'].'">'.$data_dtsen['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$data_ats['url'].'">'.$data_ats['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$petunjuk_penggunaan['url'].'">'.$petunjuk_penggunaan['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$dokumentasi_sistem['url'].'">'.$dokumentasi_sistem['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$tanggapan_publik['url'].'">'.$tanggapan_publik['title'].'</a></li>
@@ -795,11 +804,20 @@ class Wp_Satset_Admin {
 		Container::make( 'theme_options', __( 'Data DTSEN' ) )
 			->set_page_parent( $basic_options_container )
 			->add_fields( array(
-		        Field::make( 'text', 'crb_dtsen_satset_server', 'Alamat server WP-SIKS' )
+		        Field::make( 'text', 'crb_dtsen_satset_server', 'Alamat server WP-SIKS DTSEN' )
 		        	->set_default_value(site_url().'/wp-admin/admin-ajax.php'),
-		        Field::make( 'text', 'crb_dtsen_satset_api_key', 'API KEY WP-SIKS' ),
+		        Field::make( 'text', 'crb_dtsen_satset_api_key', 'API KEY WP-SIKS DTSEN' ),
 		        Field::make( 'html', 'crb_dtsen_save_button' )
 	            	->set_html( '<div id="pilih-desa"></div><div style="text-align: center; margin: 10px;"><a onclick="get_data_dtsen(); return false" href="javascript:void(0);" class="button button-primary">Singkronisasi Data</a></div>' )
+	        ) );
+		Container::make( 'theme_options', __( 'Data ATS' ) )
+			->set_page_parent( $basic_options_container )
+			->add_fields( array(
+		        Field::make( 'text', 'crb_ats_satset_server', 'Alamat server WP-SIKS ATS' )
+		        	->set_default_value(site_url().'/wp-admin/admin-ajax.php'),
+		        Field::make( 'text', 'crb_ats_satset_api_key', 'API KEY WP-SIKS ATS' ),
+		        Field::make( 'html', 'crb_ats_save_button' )
+	            	->set_html( '<div id="pilih-desa"></div><div style="text-align: center; margin: 10px;"><a onclick="get_data_ats(); return false" href="javascript:void(0);" class="button button-primary">Singkronisasi Data</a></div>' )
 	        ) );
 		Container::make( 'theme_options', __( 'Data Desa' ) )
 			->set_page_parent( $basic_options_container )
@@ -1635,6 +1653,98 @@ class Wp_Satset_Admin {
 			'status' => 'success',
 			'message' => 'Sinkronisasi berhasil!',
 			'count' => count($dtsen['data'])
+		]);
+	}
+
+	public function get_data_ats()
+	{
+		global $wpdb;
+
+		$url = trim(get_option('_crb_ats_satset_server'));
+		$api_key = trim(get_option('_crb_ats_satset_api_key'));
+		if (empty($url)) {
+			wp_send_json([
+				'status' => 'error',
+				'message' => 'URL server SIKS kosong!'
+			]);
+		}
+
+		if (empty($api_key)) {
+			wp_send_json([
+				'status' => 'error',
+				'message' => 'API KEY kosong!'
+			]);
+		}
+
+		if (empty($_POST['desa'])) {
+			wp_send_json([
+				'status' => 'error',
+				'message' => 'Data desa tidak dikirim!'
+			]);
+		}
+
+		$desa = json_decode(stripslashes($_POST['desa']), true);
+
+		if (empty($desa['desa_kelurahan'])) {
+			wp_send_json([
+				'status' => 'error',
+				'message' => 'desa_kelurahan kosong!'
+			]);
+		}
+
+		$data = [
+			'action' => 'get_data_ats_ajax',
+			'api_key' => $api_key,
+			'desa' => $desa['desa_kelurahan'],
+			'kd_wil' => $desa['kd_wil']
+		];
+
+		$ret_ats = $this->functions->curl_post([
+			'url' => $url,
+			'data' => $data
+		]);
+		$ats = json_decode($ret_ats, true);
+		
+		if (empty($ats['status']) || empty($ats['data'])) {
+			wp_send_json([
+				'status' => 'error',
+				'message' => 'Data tidak ditemukan dari SIKS',
+				'response' => $ats,
+				'body' => $data,
+				'url' => $url
+			]);
+		}
+		// DEBUG
+		//wp_send_json($ats['data'][0]);
+		foreach ($ats['data'] as $orang) {
+			$nik = sanitize_text_field($orang['nik']);
+			$cek = $wpdb->get_var($wpdb->prepare("
+				SELECT id
+				FROM data_ats_satset
+				WHERE nik = %s
+			", $nik));
+
+			$data = [
+			];
+
+			if ($cek) {
+				$wpdb->update(
+					'data_ats_satset',
+					$data,
+					['nik' => $nik]
+				);
+			} else {
+				$wpdb->insert(
+					'data_ats_satset',
+					$data
+				);
+			}
+		}
+
+		wp_send_json([
+			'status' => 'success',
+			'message' => 'Sinkronisasi berhasil!',
+			'count' => count($ats['data'])
 		]);
 	}
 

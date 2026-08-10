@@ -173,6 +173,7 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_import_excel_rtlh',  $plugin_admin, 'import_excel_rtlh');
 		$this->loader->add_action('wp_ajax_get_data_dtks',  $plugin_admin, 'get_data_dtks');
 		$this->loader->add_action('wp_ajax_get_data_dtsen',  $plugin_admin, 'get_data_dtsen');
+		$this->loader->add_action('wp_ajax_get_data_ats',  $plugin_admin, 'get_data_ats');
 		$this->loader->add_action('wp_ajax_get_data_dtsen_ajax',  $plugin_admin, 'get_data_dtsen_ajax');
 		$this->loader->add_action('wp_ajax_get_data_desa',  $plugin_admin, 'get_data_desa');
 		$this->loader->add_action('wp_ajax_get_data_batas_kecamatan',  $plugin_admin, 'get_data_batas_kecamatan');
