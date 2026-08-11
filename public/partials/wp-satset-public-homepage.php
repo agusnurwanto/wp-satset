@@ -6,10 +6,7 @@
         $url = get_option('_crb_satset_menu_url_'.$i);
         $logo = get_option('_crb_satset_menu_logo_'.$i);
         
-        if(!empty($text) && $text != '...'){
-            if(empty($logo)) {
-                $logo = $gambar_menu_default;
-            }
+        if(!empty($logo)){
             $active_menus[] = array(
                 'text' => $text,
                 'url' => $url,
@@ -23,11 +20,8 @@
     if($total_menus == 1) $col_md = 12;
     elseif($total_menus == 2) $col_md = 6;
     elseif($total_menus == 3) $col_md = 4;
-    elseif($total_menus == 4) $col_md = 3;
-    elseif($total_menus == 8) $col_md = 3;
-    elseif($total_menus > 0 && $total_menus % 4 == 0) $col_md = 3;
-    elseif($total_menus > 0 && $total_menus % 3 == 0) $col_md = 4;
-    elseif($total_menus > 4) $col_md = 4;
+    elseif($total_menus >= 4 && $total_menus <= 8) $col_md = 3;
+    elseif($total_menus >= 9) $col_md = 2;
     
     $col_class = 'col-md-' . $col_md;
 ?>
