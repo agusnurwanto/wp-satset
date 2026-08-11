@@ -1,79 +1,43 @@
 <?php
     $gambar_menu_default = 'https://via.placeholder.com/25x25';
-    $gambar_menu0 = get_option('_crb_satset_menu_logo_0');
-    if(empty($gambar_menu0)){
-        $gambar_menu0 = $gambar_menu_default;
+    $active_menus = array();
+    for($i = 1; $i <= 16; $i++){
+        $text = get_option('_crb_satset_menu_text_'.$i);
+        $url = get_option('_crb_satset_menu_url_'.$i);
+        $logo = get_option('_crb_satset_menu_logo_'.$i);
+        
+        if(!empty($text) && $text != '...'){
+            if(empty($logo)) {
+                $logo = $gambar_menu_default;
+            }
+            $active_menus[] = array(
+                'text' => $text,
+                'url' => $url,
+                'logo' => $logo,
+            );
+        }
     }
-    $gambar_menu1 = get_option('_crb_satset_menu_logo_1');
-    if(empty($gambar_menu1)){
-        $gambar_menu1 = $gambar_menu_default;
-    }
-    $gambar_menu2 = get_option('_crb_satset_menu_logo_2');
-    if(empty($gambar_menu2)){
-        $gambar_menu2 = $gambar_menu_default;
-    }
-    $gambar_menu3 = get_option('_crb_satset_menu_logo_3');
-    if(empty($gambar_menu3)){
-        $gambar_menu3 = $gambar_menu_default;
-    }
-    $gambar_menu4 = get_option('_crb_satset_menu_logo_4');
-    if(empty($gambar_menu4)){
-        $gambar_menu4 = $gambar_menu_default;
-    }
-    $gambar_menu5 = get_option('_crb_satset_menu_logo_5');
-    if(empty($gambar_menu5)){
-        $gambar_menu5 = $gambar_menu_default;
-    }
-    $gambar_menu6 = get_option('_crb_satset_menu_logo_6');
-    if(empty($gambar_menu6)){
-        $gambar_menu6 = $gambar_menu_default;
-    }
-    $gambar_menu7 = get_option('_crb_satset_menu_logo_7');
-    if(empty($gambar_menu7)){
-        $gambar_menu7 = $gambar_menu_default;
-    }
-    $gambar_menu8 = get_option('_crb_satset_menu_logo_8');
-    if(empty($gambar_menu8)){
-        $gambar_menu8 = $gambar_menu_default;
-    }
-    $gambar_menu9 = get_option('_crb_satset_menu_logo_9');
-    if(empty($gambar_menu9)){
-        $gambar_menu9 = $gambar_menu_default;
-    }
-    $gambar_menu10 = get_option('_crb_satset_menu_logo_10');
-    if(empty($gambar_menu10)){
-        $gambar_menu10 = $gambar_menu_default;
-    }
-    $gambar_menu11 = get_option('_crb_satset_menu_logo_11');
-    if(empty($gambar_menu11)){
-        $gambar_menu11 = $gambar_menu_default;
-    }
-    $gambar_menu12 = get_option('_crb_satset_menu_logo_12');
-    if(empty($gambar_menu12)){
-        $gambar_menu12 = $gambar_menu_default;
-    }
-    $gambar_menu13 = get_option('_crb_satset_menu_logo_13');
-    if(empty($gambar_menu13)){
-        $gambar_menu13 = $gambar_menu_default;
-    }
-    $gambar_menu14 = get_option('_crb_satset_menu_logo_14');
-    if(empty($gambar_menu14)){
-        $gambar_menu14 = $gambar_menu_default;
-    }
-    $gambar_menu15 = get_option('_crb_satset_menu_logo_15');
-    if(empty($gambar_menu15)){
-        $gambar_menu15 = $gambar_menu_default;
-    }
-    $gambar_menu16 = get_option('_crb_satset_menu_logo_16');
-    if(empty($gambar_menu16)){
-        $gambar_menu16 = $gambar_menu_default;
-    }
+    
+    $total_menus = count($active_menus);
+    $col_md = 4; // default 3 items per row
+    if($total_menus == 1) $col_md = 12;
+    elseif($total_menus == 2) $col_md = 6;
+    elseif($total_menus == 3) $col_md = 4;
+    elseif($total_menus == 4) $col_md = 3;
+    elseif($total_menus == 8) $col_md = 3;
+    elseif($total_menus > 0 && $total_menus % 4 == 0) $col_md = 3;
+    elseif($total_menus > 0 && $total_menus % 3 == 0) $col_md = 4;
+    elseif($total_menus > 4) $col_md = 4;
+    
+    $col_class = 'col-md-' . $col_md;
 ?>
 <script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/loadingoverlay.min.js"></script>
-<script type="text/javascript">
 <?php
-    $src = 'src="'.get_option('_crb_satset_menu_video_loading').'"';
+    $video = get_option('_crb_satset_menu_video_loading');
+    if(!empty($video)):
+        $src = 'src="'.$video.'"';
 ?>
+<script type="text/javascript">
     var $ = jQuery;
     function progressLoading() {
         $.LoadingOverlay('show', { 
@@ -89,6 +53,9 @@
         jQuery('body').addClass('bg-infinity');
     }, <?php echo get_option('_crb_satset_lama_loading'); ?>);
 </script>
+<?php
+    endif;
+?>
 <!-- CSS Begins-->
 <link href="<?php echo SATSET_PLUGIN_URL; ?>public/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
 <link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/flaticon.css" rel="stylesheet" type="text/css" />
@@ -185,15 +152,18 @@
     }
     .site-logo {
         max-width: 500px;
-	width: 100%;
+	    width: 100%;
+    }
+    #page {
+        background-color: rgba(0, 0, 0, 0.5);
     }
 </style>
-<section id="sewa_aset">
+<section>
     <div class="container intro-text">
         <div class="row text-center">
             <div class="col-md-12" style="margin-top: 35px;">
                 <a class="main animated" data-animation="fadeInUp" data-animation-delay="1000" href="<?php echo site_url(); ?>">
-                    <img class="site-logo" src="<?php echo get_option('_crb_satset_menu_logo_dashboard'); ?>" alt="SIMATA" />
+                    <img class="site-logo" src="<?php echo get_option('_crb_satset_menu_logo_dashboard'); ?>" alt="SATSET" />
                 </a>
             </div>
         </div>
@@ -204,180 +174,22 @@
                 </div>
             </div>
         </div>
-        <div class="row counting-box title-row text-center">
-            <div class="col-md-2 col-xs-6 animated" data-animation="fadeInLeft" data-animation-delay="1000">
+        <div class="row counting-box title-row text-center" style="display: flex; flex-wrap: wrap; justify-content: center;">
+            <?php foreach($active_menus as $index => $menu): 
+                $animations = array('fadeInLeft', 'fadeInUp', 'fadeInRight');
+                $anim = $animations[$index % 3];
+            ?>
+            <div class="<?php echo $col_class; ?> col-xs-6 animated" data-animation="<?php echo $anim; ?>" data-animation-delay="1000">
                 <div class="setbulet bg-info pull-up">
-                    <a href="<?php echo get_option('_crb_satset_menu_url_1'); ?>" target="_blank">
-                        <img src="<?php echo $gambar_menu1; ?>">
+                    <a href="<?php echo $menu['url']; ?>" target="_blank">
+                        <img src="<?php echo $menu['logo']; ?>">
                     </a>
                 </div>
-                <a href="<?php echo get_option('_crb_satset_menu_url_1'); ?>" target="_blank">
-                    <h3 class="normal text-white text-xbold text-shadow"><?php echo get_option('_crb_satset_menu_text_1'); ?></h3>
+                <a href="<?php echo $menu['url']; ?>" target="_blank">
+                    <h3 class="normal text-white text-xbold text-shadow"><?php echo $menu['text']; ?></h3>
                 </a>
             </div>
-            <div class="col-md-2 col-xs-6 animated" data-animation="fadeInLeft" data-animation-delay="1000">
-                <div class="setbulet bg-info pull-up">
-                    <a href="<?php echo get_option('_crb_satset_menu_url_2'); ?>" target="_blank">
-                        <img src="<?php echo $gambar_menu2; ?>">
-                    </a>
-                </div>
-                <a href="<?php echo get_option('_crb_satset_menu_url_2'); ?>" target="_blank">
-                    <h3 class="normal text-white text-xbold text-shadow"><?php echo get_option('_crb_satset_menu_text_2'); ?></h3>
-                </a>
-            </div>
-            <div class="col-md-2 col-xs-6 animated" data-animation="fadeInUp" data-animation-delay="1000">
-                <div class="setbulet bg-info pull-up">
-                    <a href="<?php echo get_option('_crb_satset_menu_url_3'); ?>" target="_blank">
-                        <img src="<?php echo $gambar_menu3; ?>">
-                    </a>
-                </div>
-                <a href="<?php echo get_option('_crb_satset_menu_url_3'); ?>" target="_blank">
-                    <h3 class="normal text-white text-xbold text-shadow"><?php echo get_option('_crb_satset_menu_text_3'); ?></h3>
-                </a>
-            </div>
-            <div class="col-md-2 col-xs-6 animated" data-animation="fadeInUp" data-animation-delay="1000">
-                <div class="setbulet bg-info pull-up">
-                    <a href="<?php echo get_option('_crb_satset_menu_url_4'); ?>" target="_blank">
-                        <img src="<?php echo $gambar_menu4; ?>">
-                    </a>
-                </div>
-                <a href="<?php echo get_option('_crb_satset_menu_url_4'); ?>" target="_blank">
-                    <h3 class="normal text-white text-xbold text-shadow"><?php echo get_option('_crb_satset_menu_text_4'); ?></h3>
-                </a>
-            </div>
-            <div class="col-md-2 col-xs-6 animated" data-animation="fadeInRight" data-animation-delay="1000">
-                <div class="setbulet bg-info pull-up">
-                    <a href="<?php echo get_option('_crb_satset_menu_url_5'); ?>" target="_blank">
-                        <img src="<?php echo $gambar_menu5; ?>">
-                    </a>
-                </div>
-                <a href="<?php echo get_option('_crb_satset_menu_url_5'); ?>" target="_blank">
-                    <h3 class="normal text-white text-xbold text-shadow"><?php echo get_option('_crb_satset_menu_text_5'); ?></h3>
-                </a>
-            </div>
-            <div class="col-md-2 col-xs-6 animated" data-animation="fadeInRight" data-animation-delay="1000">
-                <div class="setbulet bg-info pull-up">
-                    <a href="<?php echo get_option('_crb_satset_menu_url_6'); ?>" target="_blank">
-                        <img src="<?php echo $gambar_menu6; ?>">
-                    </a>
-                </div>
-                <a href="<?php echo get_option('_crb_satset_menu_url_6'); ?>" target="_blank">
-                    <h3 class="normal text-white text-xbold text-shadow"><?php echo get_option('_crb_satset_menu_text_6'); ?></h3>
-                </a>
-            </div>
-        </div>
-        <div class="row counting-box text-center title-row">
-            <div class="col-md-2 col-xs-6 animated" data-animation="fadeInLeft" data-animation-delay="1000">
-                <div class="setbulet bg-info pull-up">
-                    <a href="<?php echo get_option('_crb_satset_menu_url_7'); ?>" target="_blank">
-                        <img src="<?php echo $gambar_menu7; ?>">
-                    </a>
-                </div>
-                <a href="<?php echo get_option('_crb_satset_menu_url_7'); ?>" target="_blank">
-                    <h3 class="normal text-white text-xbold text-shadow"><?php echo get_option('_crb_satset_menu_text_7'); ?></h3>
-                </a>
-            </div>
-            <div class="col-md-2 col-xs-6 animated" data-animation="fadeInLeft" data-animation-delay="1000">
-                <div class="setbulet bg-info pull-up">
-                    <a href="<?php echo get_option('_crb_satset_menu_url_8'); ?>" target="_blank">
-                        <img src="<?php echo $gambar_menu8; ?>">
-                    </a>
-                </div>
-                <a href="<?php echo get_option('_crb_satset_menu_url_8'); ?>" target="_blank">
-                    <h3 class="normal text-white text-xbold text-shadow"><?php echo get_option('_crb_satset_menu_text_8'); ?></h3>
-                </a>
-            </div>
-            <div class="col-md-2 col-xs-6 animated" data-animation="fadeInUp" data-animation-delay="1000">
-                <div class="setbulet bg-info pull-up">
-                    <a href="<?php echo get_option('_crb_satset_menu_url_9'); ?>" target="_blank">
-                        <img src="<?php echo $gambar_menu9; ?>">
-                    </a>
-                </div>
-                <a href="<?php echo get_option('_crb_satset_menu_url_9'); ?>" target="_blank">
-                    <h3 class="normal text-white text-xbold text-shadow"><?php echo get_option('_crb_satset_menu_text_9'); ?></h3>
-                </a>
-            </div>
-            <div class="col-md-2 col-xs-6 animated" data-animation="fadeInUp" data-animation-delay="1000">
-                <div class="setbulet bg-info pull-up">
-                    <a href="<?php echo get_option('_crb_satset_menu_url_10'); ?>" target="_blank">
-                        <img src="<?php echo $gambar_menu10; ?>">
-                    </a>
-                </div>
-                <a href="<?php echo get_option('_crb_satset_menu_url_10'); ?>" target="_blank">
-                    <h3 class="normal text-white text-xbold text-shadow"><?php echo get_option('_crb_satset_menu_text_10'); ?></h3>
-                </a>
-            </div>
-            <div class="col-md-2 col-xs-6 animated" data-animation="fadeInRight" data-animation-delay="1000">
-                <div class="setbulet bg-info pull-up">
-                    <a href="<?php echo get_option('_crb_satset_menu_url_11'); ?>" target="_blank">
-                        <img src="<?php echo $gambar_menu11; ?>">
-                    </a>
-                </div>
-                <a href="<?php echo get_option('_crb_satset_menu_url_11'); ?>" target="_blank">
-                    <h3 class="normal text-white text-xbold text-shadow"><?php echo get_option('_crb_satset_menu_text_11'); ?></h3>
-                </a>
-            </div>
-            <div class="col-md-2 col-xs-6 animated" data-animation="fadeInRight" data-animation-delay="1000">
-                <div class="setbulet bg-info pull-up">
-                    <a href="#hide-menu" onclick="show_more(); return false;">
-                        <img src="<?php echo $gambar_menu0; ?>">
-                    </a>
-                </div>
-                <a href="#hide-menu" onclick="show_more(); return false;">
-                    <h3 class="normal text-white text-xbold text-shadow" id="text-lainya"><?php echo get_option('_crb_satset_menu_text_0'); ?></h3>
-                </a>
-            </div>
-        </div>
-        <div id="hide-menu" class="row counting-box text-center title-row">
-            <div class="col-md-2 col-xs-6 animated" data-animation="fadeInUp" data-animation-delay="200">
-                <div class="setbulet bg-info pull-up">
-                    <a href="<?php echo get_option('_crb_satset_menu_url_12'); ?>" target="_blank">
-                        <img src="<?php echo $gambar_menu12; ?>">
-                    </a>
-                </div>
-                <a href="<?php echo get_option('_crb_satset_menu_url_12'); ?>" target="_blank">
-                    <h3 class="normal text-white text-xbold text-shadow"><?php echo get_option('_crb_satset_menu_text_12'); ?></h3>
-                </a>
-            </div>
-            <div class="col-md-2 col-xs-6 animated" data-animation="fadeInUp" data-animation-delay="200">
-                <div class="setbulet bg-info pull-up">
-                    <a href="<?php echo get_option('_crb_satset_menu_url_13'); ?>" target="_blank">
-                        <img src="<?php echo $gambar_menu13; ?>">
-                    </a>
-                </div>
-                <a href="<?php echo get_option('_crb_satset_menu_url_13'); ?>" target="_blank">
-                    <h3 class="normal text-white text-xbold text-shadow"><?php echo get_option('_crb_satset_menu_text_13'); ?></h3>
-                </a>
-            </div>
-            <div class="col-md-2 col-xs-6 animated" data-animation="fadeInUp" data-animation-delay="200">
-                <div class="setbulet bg-info pull-up">
-                    <a href="<?php echo get_option('_crb_satset_menu_url_14'); ?>" target="_blank">
-                        <img src="<?php echo $gambar_menu14; ?>">
-                    </a>
-                </div>
-                <a href="<?php echo get_option('_crb_satset_menu_url_14'); ?>" target="_blank">
-                    <h3 class="normal text-white text-xbold text-shadow"><?php echo get_option('_crb_satset_menu_text_14'); ?></h3>
-                </a>
-            </div>
-            <div class="col-md-2 col-xs-6 animated" data-animation="fadeInUp" data-animation-delay="200">
-                <div class="setbulet bg-info pull-up">
-                    <a href="<?php echo get_option('_crb_satset_menu_url_15'); ?>" target="_blank">
-                        <img src="<?php echo $gambar_menu15; ?>">
-                    </a>
-                </div>
-                <a href="<?php echo get_option('_crb_satset_menu_url_15'); ?>" target="_blank">
-                    <h3 class="normal text-white text-xbold text-shadow"><?php echo get_option('_crb_satset_menu_text_15'); ?></h3>
-                </a>
-            </div>
-            <div class="col-md-2 col-xs-6 animated" data-animation="fadeInUp" data-animation-delay="200">
-                <div class="setbulet bg-info pull-up">
-                    <a href="<?php echo get_option('_crb_satset_menu_url_16'); ?>" target="_blank">
-                        <img src="<?php echo $gambar_menu16; ?>">
-                    </a>
-                </div>
-                <a href="<?php echo get_option('_crb_satset_menu_url_16'); ?>" target="_blank">
-                    <h3 class="normal text-white text-xbold text-shadow"><?php echo get_option('_crb_satset_menu_text_16'); ?></h3>
-                </a
+            <?php endforeach; ?>
         </div>
     </div>
 </section>
@@ -418,18 +230,4 @@
     jQuery('body').vegas({
         slides: background_header
     });
-
-    function show_more(){
-        if(jQuery('#hide-menu').hasClass('show')){
-            jQuery('#hide-menu').removeClass('show');
-            jQuery('#text-lainya').text(jQuery('#hide-menu').attr('text-asli'));
-        }else{
-            jQuery('#hide-menu').addClass('show');
-            jQuery('#hide-menu').attr('text-asli', jQuery('#text-lainya').text());
-            jQuery('#text-lainya').text('Sembunyikan');
-            jQuery("html, body").animate({ 
-                scrollTop: jQuery(document).height()
-            }, 1000);
-        }
-    }
 </script>
