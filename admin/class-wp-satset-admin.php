@@ -1744,7 +1744,8 @@ class Wp_Satset_Admin {
 				'kab_kot'            => $orang['kab_kot'],
 				'kecamatan'          => $orang['kecamatan'],
 				'desa'               => $orang['desa'],
-				'kode'           => $orang['kode'],
+				'kode'           	=> $orang['kode'],
+				'kdwil'				=> $desa['kd_wil'],
 				'update_at'          => date('Y-m-d H:i:s'),
 				'active'             => 1
 			);

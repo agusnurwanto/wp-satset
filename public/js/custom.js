@@ -8,11 +8,11 @@ Page Loader
 
     pageLoader: function() {
 
-        $(".loader-item")
+        jQuery(".loader-item")
             .delay(700)
             .fadeOut();
 
-        $("#pageloader")
+        jQuery("#pageloader")
             .delay(800)
             .fadeOut("slow");
 
@@ -27,8 +27,9 @@ Carousel-slider
 
     simplecarousel: function() {
 
+        if ( !jQuery(".owl-demo").length || typeof jQuery.fn.owlCarousel !== 'function' ) return;
 
-        $(".owl-demo")
+        jQuery(".owl-demo")
             .owlCarousel({
 
                 items: 1,
@@ -59,10 +60,10 @@ Carousel-slider
     simpleAnimation: function() {
 
 
-        $('.animated')
+        jQuery('.animated')
             .appear(function() {
 
-                var elem = $(this);
+                var elem = jQuery(this);
 
                 var animation = elem.data('animation');
 
@@ -102,17 +103,17 @@ Carousel-slider
 
 -------------------------------------------- */
 
-        var loadtext = $('.load-more');
+        var loadtext = jQuery('.load-more');
 
-        $(".load-posts")
+        jQuery(".load-posts")
             .click(function() {
 
-                if ($(this)
+                if (jQuery(this)
                     .hasClass('disable')) return false;
 
 
 
-                $(this)
+                jQuery(this)
                     .html(
                         '<i class="fa fa-spin fa-spinner"></i> Loading'
                     );
@@ -129,15 +130,15 @@ Carousel-slider
 
                     $hidden.fadeIn(500);
 
-                    $(this)
+                    jQuery(this)
                         .addClass('disable');
 
-                    $(this)
+                    jQuery(this)
                         .fadeTo("slow", 0.23) /*.delay(600)*/
 
                     .queue(function(n) {
 
-                            $(this)
+                            jQuery(this)
                                 .html('All Posts Loaded');
 
                             n();
@@ -151,12 +152,12 @@ Carousel-slider
 
                     $hidden.fadeIn(500);
 
-                    $(this)
+                    jQuery(this)
                         .fadeTo("slow", 0.23) /*.delay(600)*/
 
                     .queue(function(g) {
 
-                            $(this)
+                            jQuery(this)
                                 .html(
                                     'Load More Post <i class="flaticon-arrow209">'
                                 );
@@ -226,13 +227,13 @@ Carousel-slider
 
         // Scroll Links
 
-        $('.page-scroll a')
+        jQuery('.page-scroll a')
             .bind('click', function(event) {
-                var $anchor = $(this);
-                $('html, body')
+                var $anchor = jQuery(this);
+                jQuery('html, body')
                     .stop()
                     .animate({
-                        scrollTop: $($anchor.attr('href'))
+                        scrollTop: jQuery($anchor.attr('href'))
                             .offset()
                             .top
                     }, 1500, 'easeInOutExpo');
@@ -250,16 +251,18 @@ Carousel-slider
 
     funFact: function() {
 
-        $(".fact-number")
+        if ( !jQuery(".fact-number").length ) return;
+
+        jQuery(".fact-number")
             .appear(function() {
 
-                $('.fact-number')
+                jQuery('.fact-number')
                     .each(function() {
 
-                        dataperc = $(this)
+                        dataperc = jQuery(this)
                             .attr('data-perc'),
 
-                            $(this)
+                            jQuery(this)
                             .find('.factor')
                             .delay(6000)
                             .countTo({
@@ -281,11 +284,11 @@ Carousel-slider
             });
 
 
-        $.fn.countTo = function(options) {
+        jQuery.fn.countTo = function(options) {
 
             // merge the default plugin settings with the custom options
 
-            options = $.extend({}, $.fn.countTo.defaults, options || {});
+            options = jQuery.extend({}, jQuery.fn.countTo.defaults, options || {});
 
 
 
@@ -297,7 +300,7 @@ Carousel-slider
 
 
 
-            return $(this)
+            return jQuery(this)
                 .each(function() {
 
                     var _this = this,
@@ -317,7 +320,7 @@ Carousel-slider
 
                         loopCount++;
 
-                        $(_this)
+                        jQuery(_this)
                             .html(value.toFixed(options.decimals));
 
 
@@ -358,7 +361,7 @@ Carousel-slider
 
 
 
-        $.fn.countTo.defaults = {
+        jQuery.fn.countTo.defaults = {
 
             from: 0, // the number the element should start at
 
@@ -388,7 +391,9 @@ Header Screen Slider
 
     mobileSlider: function() {
 
-        $("#mobileslider")
+        if ( !jQuery("#mobileslider").length || typeof jQuery.fn.owlCarousel !== 'function' ) return;
+
+        jQuery("#mobileslider")
             .owlCarousel({
                 items: 1,
                 slideSpeed: 1000,
@@ -416,7 +421,8 @@ Screenshot Scripts
 
     screenShot: function() {
 
-        $("#screenshot")
+        if ( !jQuery("#screenshot").length || typeof jQuery.fn.owlCarousel !== 'function' ) return;
+        jQuery("#screenshot")
             .owlCarousel({
                 items: 2, /* item per page */
                 lazyLoad: true,
@@ -441,7 +447,9 @@ Testimonials Scripts
 
     clientFeedback: function() {
 
-        $("#feedback")
+        if ( !jQuery("#feedback").length || typeof jQuery.fn.owlCarousel !== 'function' ) return;
+        
+        jQuery("#feedback")
             .owlCarousel({
                 items: 1,
                 lazyLoad: true,
@@ -468,6 +476,8 @@ Testimonials Scripts
 
     simplePopupphoto: function() {
 
+        if ( !jQuery("a[data-rel^='prettyPhoto']").length || typeof jQuery.fn.owlCarousel !== 'function' ) return;
+        
         jQuery("a[data-rel^='prettyPhoto']")
             .prettyPhoto({
 
@@ -484,10 +494,10 @@ Testimonials Scripts
 
     simpleNav: function() {
 
-        $('.nav li a.scroll')
+        jQuery('.nav li a.scroll')
             .click(function() {
 
-                $('.navbar-collapse')
+                jQuery('.navbar-collapse')
                     .removeClass('in');
 
             });
@@ -498,9 +508,9 @@ Testimonials Scripts
 	Fixed Menu on Scroll
 	
 	-------------------------------------------- */
+        if ( !jQuery("#navigation").length || typeof jQuery.fn.owlCarousel !== 'function' ) return;
 
-
-        $("#navigation")
+        jQuery("#navigation")
             .sticky({
                 topSpacing: 0
             });
@@ -515,10 +525,10 @@ Portfolio Scripts
 
     simplePortfolio: function() {
 
-        if ($('#portfolio-wrapper')
+        if (jQuery('#portfolio-wrapper')
             .length) {
 
-            $('#portfolio-wrapper')
+            jQuery('#portfolio-wrapper')
                 .mixItUp();
 
         }
@@ -527,11 +537,11 @@ Portfolio Scripts
 
         //expander
 
-        var loader = $('.item-expander');
+        var loader = jQuery('.item-expander');
 
         if (typeof loader.html() == 'undefined') {
 
-            $(
+            jQuery(
                     '<div class="item-expander"><div id="item-expander" class="container clearfix relative"><p class="cls-btn"><a class="close">X</a></p><div/></div></div>'
                 )
                 .css({
@@ -540,25 +550,25 @@ Portfolio Scripts
                 .hide()
                 .insertAfter('.portfolio');
 
-            loader = $('.item-expander');
+            loader = jQuery('.item-expander');
 
         }
 
-        $('.expander')
+        jQuery('.expander')
             .on('click', function(e) {
 
                 e.preventDefault();
 
                 e.stopPropagation();
 
-                var url = $(this)
+                var url = jQuery(this)
                     .attr('href');
 
                 loader.slideUp(function() {
 
                     $.get(url, function(data) {
 
-                        var portfolioContainer = $(
+                        var portfolioContainer = jQuery(
                             '.portfolio');
 
                         var topPosition =
@@ -568,14 +578,14 @@ Portfolio Scripts
                             topPosition +
                             portfolioContainer.height();
 
-                        $('html,body')
+                        jQuery('html,body')
                             .delay(600)
                             .animate({
                                 scrollTop: bottomPosition -
                                     -10
                             }, 800);
 
-                        var container = $(
+                        var container = jQuery(
                             '#item-expander>div',
                             loader);
 
@@ -583,10 +593,10 @@ Portfolio Scripts
 
                         container.html(data);
 
-                        $(".fit-vids")
+                        jQuery(".fit-vids")
                             .fitVids();
 
-                        $('.project')
+                        jQuery('.project')
                             .flexslider({
 
                                 animation: "fade",
@@ -629,18 +639,18 @@ Portfolio Scripts
 
             });
 
-        $('.close', loader)
+        jQuery('.close', loader)
             .on('click', function() {
 
                 loader.delay(300)
                     .slideUp(function() {
 
-                        var container = $('#item-expander>div',
+                        var container = jQuery('#item-expander>div',
                             loader);
 
                         container.html('');
 
-                        $(this)
+                        jQuery(this)
                             .css({
                                 opacity: 0
                             });
@@ -649,12 +659,12 @@ Portfolio Scripts
 
                     });
 
-                var portfolioContainer = $('.portfolio');
+                var portfolioContainer = jQuery('.portfolio');
 
                 var topPosition = portfolioContainer.offset()
                     .top;
 
-                $('html,body')
+                jQuery('html,body')
                     .delay(0)
                     .animate({
                         scrollTop: topPosition - 70
@@ -672,22 +682,22 @@ Portfolio Scripts
 -------------------------------------------- */
     simpleOverlay: function() {
 
-        if (Modernizr.touch) {
+        if ( typeof Modernizr != 'undefined' && Modernizr && Modernizr.touch) {
 
             // show the close overlay button
 
-            $(".close-overlay")
+            jQuery(".close-overlay")
                 .removeClass("hidden");
 
             // handle the adding of hover class when clicked
 
-            $(".img")
+            jQuery(".img")
                 .click(function(e) {
 
-                    if (!$(this)
+                    if (!jQuery(this)
                         .hasClass("hover")) {
 
-                        $(this)
+                        jQuery(this)
                             .addClass("hover");
 
                     }
@@ -696,18 +706,18 @@ Portfolio Scripts
 
             // handle the closing of the overlay
 
-            $(".close-overlay")
+            jQuery(".close-overlay")
                 .click(function(e) {
 
                     e.preventDefault();
 
                     e.stopPropagation();
 
-                    if ($(this)
+                    if (jQuery(this)
                         .closest(".img")
                         .hasClass("hover")) {
 
-                        $(this)
+                        jQuery(this)
                             .closest(".img")
                             .removeClass("hover");
 
@@ -719,10 +729,10 @@ Portfolio Scripts
 
             // handle the mouseenter functionality
 
-            $(".img")
+            jQuery(".img")
                 .mouseenter(function() {
 
-                    $(this)
+                    jQuery(this)
                         .addClass("hover");
 
                 })
@@ -731,7 +741,7 @@ Portfolio Scripts
 
             .mouseleave(function() {
 
-                $(this)
+                jQuery(this)
                     .removeClass("hover");
 
             });
@@ -749,8 +759,10 @@ Portfolio Scripts
 -------------------------------------------- */
 
     flexSlider: function() {
+        
+        if ( !jQuery(".flexslider").length || typeof jQuery.fn.owlCarousel !== 'function' ) return;
 
-        $('.flexslider')
+        jQuery('.flexslider')
             .flexslider({
 
                 animation: 'fade',
@@ -766,8 +778,7 @@ Portfolio Scripts
 };
 
 
-$(document)
-    .ready(function() {
+jQuery(document).ready(function() {
 
         appMaster.pageLoader();
 
@@ -794,6 +805,4 @@ $(document)
         appMaster.flexSlider();
 
         appMaster.simpleOverlay();
-
-
-    });
+});

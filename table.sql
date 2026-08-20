@@ -532,6 +532,7 @@ CREATE TABLE `data_ats_satset` (
     `kecamatan` VARCHAR(100) DEFAULT NULL,
     `desa` VARCHAR(100) DEFAULT NULL,
     `kode` VARCHAR(100) DEFAULT NULL,
+    `kdwil` VARCHAR(20) DEFAULT NULL,  
     `active` tinyint(4) DEFAULT 1,
     `update_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),

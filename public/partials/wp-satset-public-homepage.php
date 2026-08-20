@@ -25,20 +25,20 @@
     
     $col_class = 'col-md-' . $col_md;
 ?>
-<script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/loadingoverlay.min.js"></script>
 <?php
     $video = get_option('_crb_satset_menu_video_loading');
     if(!empty($video)):
         $src = 'src="'.$video.'"';
 ?>
+<script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/loadingoverlay.min.js"></script>
 <script type="text/javascript">
     var $ = jQuery;
     function progressLoading() {
-        $.LoadingOverlay('show', { 
-            image : '', 
-            custom : '<video style="position: absolute; width: 90%; top: 0; margin: auto;" autoplay muted><source <?php echo $src; ?> type="video/mp4">Your browser does not support the video tag.</video>', 
+        $.LoadingOverlay('show', {
+            image : '',
+            custom : '<video style="position: absolute; width: 90%; top: 0; margin: auto;" autoplay muted><source <?php echo $src; ?> type="video/mp4">Your browser does not support the video tag.</video>',
             imageAnimation : false,
-            background : "rgba(0, 0, 0, 1)" 
+            background : "rgba(0, 0, 0, 1)"
         });
     }
     progressLoading();
@@ -48,31 +48,27 @@
     }, <?php echo get_option('_crb_satset_lama_loading'); ?>);
 </script>
 <?php
+    else:
+?>
+<script type="text/javascript">
+    jQuery('body').addClass('bg-infinity');
+</script>
+<?php
     endif;
 ?>
 <!-- CSS Begins-->
-<link href="<?php echo SATSET_PLUGIN_URL; ?>public/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
 <link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/flaticon.css" rel="stylesheet" type="text/css" />
 <link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/bootstrap.part1.min.css" rel="stylesheet" type="text/css" />
 <link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/bootstrap.part2.min.css" rel="stylesheet" type="text/css" />
-<link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/portfolio.css" rel="stylesheet" type="text/css" />
 <link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/animate.min.css" rel="stylesheet" type="text/css" />
-<link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/prettyPhoto.css" rel="stylesheet" type="text/css" />
-<link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/flexslider.css" rel="stylesheet" type="text/css" />
-<link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/tweet-carousel.css" rel="stylesheet" type="text/css" />
 <link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/vegas.min.css" rel="stylesheet" type="text/css" />
 <!-- Main Style -->
-<link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/style.css" rel="stylesheet" type="text/css" />
-<link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/responsive.css" rel="stylesheet" type="text/css /">
-<!-- Color Panel -->
-<link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/color_panel.css" rel="stylesheet" type="text/css /">
+<link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/wp-satset-public.css" rel="stylesheet" type="text/css" />
+<link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/responsive.css" rel="stylesheet" type="text/css" />
 <!-- Skin Colors -->
 <link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/landing.css" id="changeable-colors" rel="stylesheet" type="text/css" />
-<!-- Custom Styles -->
-<link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/parallax-star.css" rel="stylesheet" type="text/css" />
-<link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/floating-cloud.css" rel="stylesheet" type="text/css" />
+<!-- Loading Animation -->
 <link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/infinity.css" rel="stylesheet" type="text/css" />
-<link href="<?php echo SATSET_PLUGIN_URL; ?>public/css/bgsliding.css" rel="stylesheet" type="text/css" />
 <style type="text/css">
     .page-title {
         background-image:
@@ -188,30 +184,11 @@
     </div>
 </section>
 
-<script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/jquery.sticky.js"></script>
-<!-- Slider and Features Canvas -->
-<script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/jquery.flexslider-min.js"></script>
-<script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/vegas.min.js"></script>
-<!-- Overlay -->
-<script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/modernizr.js"></script>
-<!-- Screenshot -->
-<script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/jquery.flexisel.js"></script>
-<!-- Portfolio -->
-<script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/jquery.prettyPhoto.js"></script>
-<script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/jquery.mixitup.min.js"></script>
-<script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/jquery.fitvids.js"></script>
-<script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/jquery.easing.1.3.js"></script>
-<!-- Counting Section -->
+<!-- Animations -->
 <script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/jquery.appear.js"></script>
-<!-- Expertise Circular Progress Bar -->
-<script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/effect.js"></script>
-<!-- Twitter -->
-<script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/carousel.js"></script>
+<!-- Background Slideshow -->
+<script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/vegas.min.js"></script>
 <script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/custom.js"></script>
-<script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/delaunator.min.js"></script>
-<script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/rainbow-lines.js"></script>
-<!-- Color -->
-<script type="text/javascript" src="<?php echo SATSET_PLUGIN_URL; ?>public/js/color-panel.js"></script>
 <script type="text/javascript">
 <?php
     $background_header_db = $this->functions->get_option_complex('_crb_satset_background_beranda', 'beranda');
