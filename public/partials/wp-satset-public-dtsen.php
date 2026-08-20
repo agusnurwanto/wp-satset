@@ -188,17 +188,19 @@ foreach ($maps_all as $i => $desa) {
 
     $nama_desa = $desa['data']['desa'];
     $is_admin = false;
-    $user_id = um_user('ID');
-    $user_meta = get_userdata($user_id);
-    if (in_array("administrator", $user_meta->roles)) {
-        $is_admin = true;
-    }
-    if (in_array("administrator", $user_meta->roles)){
-        $detail_url = add_query_arg(
-            'id_wilayah',
-            $id_wilayah,
-            $data_dtsen['url']);
-        $nama_desa = "<a href='" . $detail_url . "' target='_blank' rel='noopener noreferrer'>" . $desa['data']['desa'] . "</a>";
+    if ( is_user_logged_in() ) {
+        $user_id = um_user('ID');
+        $user_meta = get_userdata($user_id);
+        if (in_array("administrator", $user_meta->roles)) {
+            $is_admin = true;
+        }
+        if (in_array("administrator", $user_meta->roles)){
+            $detail_url = add_query_arg(
+                'id_wilayah',
+                $id_wilayah,
+                $data_dtsen['url']);
+            $nama_desa = "<a href='" . $detail_url . "' target='_blank' rel='noopener noreferrer'>" . $desa['data']['desa'] . "</a>";
+        }
     }
     $body .= "
         <tr>
