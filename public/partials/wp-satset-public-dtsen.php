@@ -9,6 +9,14 @@ if (!empty($_GET) && !empty($_GET['tahun_anggaran'])) {
 } else {
     $tahun_anggaran = get_option('_crb_tahun_satset');
 }
+
+$data_dtsen = $this->functions->generatePage(array(
+    'nama_page' => 'Data Detail DTSEN', 
+    'content' => '[data_detail_dtsen]',
+    'show_header' => 1,
+    'post_status' => 'private'
+));
+
 $center = $this->get_center();
 $maps_all = $this->get_polygon();
 if (!empty($_GET['desil'])) {
@@ -186,13 +194,6 @@ foreach ($maps_all as $i => $desa) {
         $is_admin = true;
     }
     if (in_array("administrator", $user_meta->roles)){
-        $data_dtsen = $this->functions->generatePage(array(
-			'nama_page' => 'Data DTSEN', 
-			'content' => '[data_dtsen]',
-        	'show_header' => 1,
-        	'no_key' => 1,
-			'post_status' => 'publish'
-		));
         $detail_url = add_query_arg(
             'id_wilayah',
             $id_wilayah,

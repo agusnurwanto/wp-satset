@@ -5,6 +5,13 @@ if (!defined('WPINC')) {
     die;
 }
 
+$data_ats = $this->functions->generatePage(array(
+    'nama_page' => 'Data Detail ATS', 
+    'content' => '[data_detail_ats]',
+    'show_header' => 1,
+    'post_status' => 'private'
+));
+
 $center   = $this->get_center();
 $maps_all = $this->get_polygon();
 
@@ -167,13 +174,28 @@ foreach ($maps_all as $i => $desa) {
 
     $search = $this->getSearchLocation($desa['data']);
 
+    $nama_desa = $desa['data']['desa'];
+    $is_admin = false;
+    $user_id = um_user('ID');
+    $user_meta = get_userdata($user_id);
+    if (in_array("administrator", $user_meta->roles)) {
+        $is_admin = true;
+    }
+    if (in_array("administrator", $user_meta->roles)){
+        $detail_url = add_query_arg(
+            'id_wilayah',
+            $kdwil,
+            $data_ats['url']);
+        $nama_desa = "<a href='" . $detail_url . "' target='_blank' rel='noopener noreferrer'>" . $desa['data']['desa'] . "</a>";
+    }
+
     $body .= "
         <tr>
             <td class='text-center'>" . $kdwil . "</td>
             <td class='text-center'>" . $provinsi . "</td>
             <td class='text-center'>" . $kab_kot . "</td>
             <td class='text-center'>" . $desa['data']['kecamatan'] . "</td>
-            <td class='text-center'>" . $desa['data']['desa'] . "</td>
+            <td class='text-center'>" .  $nama_desa . "</td>
             <td class='text-center'>" . $this->number_format($total_ats) . "</td>
             <td class='text-center'>" . $this->number_format($jumlah_do) . "</td>
             <td class='text-center'>" . $this->number_format($jumlah_ltm) . "</td>

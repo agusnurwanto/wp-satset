@@ -189,6 +189,14 @@ class Wp_Satset_Public {
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-ats.php';
 	}
 	
+	function data_detail_ats(){
+		// untuk disable render shortcode di halaman edit page/post
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-detail-ats.php';
+	}
+	
 	function data_detail_dtsen(){
 		// untuk disable render shortcode di halaman edit page/post
 		if(!empty($_GET) && !empty($_GET['post'])){
