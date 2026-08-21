@@ -171,6 +171,7 @@ CREATE TABLE `data_tbc` (
     `kabkot` TEXT DEFAULT NULL,
     `kecamatan` TEXT DEFAULT NULL,
     `desa` TEXT DEFAULT NULL,
+    `kdwil` VARCHAR(20) DEFAULT NULL,  
     `tanggal_register` TEXT DEFAULT NULL,
     `no_reg_fasyankes` TEXT DEFAULT NULL,
     `no_reg_kabkot` TEXT DEFAULT NULL,

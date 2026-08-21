@@ -197,6 +197,14 @@ class Wp_Satset_Public {
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-detail-ats.php';
 	}
 	
+	function data_detail_tbc(){
+		// untuk disable render shortcode di halaman edit page/post
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-detail-tbc.php';
+	}
+	
 	function data_detail_dtsen(){
 		// untuk disable render shortcode di halaman edit page/post
 		if(!empty($_GET) && !empty($_GET['post'])){
@@ -691,13 +699,7 @@ public function getNamaDaerah($value=''){
 
 	function get_tbc(){
 		global $wpdb;
-		$prov = get_option('_crb_prov_satset');
-		$where = " provinsi='$prov'";
-		$kab = get_option('_crb_kab_satset');
-		if(!empty($kab)){
-			$where .= " and kabkot='$kab'";
-		}
-
+		$where = " 1=1";
 	    if (!empty($_GET['tahun_anggaran'])) {
 	        $tahun_anggaran = $_GET['tahun_anggaran'];
 	    } else {
@@ -1867,13 +1869,7 @@ public function tambah_data_tbc(){
 		);
 		if(!empty($_POST)){
 			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
-				if(empty($_POST['tanggal_register'])){
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data tanggal_register tidak boleh kosong!';
-				} else if(empty($_POST['no_reg_fasyankes'])){
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data no_reg_fasyankes tidak boleh kosong!';
-				} else if(empty($_POST['no_reg_kabkot'])){
+				if(empty($_POST['no_reg_kabkot'])){
 					$ret['status'] = 'error';
 					$ret['message'] = 'Data no_reg_kabkot tidak boleh kosong!';
 				} else if(empty($_POST['nik'])){
@@ -1882,30 +1878,6 @@ public function tambah_data_tbc(){
 				} else if(empty($_POST['nama'])){
 					$ret['status'] = 'error';
 					$ret['message'] = 'Data nama tidak boleh kosong!';
-				} else if(empty($_POST['umur'])){
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data umur tidak boleh kosong!';
-				} else if(empty($_POST['jenis_kelamin'])){
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data jenis_kelamin tidak boleh kosong!';
-				} else if(empty($_POST['alamat'])){
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data alamat tidak boleh kosong!';
-				} else if(empty($_POST['pindahan_dari_fasyankes'])){
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data pindahan_dari_fasyankes tidak boleh kosong!';
-				} else if(empty($_POST['tindak_lanjut'])){
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data tindak_lanjut tidak boleh kosong!';
-				} else if(empty($_POST['tanggal_mulai_pengobatan'])){
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data tanggal_mulai_pengobatan tidak boleh kosong!';
-				} else if(empty($_POST['hasil_akhir_pengobatan'])){
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data hasil_akhir_pengobatan tidak boleh kosong!';
-				} else if(empty($_POST['status_pengobatan'])){
-					$ret['status'] = 'error';
-					$ret['message'] = 'Data status_pengobatan tidak boleh kosong!';
 				} else if(empty($_POST['tahun_anggaran'])){
 					$ret['status'] = 'error';
 					$ret['message'] = 'Data tahun_anggaran tidak boleh kosong!';
@@ -1942,6 +1914,7 @@ public function tambah_data_tbc(){
 				        'status_pengobatan' => $status_pengobatan,
 				        'tahun_anggaran' => $tahun_anggaran,
 				        'keterangan' => $keterangan,
+				        'kdwil' => $no_reg_kabkot,
 				        'active' => 1,
 				        'update_at' => current_time('mysql') // Pastikan waktu sesuai kebutuhan
 				    );

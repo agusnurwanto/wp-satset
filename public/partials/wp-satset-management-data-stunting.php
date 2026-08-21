@@ -723,7 +723,6 @@ function submitTambahDataFormStunting(){
             jQuery('#modalTambahDataStunting').modal('hide');
             if(res.status == 'success'){
                 get_data_stunting();
-                location.reload(); 
             }else{
                 jQuery('#wrap-loading').hide();
             }

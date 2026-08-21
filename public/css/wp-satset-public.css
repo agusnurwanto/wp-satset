@@ -53,3 +53,18 @@
 .ast-single-post .entry-content a, .ast-comment-content a:not(.ast-comment-edit-reply-wrap a) {
     text-decoration: none !important;
 }
+
+/* Pastikan tabel memiliki pengaturan border yang benar */
+#table-data {
+  border-collapse: separate; /* Direkomendasikan untuk sticky header */
+  border-spacing: 0;
+}
+
+/* Membuat header tetap di atas */
+#table-data thead th {
+  position: sticky;
+  top: 0; /* Menempel di paling atas */
+  z-index: 10; /* Memastikan header berada di atas konten body */
+  background-color: #ffffff; /* Ganti dengan warna tema Anda */
+  border-bottom: 2px solid #ddd; /* Opsional: memberi garis pembatas */
+}

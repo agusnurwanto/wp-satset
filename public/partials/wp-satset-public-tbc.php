@@ -5,6 +5,13 @@ if (!defined('WPINC')) {
     die;
 }
 
+$data_tbc = $this->functions->generatePage(array(
+    'nama_page' => 'Data Detail TBC', 
+    'content' => '[data_detail_tbc]',
+    'show_header' => 1,
+    'post_status' => 'private'
+));
+
 if (!empty($_GET) && !empty($_GET['tahun_anggaran'])) {
     $tahun_anggaran = $_GET['tahun_anggaran'];
 } else {
@@ -16,7 +23,7 @@ $tbc_all = $this->get_tbc();
 
 $tbc_all_desa = array();
 foreach($tbc_all as $data){
-    $index = $data['provinsi'].'.'.$data['kabkot'].'.'.$data['kecamatan'].'.'.$data['desa'];
+    $index = $data['kdwil'];
     if(empty($tbc_all_desa[$index])){
         $tbc_all_desa[$index] = array();
     }
@@ -24,56 +31,54 @@ foreach($tbc_all as $data){
 }
 // print_r($tbc_all_desa); die();
 
+// Helper: kelompokkan umur per range 10 tahun
+function tbc_group_umur($records){
+    $groups = array();
+    foreach($records as $orang){
+        $umur = intval($orang['umur']);
+        $low  = floor($umur / 10) * 10;
+        $high = $low + 9;
+        $label = $low.'-'.$high.' th';
+        if(empty($groups[$low])) $groups[$low] = array('label' => $label, 'count' => 0);
+        $groups[$low]['count']++;
+    }
+    ksort($groups);
+    $result = array();
+    foreach($groups as $g){
+        $result[] = $g['label'].' : '.$g['count'].' orang';
+    }
+    return $result;
+}
+
+// Helper: kelompokkan tindak lanjut, beri label jika kosong
+function tbc_group_tindak_lanjut($records){
+    $groups = array();
+    foreach($records as $orang){
+        $tl = trim($orang['tindak_lanjut']);
+        $label = ($tl === '' || $tl === null) ? '(Tidak Ada Tindak Lanjut)' : $tl;
+        if(empty($groups[$label])) $groups[$label] = 0;
+        $groups[$label]++;
+    }
+    ksort($groups);
+    $result = array();
+    foreach($groups as $label => $count){
+        $result[] = $label.': '.$count;
+    }
+    return $result;
+}
+
 $total_all = 0;
 $body =  '';
 foreach($maps_all as $i => $desa){
     $maps_all[$i]['index'] = $i;
-    $index = $desa['data']['provinsi'].'.'.$desa['data']['kab_kot'].'.'.$desa['data']['kecamatan'].'.'.$desa['data']['desa'];
+    $index = $desa['data']['id2012'];
     $total_tbc = 0;
-    $total_jk = array();
     $total_umur = array();
     $total_tindak_lanjut = array();
-    $total_hasil_akhir = array();
-    $total_status_pengobatan = array();
     if(!empty($tbc_all_desa[$index])){
         $total_tbc = count($tbc_all_desa[$index]);
-        foreach($tbc_all_desa[$index] as $orang){
-            if(empty($total_jk[$orang['jenis_kelamin']])){
-                $total_jk[$orang['jenis_kelamin']] = 0;
-            }
-            $total_jk[$orang['jenis_kelamin']]++;
-            if(empty($total_umur[$orang['umur']])){
-                $total_umur[$orang['umur']] = 0;
-            }
-            $total_umur[$orang['umur']]++;
-            if(empty($total_tindak_lanjut[$orang['tindak_lanjut']])){
-                $total_tindak_lanjut[$orang['tindak_lanjut']] = 0;
-            }
-            $total_tindak_lanjut[$orang['tindak_lanjut']]++;
-            if(empty($total_hasil_akhir[$orang['hasil_akhir_pengobatan']])){
-                $total_hasil_akhir[$orang['hasil_akhir_pengobatan']] = 0;
-            }
-            $total_hasil_akhir[$orang['hasil_akhir_pengobatan']]++;
-            if(empty($total_status_pengobatan[$orang['status_pengobatan']])){
-                $total_status_pengobatan[$orang['status_pengobatan']] = 0;
-            }
-            $total_status_pengobatan[$orang['status_pengobatan']]++;
-        }
-        foreach($total_jk as $key => $data){
-            $total_jk[$key] = $key.': '.$data;
-        }
-        foreach($total_umur as $key => $data){
-            $total_umur[$key] = $key.': '.$data;
-        }
-        foreach($total_tindak_lanjut as $key => $data){
-            $total_tindak_lanjut[$key] = $key.': '.$data;
-        }
-        foreach($total_hasil_akhir as $key => $data){
-            $total_hasil_akhir[$key] = $key.': '.$data;
-        }
-        foreach($total_status_pengobatan as $key => $data){
-            $total_status_pengobatan[$key] = $key.': '.$data;
-        }
+        $total_umur         = tbc_group_umur($tbc_all_desa[$index]);
+        $total_tindak_lanjut = tbc_group_tindak_lanjut($tbc_all_desa[$index]);
     }
     if($total_tbc <= 5){
         $maps_all[$i]['color'] = '#0cbf00';
@@ -83,23 +88,63 @@ foreach($maps_all as $i => $desa){
         $maps_all[$i]['color'] = '#ff0000';
     }
     $search = $this->getSearchLocation($desa['data']);
+
+    $nama_desa = $desa['data']['desa'];
+    $is_admin = false;
+    
+    if ( is_user_logged_in() ) {
+        $user_id = um_user('ID');
+        $user_meta = get_userdata($user_id);
+        if (in_array("administrator", $user_meta->roles)) {
+            $is_admin = true;
+        }
+        if (in_array("administrator", $user_meta->roles)){
+            $detail_url = add_query_arg(
+                'id_wilayah',
+                $index,
+                $data_tbc['url']);
+            $nama_desa = "<a href='" . $detail_url . "' target='_blank' rel='noopener noreferrer'>" . $desa['data']['desa'] . "</a>";
+        }
+    }
     $body .= "
         <tr>
             <td class='text-center'>".$desa['data']['id2012']."</td>
             <td class='text-center'>".$desa['data']['provinsi']."</td>
             <td class='text-center'>".$desa['data']['kab_kot']."</td>
             <td class='text-center'>".$desa['data']['kecamatan']."</td>
-            <td class='text-center'>".$desa['data']['desa']."</td>
+            <td class='text-center'>".$nama_desa."</td>
             <td class='text-center'>".$total_tbc."</td>
-            <td>".implode('<br>', $total_jk)."</td>
             <td>".implode('<br>', $total_umur)."</td>
             <td>".implode('<br>', $total_tindak_lanjut)."</td>
-            <td>".implode('<br>', $total_hasil_akhir)."</td>
-            <td>".implode('<br>', $total_status_pengobatan)."</td>
             <td class='text-center'><a style='margin-bottom: 5px;' onclick='cari_alamat(\"".$search."\"); return false;' href='#' class='btn btn-danger'>Map</a></td>
         </tr>
     ";
     $total_all += $total_tbc;
+    unset($tbc_all_desa[$index]);
+}
+
+// Data TBC luar wilayah Kab. Magetan (kdwil tidak cocok dengan id2012 manapun)
+foreach($tbc_all_desa as $kdwil => $records){
+    $total_tbc_luar = count($records);
+    $total_umur_luar = array();
+    $total_tindak_lanjut_luar = array();
+    $total_umur_luar          = tbc_group_umur($records);
+    $total_tindak_lanjut_luar = tbc_group_tindak_lanjut($records);
+    $info = $records[0];
+    $body .= "
+        <tr>
+            <td class='text-center'>".$kdwil."</td>
+            <td class='text-center'>".$info['provinsi']."</td>
+            <td class='text-center'>".$info['kabkot']."</td>
+            <td class='text-center'>".$info['kecamatan']."</td>
+            <td class='text-center'>".$info['desa']." (Di luar daerah)</td>
+            <td class='text-center'>".$total_tbc_luar."</td>
+            <td>".implode('<br>', $total_umur_luar)."</td>
+            <td>".implode('<br>', $total_tindak_lanjut_luar)."</td>
+            <td class='text-center'>-</td>
+        </tr>
+    ";
+    $total_all += $total_tbc_luar;
 }
 
 $tahun = $wpdb->get_results('
@@ -144,11 +189,8 @@ foreach($tahun as $tahun_value){
                     <th class='text-center'>Kecamatan</th>
                     <th class='text-center'>Desa</th>
                     <th class='text-center'>Total TBC</th>
-                    <th class='text-center'>Jenis Kelamin</th>
                     <th class='text-center'>Umur</th>
                     <th class='text-center'>Tindak Lanjut</th>
-                    <th class='text-center'>Hasil Akhir</th>
-                    <th class='text-center'>Status Pengobatan</th>
                     <th class='text-center'>Aksi</th>
                 </tr>
             </thead>

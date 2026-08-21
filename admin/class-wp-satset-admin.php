@@ -1134,6 +1134,16 @@ class Wp_Satset_Admin {
 				'update' => 0,
 				'error' => array()
 			);
+			if(empty($_POST['tahun_anggaran'])){
+				die(json_encode(array('status' => 'error', 'message' => 'Tahun anggaran tidak boleh kosong!')));
+			}
+			// Jika update_active dan page = 1, set semua data active = 0
+			if (!empty($_POST['update_active']) && $_POST['page'] == 1) {
+				$wpdb->update("data_tbc", array('active' => 0), array(
+					'active' => 1,
+					'tahun_anggaran' => $_POST['tahun_anggaran']
+				));
+			}
 			foreach ($_POST['data'] as $k => $data) {
 				$newData = array();
 				foreach($data as $kk => $vv){
@@ -1147,25 +1157,16 @@ class Wp_Satset_Admin {
 						strtoupper($v)
 					);
 				}
-				$jml = count($alamat);
-				$provinsi = '';
-				$kabkot = '';
-				$kecamatan = '';
-				$desa = '';
-				if($jml >= 4){
-					$provinsi = $alamat[$jml-1];
-					$kabkot = $alamat[$jml-2];
-					$kecamatan = $alamat[$jml-3];
-					$desa = $alamat[$jml-4];
-				}
+				$newData['nik'] = preg_replace('/[^0-9]/', '', $newData['nik']);
 				$data_db = array(
-				    'provinsi' => $provinsi,
-				    'kabkot' => $kabkot,
-				    'kecamatan' => $kecamatan,
-				    'desa' => $desa,
+				    'provinsi' => $newData['provinsi'],
+				    'kabkot' => $newData['kabkot'],
+				    'kecamatan' => $newData['kecamatan'],
+				    'desa' => $newData['desa'],
 				    'tanggal_register' => $newData['tanggal_register'],
 				    'no_reg_fasyankes' => $newData['no_reg_fasyankes'],
 				    'no_reg_kabkot' => $newData['no_reg_kabkot'],
+				    'kdwil' => $newData['no_reg_kabkot'],
 				    'nik' => $newData['nik'],
 				    'nama' => $newData['nama'],
 				    'umur' => $newData['umur'],
@@ -1177,7 +1178,8 @@ class Wp_Satset_Admin {
 				    'hasil_akhir_pengobatan' => $newData['hasil_akhir_pengobatan'],
 				    'status_pengobatan' => $newData['status_pengobatan'],
 				    'keterangan' => $newData['keterangan'],
-				    'tahun_anggaran' => $newData['tahun_anggaran'],
+				    'tahun_anggaran' => $_POST['tahun_anggaran'],
+					'active' => 1
 				);
 				// print_r($data_db); die();
 				$wpdb->last_error = "";

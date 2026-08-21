@@ -342,13 +342,7 @@ function tambah_data_tbc(){
 function submitTambahDataFormTBC(){
     var id_data = jQuery('#id_data').val();
     var tanggal_register = jQuery('#tanggal_register').val();
-    if(tanggal_register == ''){
-        return alert('Data tanggal_register tidak boleh kosong!');
-    }
     var no_reg_fasyankes = jQuery('#no_reg_fasyankes').val();
-    if(no_reg_fasyankes == ''){
-        return alert('Data no_reg_fasyankes tidak boleh kosong!');
-    }
     var no_reg_kabkot = jQuery('#no_reg_kabkot').val();
     if(no_reg_kabkot == ''){
         return alert('Data no_reg_kabkot tidak boleh kosong!');
@@ -362,37 +356,13 @@ function submitTambahDataFormTBC(){
         return alert('Data nama tidak boleh kosong!');
     }
     var umur = jQuery('#umur').val();
-    if(umur == ''){
-        return alert('Data umur tidak boleh kosong!');
-    }
     var jenis_kelamin = jQuery('#jenis_kelamin').val();
-    if(jenis_kelamin == ''){
-        return alert('Data jenis_kelamin tidak boleh kosong!');
-    }
     var alamat = jQuery('#alamat').val();
-    if(alamat == ''){
-        return alert('Data alamat tidak boleh kosong!');
-    }
     var pindahan_dari_fasyankes = jQuery('#pindahan_dari_fasyankes').val();
-    if(pindahan_dari_fasyankes == ''){
-        return alert('Data pindahan_dari_fasyankes tidak boleh kosong!');
-    }
     var tindak_lanjut = jQuery('#tindak_lanjut').val();
-    if(tindak_lanjut == ''){
-        return alert('Data tindak_lanjut tidak boleh kosong!');
-    }
     var tanggal_mulai_pengobatan = jQuery('#tanggal_mulai_pengobatan').val();
-    if(tanggal_mulai_pengobatan == ''){
-        return alert('Data tanggal_mulai_pengobatan tidak boleh kosong!');
-    }
     var hasil_akhir_pengobatan = jQuery('#hasil_akhir_pengobatan').val();
-    if(hasil_akhir_pengobatan == ''){
-        return alert('Data hasil_akhir_pengobatan tidak boleh kosong!');
-    }
     var status_pengobatan = jQuery('#status_pengobatan').val();
-    if(status_pengobatan == ''){
-        return alert('Data status_pengobatan tidak boleh kosong!');
-    }
     var tahun_anggaran = jQuery('#tahun_anggaran').val();
     if(tahun_anggaran == ''){
         return alert('Data tahun_anggaran tidak boleh kosong!');
@@ -421,7 +391,7 @@ function submitTambahDataFormTBC(){
             'tanggal_mulai_pengobatan': tanggal_mulai_pengobatan,
             'hasil_akhir_pengobatan': hasil_akhir_pengobatan,
             'status_pengobatan': status_pengobatan,
-            'tahun_anggaran': <?php echo $tahun_anggaran; ?>,
+            'tahun_anggaran': tahun_anggaran,
             'keterangan': keterangan,
         },
         success: function(res){
@@ -429,7 +399,6 @@ function submitTambahDataFormTBC(){
             jQuery('#modalTambahDataTBC').modal('hide');
             if(res.status == 'success'){
                 get_data_tbc();
-                location.reload(); 
             }else{
                 jQuery('#wrap-loading').hide();
             }
