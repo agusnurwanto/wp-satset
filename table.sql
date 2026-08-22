@@ -588,7 +588,6 @@ CREATE TABLE `data_aids` (
     `tahun_anggaran` year(4) DEFAULT NULL,
     PRIMARY KEY (id),
     INDEX(`id_pasien`),
-    INDEX(`kabkot`),
     INDEX(`tahun_anggaran`),
     INDEX(`active`)
 );

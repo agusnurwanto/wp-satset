@@ -1,9 +1,16 @@
 <?php
-global $wpdb;
-
 if (!defined('WPINC')) {
     die;
 }
+    
+global $wpdb;
+
+$data_aids = $this->functions->generatePage(array(
+    'nama_page' => 'Data Detail AIDS', 
+    'content' => '[data_detail_aids]',
+    'show_header' => 1,
+    'post_status' => 'private'
+));
 
 if (!empty($_GET['tahun_anggaran'])) {
     $tahun_anggaran = $_GET['tahun_anggaran'];
@@ -224,6 +231,22 @@ foreach ($maps_all as $i => $desa) {
 
     $search    = $this->getSearchLocation($desa['data']);
     $nama_desa = esc_html($desa['data']['desa']);
+    $is_admin = false;
+    
+    if ( is_user_logged_in() ) {
+        $user_id = um_user('ID');
+        $user_meta = get_userdata($user_id);
+        if (in_array("administrator", $user_meta->roles)) {
+            $is_admin = true;
+        }
+        if (in_array("administrator", $user_meta->roles)){
+            $detail_url = add_query_arg(
+                'id_wilayah',
+                $id2012,
+                $data_aids['url']);
+            $nama_desa = "<a href='" . $detail_url . "' target='_blank' rel='noopener noreferrer'>" . $desa['data']['desa'] . "</a>";
+        }
+    }
     $total_all += $total_pasien;
 
     $body_mapped .= "

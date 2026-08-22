@@ -268,6 +268,7 @@ class Wp_Satset {
 		add_shortcode('data_aids', array($plugin_public, 'data_aids'));
 		add_shortcode('data_detail_tbc', array($plugin_public, 'data_detail_tbc'));
 		add_shortcode('data_detail_ats', array($plugin_public, 'data_detail_ats'));
+		add_shortcode('data_detail_aids', array($plugin_public, 'data_detail_aids'));
 		add_shortcode('data_detail_dtsen', array($plugin_public, 'data_detail_dtsen'));
 		add_shortcode('data_detail_kk_dtsen', array($plugin_public, 'data_detail_kk_dtsen'));
 		add_shortcode('data_batas_desa', array($plugin_public, 'data_batas_desa'));
