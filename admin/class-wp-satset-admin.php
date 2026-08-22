@@ -251,6 +251,14 @@ class Wp_Satset_Admin {
 			'post_status' => 'publish'
 		));
 
+		$data_aids = $this->functions->generatePage(array(
+			'nama_page' => 'Data AIDS', 
+			'content' => '[data_aids]',
+        	'show_header' => 1,
+        	'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
 		$data_rtlh = $this->functions->generatePage(array(
 			'nama_page' => 'Data RTLH', 
 			'content' => '[data_rtlh]',
@@ -391,6 +399,20 @@ class Wp_Satset_Admin {
 			'no_key' => 1,
 			'post_status' => 'private'
 		));
+		$management_data_aids = $this->functions->generatePage(array(
+			'nama_page' => 'Management Data AIDS',
+			'content' => '[management_data_aids_satset]',
+			'show_header' => 1,
+			'no_key' => 1,
+			'post_status' => 'private'
+		));
+		$mapping_desa_aids = $this->functions->generatePage(array(
+			'nama_page' => 'Mapping Desa Data AIDS',
+			'content' => '[mapping_desa_aids]',
+			'show_header' => 1,
+			'no_key' => 1,
+			'post_status' => 'private'
+		));
 		$management_data_rtlh = $this->functions->generatePage(array(
 			'nama_page' => 'Management Data RTLH',
 			'content' => '[management_data_rtlh_satset]',
@@ -431,6 +453,7 @@ class Wp_Satset_Admin {
 	            		<li><a target="_blank" href="'.$data_p3ke['url'].'">'.$data_p3ke['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_stunting['url'].'">'.$data_stunting['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_tbc['url'].'">'.$data_tbc['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$data_aids['url'].'">'.$data_aids['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_rtlh['url'].'">'.$data_rtlh['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_dtks['url'].'">'.$data_dtks['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_dtsen['url'].'">'.$data_dtsen['title'].'</a></li>
@@ -763,6 +786,34 @@ class Wp_Satset_Admin {
 	            	->set_html( 'Pilih Tahun Anggaran : <select id="data-tahun-tbc" class="cf-select__input">'.$pilih_tahun.'</select>' ),
 		        Field::make( 'html', 'crb_tbc_save_button' )
 	            	->set_html( '<a onclick="import_excel_tbc(); return false" href="javascript:void(0);" class="button button-primary">Import WP</a>' )
+	        ) );
+
+		Container::make( 'theme_options', __( 'Data AIDS' ) )
+			->set_page_parent( $basic_options_container )
+			->add_fields( array(
+		    	Field::make( 'html', 'crb_aids_hide_sidebar' )
+		        	->set_html( '
+		        		<style>
+		        			.postbox-container { display: none; }
+		        			#poststuff #post-body.columns-2 { margin: 0 !important; }
+		        		</style>
+		        	' ),
+		        Field::make( 'html', 'crb_satset_halaman_terkait_aids' )
+		        	->set_html( '
+					<h5>HALAMAN TERKAIT</h5>
+	            	<ol>
+	            		<li><a target="_blank" href="'.$management_data_aids['url'].'">'.$management_data_aids['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$mapping_desa_aids['url'].'">'.$mapping_desa_aids['title'].'</a></li>
+	            	</ol>
+		        	' ),
+		        Field::make( 'html', 'crb_aids_upload_html' )
+	            	->set_html( '<h3>Import EXCEL data aids</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePickedSatset(event);"><br>Contoh format file excel bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_aids.xlsx">download di sini</a>. Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
+		        Field::make( 'html', 'crb_aids_satset' )
+	            	->set_html( 'Data JSON : <textarea id="data-excel" class="cf-select__input"></textarea>' ),
+		        Field::make( 'html', 'crb_p3ke_satset_tahun' )
+	            	->set_html( 'Pilih Tahun Anggaran : <select id="data-tahun-aids" class="cf-select__input">'.$pilih_tahun.'</select>' ),
+		        Field::make( 'html', 'crb_aids_save_button' )
+	            	->set_html( '<a onclick="import_excel_aids(); return false" href="javascript:void(0);" class="button button-primary">Import WP</a>' )
 	        ) );
 
 		Container::make( 'theme_options', __( 'Data RTLH' ) )
@@ -1223,6 +1274,113 @@ class Wp_Satset_Admin {
 					$ret['data']['error'][] = array($wpdb->last_error, $data_db);
 				};
 
+			}
+		} else {
+			$ret['status'] = 'error';
+			$ret['message'] = 'Format Salah!';
+		}
+		die(json_encode($ret));
+	}
+
+	function import_excel_aids(){
+		global $wpdb;
+		$ret = array(
+			'status'	=> 'success',
+			'message'	=> 'Berhasil import excel!'
+		);
+		if (!empty($_POST)) {
+			$ret['data'] = array(
+				'insert' => 0,
+				'update' => 0,
+				'error' => array()
+			);
+			if(empty($_POST['tahun_anggaran'])){
+				die(json_encode(array('status' => 'error', 'message' => 'Tahun anggaran tidak boleh kosong!')));
+			}
+			// Jika update_active dan page = 1, set semua data active = 0
+			if (!empty($_POST['update_active']) && $_POST['page'] == 1) {
+				$wpdb->update("data_aids", array('active' => 0), array(
+					'active' => 1,
+					'tahun_anggaran' => $_POST['tahun_anggaran']
+				));
+			}
+			foreach ($_POST['data'] as $k => $data) {
+				$newData = array();
+				foreach($data as $kk => $vv){
+					$newData[trim(preg_replace('/\s+/', ' ', $kk))] = trim(preg_replace('/\s+/', ' ', $vv));
+				}
+				$data_db = array(
+					'provinsi'                                                             => $newData['provinsi'],
+					'kabkot'                                                               => $newData['kabkot'],
+					'kecamatan'                                                            => $newData['kecamatan'],
+					'kode_upk'                                                             => $newData['kode_upk'],
+					'nama_upk'                                                             => $newData['nama_upk'],
+					'id_pasien'                                                            => $newData['id_pasien'],
+					'warga_negara'                                                         => $newData['warga_negara'],
+					'nik'                                                                  => $newData['nik'],
+					'nama_pasien'                                                          => $newData['nama_pasien'],
+					'tanggal_lahir'                                                        => $newData['tanggal_lahir'],
+					'jenis_kelamin'                                                        => $newData['jenis_kelamin'],
+					'no_telp'                                                              => $newData['no_telp'],
+					'umur_terdiagnosis'                                                    => $newData['umur_terdiagnosis'],
+					'kelompok_umur_terdiagnosis'                                           => $newData['kelompok_umur_terdiagnosis'],
+					'kategori_umur_terdiagnosis'                                           => $newData['kategori_umur_terdiagnosis'],
+					'provinsi_pasien'                                                      => $newData['provinsi_pasien'],
+					'kabkot_pasien'                                                        => $newData['kabkot_pasien'],
+					'kecamatan_pasien'                                                     => $newData['kecamatan_pasien'],
+					'desa_pasien'                                                          => $newData['desa_pasien'],
+					'alamat_pasien'                                                        => $newData['alamat_pasien'],
+					'provinsi_domisili'                                                    => $newData['provinsi_domisili'],
+					'kabkot_domisili'                                                      => $newData['kabkot_domisili'],
+					'kecamatan_domisili'                                                   => $newData['kecamatan_domisili'],
+					'desa_domisili'                                                        => $newData['desa_domisili'],
+					'alamat_domisili'                                                      => $newData['alamat_domisili'],
+					'tanggal_register'                                                     => $newData['tanggal_register'],
+					'waktu_input_pertama'                                                  => $newData['waktu_Input_pertama'],
+					'no_rekam_medik'                                                       => $newData['no_rekam_medik'],
+					'kel_populasi_lsl'                                                     => $newData['kel_populasi_lsl'],
+					'konfirmasi_hiv_plus_tanggal_konfirmasi'                               => $newData['konfirmasi_hiv_plus_tanggal_konfirmasi'],
+					'konfirmasi_hiv_plus_provinsi'                                         => $newData['konfirmasi_hiv_plus_provinsi'],
+					'konfirmasi_hiv_plus_kabkot'                                           => $newData['konfirmasi_hiv_plus_kabkot'],
+					'konfirmasi_hiv_plus_layanan'                                          => $newData['konfirmasi_hiv_plus_layanan'],
+					'akhir_followup_sblm_masuk_perawatan_meninggal'                        => $newData['akhir_followup_sebelum_masuk_perawatan_meninggal'],
+					'pendampingan_komunitas'                                               => $newData['pendampingan_komunitas'],
+					'akhir_followup_sblm_masuk_perawatan_dan_arv_meninggal'               => $newData['akhir_followup_sebelum_masuk_perawatan_dan_atau_pengobatan_arv_meninggal'],
+					'capaian_t_dan_t_layanan'                                              => $newData['capaian_t_dan_t_layanan'],
+					'capaian_t_dan_t_kabkot'                                               => $newData['capaian_t_dan_t_kabkot'],
+					'capaian_t_dan_t_provinsi'                                             => $newData['capaian_t_dan_t_provinsi'],
+					'tahun_anggaran'                                                       => $_POST['tahun_anggaran'],
+					'active'                                                               => 1,
+					'update_at'                                                            => current_time('mysql'),
+				);
+				$wpdb->last_error = "";
+				if(empty($newData['id_pasien'])){
+					$cek_id = $wpdb->get_var($wpdb->prepare("
+						SELECT id FROM data_aids
+						WHERE nama_pasien = %s
+							AND kabkot = %s
+							AND tahun_anggaran = %d
+							AND id_pasien IS NULL",
+						$newData['nama_pasien'], $newData['kabkot'], $_POST['tahun_anggaran']
+					));
+				}else{
+					$cek_id = $wpdb->get_var($wpdb->prepare("
+						SELECT id FROM data_aids
+						WHERE id_pasien = %s
+							AND tahun_anggaran = %d",
+						$newData['id_pasien'], $_POST['tahun_anggaran']
+					));
+				}
+				if(empty($cek_id)){
+					$wpdb->insert("data_aids", $data_db);
+					$ret['data']['insert']++;
+				}else{
+					$wpdb->update("data_aids", $data_db, array("id" => $cek_id));
+					$ret['data']['update']++;
+				}
+				if(!empty($wpdb->last_error)){
+					$ret['data']['error'][] = array($wpdb->last_error, $data_db);
+				}
 			}
 		} else {
 			$ret['status'] = 'error';

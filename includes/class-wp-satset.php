@@ -171,6 +171,7 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_import_excel_stunting',  $plugin_admin, 'import_excel_stunting');
 		$this->loader->add_action('wp_ajax_import_excel_tbc',  $plugin_admin, 'import_excel_tbc');
 		$this->loader->add_action('wp_ajax_import_excel_rtlh',  $plugin_admin, 'import_excel_rtlh');
+		$this->loader->add_action('wp_ajax_import_excel_aids',  $plugin_admin, 'import_excel_aids');
 		$this->loader->add_action('wp_ajax_get_data_dtks',  $plugin_admin, 'get_data_dtks');
 		$this->loader->add_action('wp_ajax_get_data_dtsen',  $plugin_admin, 'get_data_dtsen');
 		$this->loader->add_action('wp_ajax_get_data_ats',  $plugin_admin, 'get_data_ats');
@@ -220,6 +221,11 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_hapus_data_tbc_by_id', $plugin_public, 'hapus_data_tbc_by_id');
 		$this->loader->add_action('wp_ajax_get_data_tbc_by_id', $plugin_public, 'get_data_tbc_by_id');
 		$this->loader->add_action('wp_ajax_tambah_data_tbc', $plugin_public, 'tambah_data_tbc');
+		$this->loader->add_action('wp_ajax_get_datatable_aids', $plugin_public, 'get_datatable_aids');
+		$this->loader->add_action('wp_ajax_hapus_data_aids_by_id', $plugin_public, 'hapus_data_aids_by_id');
+		$this->loader->add_action('wp_ajax_get_data_aids_by_id', $plugin_public, 'get_data_aids_by_id');
+		$this->loader->add_action('wp_ajax_tambah_data_aids', $plugin_public, 'tambah_data_aids');
+		$this->loader->add_action('wp_ajax_mapping_kode_desa_aids', $plugin_public, 'mapping_kode_desa_aids');
 		$this->loader->add_action('wp_ajax_hapus_data_rtlh_by_id', $plugin_public, 'hapus_data_rtlh_by_id');
 		$this->loader->add_action('wp_ajax_get_data_rtlh_by_id', $plugin_public, 'get_data_rtlh_by_id');
 		$this->loader->add_action('wp_ajax_tambah_data_rtlh', $plugin_public, 'tambah_data_rtlh');
@@ -247,6 +253,7 @@ class Wp_Satset {
 		add_shortcode('management_data_stunting_satset', array($plugin_public, 'management_data_stunting_satset'));
 		add_shortcode('management_data_tbc_satset', array($plugin_public, 'management_data_tbc_satset'));
 		add_shortcode('management_data_rtlh_satset', array($plugin_public, 'management_data_rtlh_satset'));
+		add_shortcode('management_data_aids_satset', array($plugin_public, 'management_data_aids_satset'));
 		add_shortcode('management_data_batas_desa_satset', array($plugin_public, 'management_data_batas_desa_satset'));
 		add_shortcode('management_data_batas_kecamatan_satset', array($plugin_public, 'management_data_batas_kecamatan_satset'));
 		add_shortcode('peta_satset', array($plugin_public, 'peta_satset'));
@@ -258,13 +265,14 @@ class Wp_Satset {
 		add_shortcode('data_dtks', array($plugin_public, 'data_dtks'));
 		add_shortcode('data_dtsen', array($plugin_public, 'data_dtsen'));
 		add_shortcode('data_ats', array($plugin_public, 'data_ats'));
+		add_shortcode('data_aids', array($plugin_public, 'data_aids'));
 		add_shortcode('data_detail_tbc', array($plugin_public, 'data_detail_tbc'));
 		add_shortcode('data_detail_ats', array($plugin_public, 'data_detail_ats'));
 		add_shortcode('data_detail_dtsen', array($plugin_public, 'data_detail_dtsen'));
 		add_shortcode('data_detail_kk_dtsen', array($plugin_public, 'data_detail_kk_dtsen'));
 		add_shortcode('data_batas_desa', array($plugin_public, 'data_batas_desa'));
 		add_shortcode('data_batas_kecamatan', array($plugin_public, 'data_batas_kecamatan'));
-
+		add_shortcode('mapping_desa_aids', array($plugin_public, 'mapping_desa_aids'));
 	}
 
 	/**

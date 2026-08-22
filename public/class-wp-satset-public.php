@@ -188,6 +188,22 @@ class Wp_Satset_Public {
 		}
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-ats.php';
 	}
+
+	function data_aids(){
+		// untuk disable render shortcode di halaman edit page/post
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-aids.php';
+	}
+
+	function mapping_desa_aids(){
+		// untuk disable render shortcode di halaman edit page/post
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-mapping-desa-aids.php';
+	}
 	
 	function data_detail_ats(){
 		// untuk disable render shortcode di halaman edit page/post
@@ -329,6 +345,13 @@ class Wp_Satset_Public {
 			return '';
 		}
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-tbc.php';
+	}
+	function management_data_aids_satset(){
+		// untuk disable render shortcode di halaman edit page/post
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-aids.php';
 	}
 	function management_data_rtlh_satset(){
 		// untuk disable render shortcode di halaman edit page/post
@@ -3375,4 +3398,307 @@ public function get_datatable_batas_kecamatan(){
 		]);
 
 	}
+
+public function get_data_aids_by_id(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil get data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				$ret['data'] = $wpdb->get_row($wpdb->prepare('
+					SELECT
+						*
+					FROM data_aids
+					WHERE id=%d
+				', $_POST['id']), ARRAY_A);
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+		die(json_encode($ret));
+	}
+
+public function hapus_data_aids_by_id(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil hapus data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				$ret['data'] = $wpdb->update('data_aids', array('active' => 0), array(
+					'id' => $_POST['id']
+				));
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+		die(json_encode($ret));
+	}
+
+public function tambah_data_aids(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil simpan data!',
+			'data' => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				if(empty($_POST['id_pasien'])){
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data id_pasien tidak boleh kosong!';
+				} else if(empty($_POST['nik'])){
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data nik tidak boleh kosong!';
+				} else if(empty($_POST['nama_pasien'])){
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data nama_pasien tidak boleh kosong!';
+				} else if(empty($_POST['tahun_anggaran'])){
+					$ret['status'] = 'error';
+					$ret['message'] = 'Data tahun_anggaran tidak boleh kosong!';
+				} else {
+					$data = array(
+						'provinsi'                                      => !empty($_POST['provinsi']) ? $_POST['provinsi'] : '',
+						'kabkot'                                        => !empty($_POST['kabkot']) ? $_POST['kabkot'] : '',
+						'kecamatan'                                     => !empty($_POST['kecamatan']) ? $_POST['kecamatan'] : '',
+						'kode_upk'                                      => !empty($_POST['kode_upk']) ? $_POST['kode_upk'] : '',
+						'nama_upk'                                      => !empty($_POST['nama_upk']) ? $_POST['nama_upk'] : '',
+						'id_pasien'                                     => $_POST['id_pasien'],
+						'warga_negara'                                  => !empty($_POST['warga_negara']) ? $_POST['warga_negara'] : '',
+						'nik'                                           => $_POST['nik'],
+						'nama_pasien'                                   => $_POST['nama_pasien'],
+						'tanggal_lahir'                                 => !empty($_POST['tanggal_lahir']) ? $_POST['tanggal_lahir'] : '',
+						'jenis_kelamin'                                 => !empty($_POST['jenis_kelamin']) ? $_POST['jenis_kelamin'] : '',
+						'no_telp'                                       => !empty($_POST['no_telp']) ? $_POST['no_telp'] : '',
+						'umur_terdiagnosis'                             => !empty($_POST['umur_terdiagnosis']) ? $_POST['umur_terdiagnosis'] : '',
+						'kelompok_umur_terdiagnosis'                    => !empty($_POST['kelompok_umur_terdiagnosis']) ? $_POST['kelompok_umur_terdiagnosis'] : '',
+						'provinsi_pasien'                               => !empty($_POST['provinsi_pasien']) ? $_POST['provinsi_pasien'] : '',
+						'kabkot_pasien'                                 => !empty($_POST['kabkot_pasien']) ? $_POST['kabkot_pasien'] : '',
+						'kecamatan_pasien'                              => !empty($_POST['kecamatan_pasien']) ? $_POST['kecamatan_pasien'] : '',
+						'desa_pasien'                                   => !empty($_POST['desa_pasien']) ? $_POST['desa_pasien'] : '',
+						'alamat_pasien'                                 => !empty($_POST['alamat_pasien']) ? $_POST['alamat_pasien'] : '',
+						'provinsi_domisili'                             => !empty($_POST['provinsi_domisili']) ? $_POST['provinsi_domisili'] : '',
+						'kabkot_domisili'                               => !empty($_POST['kabkot_domisili']) ? $_POST['kabkot_domisili'] : '',
+						'kecamatan_domisili'                            => !empty($_POST['kecamatan_domisili']) ? $_POST['kecamatan_domisili'] : '',
+						'desa_domisili'                                 => !empty($_POST['desa_domisili']) ? $_POST['desa_domisili'] : '',
+						'alamat_domisili'                               => !empty($_POST['alamat_domisili']) ? $_POST['alamat_domisili'] : '',
+						'tanggal_register'                              => !empty($_POST['tanggal_register']) ? $_POST['tanggal_register'] : '',
+						'no_rekam_medik'                                => !empty($_POST['no_rekam_medik']) ? $_POST['no_rekam_medik'] : '',
+						'waktu_input_pertama'                           => !empty($_POST['waktu_input_pertama']) ? $_POST['waktu_input_pertama'] : '',
+						'kel_populasi_lsl'                              => isset($_POST['kel_populasi_lsl']) && $_POST['kel_populasi_lsl'] !== '' ? (int)$_POST['kel_populasi_lsl'] : null,
+						'pendampingan_komunitas'                        => isset($_POST['pendampingan_komunitas']) && $_POST['pendampingan_komunitas'] !== '' ? (int)$_POST['pendampingan_komunitas'] : null,
+						'capaian_t_dan_t_layanan'                      => !empty($_POST['capaian_t_dan_t_layanan']) ? $_POST['capaian_t_dan_t_layanan'] : '',
+						'konfirmasi_hiv_plus_tanggal_konfirmasi'        => !empty($_POST['konfirmasi_hiv_plus_tanggal_konfirmasi']) ? $_POST['konfirmasi_hiv_plus_tanggal_konfirmasi'] : '',
+						'konfirmasi_hiv_plus_layanan'                   => !empty($_POST['konfirmasi_hiv_plus_layanan']) ? $_POST['konfirmasi_hiv_plus_layanan'] : '',
+						'tahun_anggaran'                                => $_POST['tahun_anggaran'],
+						'active'                                        => 1,
+						'update_at'                                     => current_time('mysql'),
+					);
+
+					if(!empty($_POST['id_data'])){
+						$wpdb->update('data_aids', $data, array('id' => $_POST['id_data']));
+						$ret['message'] = 'Berhasil update data!';
+					} else {
+						$cek_id = $wpdb->get_row($wpdb->prepare('
+							SELECT id, active FROM data_aids
+							WHERE id_pasien = %s AND tahun_anggaran = %d
+						', $_POST['id_pasien'], $_POST['tahun_anggaran']), ARRAY_A);
+
+						if(empty($cek_id)){
+							$wpdb->insert('data_aids', $data);
+						} else {
+							if($cek_id['active'] == 0){
+								$wpdb->update('data_aids', $data, array('id' => $cek_id['id']));
+							} else {
+								$ret['status'] = 'error';
+								$ret['message'] = 'Gagal disimpan. Data AIDS dengan id_pasien="'.$_POST['id_pasien'].'" sudah ada!';
+							}
+						}
+					}
+				}
+			}else{
+				$ret['status']	= 'error';
+				$ret['message']	= 'Api key tidak ditemukan!';
+			}
+		}else{
+			$ret['status']	= 'error';
+			$ret['message']	= 'Format Salah!';
+		}
+		die(json_encode($ret));
+	}
+
+public function get_datatable_aids(){
+		global $wpdb;
+		$ret = array(
+			'status' => 'success',
+			'message' => 'Berhasil get data!',
+			'data'	=> array()
+		);
+
+		if(!empty($_POST)){
+			if (!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				$params = $_REQUEST;
+				$columns = array(
+					0  => 'provinsi',
+					1  => 'kabkot',
+					2  => 'kecamatan',
+					3  => 'kode_upk',
+					4  => 'nama_upk',
+					5  => 'id_pasien',
+					6  => 'warga_negara',
+					7  => 'nik',
+					8  => 'nama_pasien',
+					9  => 'tanggal_lahir',
+					10 => 'jenis_kelamin',
+					11 => 'no_telp',
+					12 => 'umur_terdiagnosis',
+					13 => 'kelompok_umur_terdiagnosis',
+					14 => 'kategori_umur_terdiagnosis',
+					15 => 'provinsi_pasien',
+					16 => 'kabkot_pasien',
+					17 => 'kecamatan_pasien',
+					18 => 'desa_pasien',
+					19 => 'alamat_pasien',
+					20 => 'provinsi_domisili',
+					21 => 'kabkot_domisili',
+					22 => 'kecamatan_domisili',
+					23 => 'desa_domisili',
+					24 => 'alamat_domisili',
+					25 => 'tanggal_register',
+					26 => 'waktu_input_pertama',
+					27 => 'no_rekam_medik',
+					28 => 'kel_populasi_lsl',
+					29 => 'konfirmasi_hiv_plus_tanggal_konfirmasi',
+					30 => 'konfirmasi_hiv_plus_provinsi',
+					31 => 'konfirmasi_hiv_plus_kabkot',
+					32 => 'konfirmasi_hiv_plus_layanan',
+					33 => 'akhir_followup_sblm_masuk_perawatan_meninggal',
+					34 => 'pendampingan_komunitas',
+					35 => 'akhir_followup_sblm_masuk_perawatan_dan_arv_meninggal',
+					36 => 'capaian_t_dan_t_layanan',
+					37 => 'capaian_t_dan_t_kabkot',
+					38 => 'capaian_t_dan_t_provinsi',
+					39 => 'tahun_anggaran',
+					40 => 'id',
+				);
+				$where = $sqlTot = $sqlRec = "";
+
+				if(empty($params['tahun_anggaran'])){
+					die(json_encode(array(
+						'status' => 'error',
+						'message' => 'Parameter tahun anggaran diperlukan!'
+					)));
+				}
+
+				$tahun_anggaran = $params['tahun_anggaran'];
+				$where .= " AND tahun_anggaran = " . $wpdb->prepare('%s', $tahun_anggaran);
+
+				if(!empty($params['search']['value'])){
+					$where .= " AND (nik LIKE " . $wpdb->prepare('%s', "%".$params['search']['value']."%");
+					$where .= " OR nama_pasien LIKE " . $wpdb->prepare('%s', "%".$params['search']['value']."%");
+					$where .= " OR id_pasien LIKE " . $wpdb->prepare('%s', "%".$params['search']['value']."%");
+					$where .= " OR no_rekam_medik LIKE " . $wpdb->prepare('%s', "%".$params['search']['value']."%");
+					$where .= ")";
+				}
+
+				$sql_tot = "SELECT count(id) as jml FROM `data_aids`";
+				$sql     = "SELECT ".implode(', ', $columns)." FROM `data_aids`";
+				$where_first = " WHERE 1=1 AND active = 1";
+				$sqlTot  = $sql_tot.$where_first.$where;
+				$sqlRec  = $sql.$where_first.$where;
+
+				$limit = '';
+				if($params['length'] != -1){
+					$limit = " LIMIT ".$wpdb->prepare('%d', $params['start'])." ,".$wpdb->prepare('%d', $params['length']);
+				}
+				$sqlRec .= " ORDER BY ".$columns[$params['order'][0]['column']]." ".$params['order'][0]['dir'].$limit;
+
+				$queryTot     = $wpdb->get_results($sqlTot, ARRAY_A);
+				$totalRecords = $queryTot[0]['jml'];
+				$queryRecords = $wpdb->get_results($sqlRec, ARRAY_A);
+
+				foreach($queryRecords as $recKey => $recVal){
+					$btn  = '<a class="btn btn-sm btn-warning" onclick="edit_data(\''.$recVal['id'].'\'); return false;" href="#" title="Edit Data"><i class="dashicons dashicons-edit"></i></a>';
+					$btn .= '<a class="btn btn-sm btn-danger" onclick="hapus_data(\''.$recVal['id'].'\'); return false;" href="#" title="Hapus Data"><i class="dashicons dashicons-trash"></i></a>';
+					$queryRecords[$recKey]['aksi'] = $btn;
+				}
+
+				$json_data = array(
+					"draw"            => intval($params['draw']),
+					"recordsTotal"    => intval($totalRecords),
+					"recordsFiltered" => intval($totalRecords),
+					"data"            => $queryRecords,
+					"sql"             => $sqlRec
+				);
+				die(json_encode($json_data));
+			}else{
+				$return = array('status' => 'error', 'message' => 'Api Key tidak sesuai!');
+			}
+		}else{
+			$return = array('status' => 'error', 'message' => 'Format tidak sesuai!');
+		}
+		die(json_encode($return));
+	}
+
+public function mapping_kode_desa_aids(){
+		global $wpdb;
+		$ret = array(
+			'status'  => 'success',
+			'message' => 'Berhasil mapping data!',
+			'data'    => array()
+		);
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
+				if(empty($_POST['kode_desa_aids'])){
+					$ret['status']  = 'error';
+					$ret['message'] = 'Parameter kode_desa_aids tidak boleh kosong!';
+				} else {
+					$kode_desa_aids  = sanitize_text_field($_POST['kode_desa_aids']);
+					$kode_desa_satset = isset($_POST['kode_desa_satset']) ? sanitize_text_field($_POST['kode_desa_satset']) : '';
+
+					// Cek apakah sudah ada baris untuk kode_desa_aids ini
+					$existing = $wpdb->get_var($wpdb->prepare(
+						"SELECT id FROM mapping_aids WHERE kode_desa_aids = %s",
+						$kode_desa_aids
+					));
+
+					if($existing){
+						$wpdb->update(
+							'mapping_aids',
+							array('kode_desa_satset' => $kode_desa_satset),
+							array('kode_desa_aids'  => $kode_desa_aids)
+						);
+						$ret['message'] = 'Mapping berhasil diperbarui!';
+					} else {
+						$wpdb->insert('mapping_aids', array(
+							'kode_desa_aids'  => $kode_desa_aids,
+							'kode_desa_satset' => $kode_desa_satset,
+						));
+						$ret['message'] = 'Mapping berhasil disimpan!';
+					}
+				}
+			} else {
+				$ret['status']  = 'error';
+				$ret['message'] = 'Api key tidak ditemukan!';
+			}
+		} else {
+			$ret['status']  = 'error';
+			$ret['message'] = 'Format Salah!';
+		}
+		die(json_encode($ret));
+	}
+
 }
