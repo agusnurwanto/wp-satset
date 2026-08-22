@@ -345,7 +345,7 @@ foreach ($tahun_list as $t) {
 
     <h2 class="text-center" style="margin-top: 30px;">
         Tabel Rekap Data AIDS/HIV<br>
-        Total Pasien: <strong><?php echo $this->number_format($total_all+$total_unmapped); ?></strong> Orang
+        Total Pasien: <strong><?php echo $this->number_format($total_all); ?></strong> Orang
     </h2>
 
     <div class="wrap-rekap-aids">
