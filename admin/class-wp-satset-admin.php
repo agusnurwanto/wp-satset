@@ -259,6 +259,14 @@ class Wp_Satset_Admin {
 			'post_status' => 'publish'
 		));
 
+		$data_malaria = $this->functions->generatePage(array(
+			'nama_page' => 'Data Malaria', 
+			'content' => '[data_malaria]',
+        	'show_header' => 1,
+        	'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
 		$data_rtlh = $this->functions->generatePage(array(
 			'nama_page' => 'Data RTLH', 
 			'content' => '[data_rtlh]',
@@ -406,9 +414,23 @@ class Wp_Satset_Admin {
 			'no_key' => 1,
 			'post_status' => 'private'
 		));
+		$management_data_malaria = $this->functions->generatePage(array(
+			'nama_page' => 'Management Data Malaria',
+			'content' => '[management_data_malaria_satset]',
+			'show_header' => 1,
+			'no_key' => 1,
+			'post_status' => 'private'
+		));
 		$mapping_desa_aids = $this->functions->generatePage(array(
 			'nama_page' => 'Mapping Desa Data AIDS',
 			'content' => '[mapping_desa_aids]',
+			'show_header' => 1,
+			'no_key' => 1,
+			'post_status' => 'private'
+		));
+		$mapping_desa_malaria = $this->functions->generatePage(array(
+			'nama_page' => 'Mapping Desa Data Malaria',
+			'content' => '[mapping_desa_malaria]',
 			'show_header' => 1,
 			'no_key' => 1,
 			'post_status' => 'private'
@@ -454,6 +476,7 @@ class Wp_Satset_Admin {
 	            		<li><a target="_blank" href="'.$data_stunting['url'].'">'.$data_stunting['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_tbc['url'].'">'.$data_tbc['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_aids['url'].'">'.$data_aids['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$data_malaria['url'].'">'.$data_malaria['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_rtlh['url'].'">'.$data_rtlh['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_dtks['url'].'">'.$data_dtks['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_dtsen['url'].'">'.$data_dtsen['title'].'</a></li>
@@ -814,6 +837,34 @@ class Wp_Satset_Admin {
 	            	->set_html( 'Pilih Tahun Anggaran : <select id="data-tahun-aids" class="cf-select__input">'.$pilih_tahun.'</select>' ),
 		        Field::make( 'html', 'crb_aids_save_button' )
 	            	->set_html( '<a onclick="import_excel_aids(); return false" href="javascript:void(0);" class="button button-primary">Import WP</a>' )
+	        ) );
+
+		Container::make( 'theme_options', __( 'Data Malaria' ) )
+			->set_page_parent( $basic_options_container )
+			->add_fields( array(
+		    	Field::make( 'html', 'crb_malaria_hide_sidebar' )
+		        	->set_html( '
+		        		<style>
+		        			.postbox-container { display: none; }
+		        			#poststuff #post-body.columns-2 { margin: 0 !important; }
+		        		</style>
+		        	' ),
+		        Field::make( 'html', 'crb_satset_halaman_terkait_malaria' )
+		        	->set_html( '
+					<h5>HALAMAN TERKAIT</h5>
+	            	<ol>
+	            		<li><a target="_blank" href="'.$management_data_malaria['url'].'">'.$management_data_malaria['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$mapping_desa_malaria['url'].'">'.$mapping_desa_malaria['title'].'</a></li>
+	            	</ol>
+		        	' ),
+		        Field::make( 'html', 'crb_malaria_upload_html' )
+	            	->set_html( '<h3>Import EXCEL data malaria</h3>Pilih file excel .xlsx : <input type="file" id="file-excel" onchange="filePickedSatset(event);"><br>Contoh format file excel bisa <a target="_blank" href="'.SATSET_PLUGIN_URL. 'excel/contoh_malaria.xlsx">download di sini</a>. Sheet file excel yang akan diimport harus diberi nama <b>data</b>. Untuk kolom nilai angka ditulis tanpa tanda titik.' ),
+		        Field::make( 'html', 'crb_malaria_satset' )
+	            	->set_html( 'Data JSON : <textarea id="data-excel" class="cf-select__input"></textarea>' ),
+		        Field::make( 'html', 'crb_p3ke_satset_tahun' )
+	            	->set_html( 'Pilih Tahun Anggaran : <select id="data-tahun-malaria" class="cf-select__input">'.$pilih_tahun.'</select>' ),
+		        Field::make( 'html', 'crb_malaria_save_button' )
+	            	->set_html( '<a onclick="import_excel_malaria(); return false" href="javascript:void(0);" class="button button-primary">Import WP</a>' )
 	        ) );
 
 		Container::make( 'theme_options', __( 'Data RTLH' ) )
@@ -1376,6 +1427,88 @@ class Wp_Satset_Admin {
 					$ret['data']['insert']++;
 				}else{
 					$wpdb->update("data_aids", $data_db, array("id" => $cek_id));
+					$ret['data']['update']++;
+				}
+				if(!empty($wpdb->last_error)){
+					$ret['data']['error'][] = array($wpdb->last_error, $data_db);
+				}
+			}
+		} else {
+			$ret['status'] = 'error';
+			$ret['message'] = 'Format Salah!';
+		}
+		die(json_encode($ret));
+	}
+
+	function import_excel_malaria(){
+		global $wpdb;
+		$ret = array(
+			'status'	=> 'success',
+			'message'	=> 'Berhasil import excel!'
+		);
+		if (!empty($_POST)) {
+			if(empty($_POST['tahun_anggaran'])){
+				die(json_encode(array('status' => 'error', 'message' => 'Tahun anggaran tidak boleh kosong!')));
+			}
+			// Jika update_active, set semua data active = 0 untuk tahun anggaran ini
+			if (!empty($_POST['update_active'])) {
+				$wpdb->update("data_malaria", array('active' => 0), array(
+					'active' => 1,
+					'tahun_anggaran' => $_POST['tahun_anggaran']
+				));
+			}
+			$ret['data'] = array(
+				'insert' => 0,
+				'update' => 0,
+				'error' => array()
+			);
+			foreach ($_POST['data'] as $k => $data) {
+				$newData = array();
+				foreach($data as $kk => $vv){
+					$newData[trim(preg_replace('/\s+/', ' ', $kk))] = trim(preg_replace('/\s+/', ' ', $vv));
+				}
+				$data_db = array(
+					'provinsi'          => isset($newData['provinsi']) ? $newData['provinsi'] : '',
+					'kabkot'            => isset($newData['kabkot']) ? $newData['kabkot'] : '',
+					'kecamatan'         => isset($newData['kecamatan']) ? $newData['kecamatan'] : '',
+					'desa'              => isset($newData['desa']) ? $newData['desa'] : '',
+					'rt'                => isset($newData['rt']) ? $newData['rt'] : '',
+					'rw'                => isset($newData['rw']) ? $newData['rw'] : '',
+					'nik'               => isset($newData['nik']) ? $newData['nik'] : '',
+					'nama'              => isset($newData['nama']) ? $newData['nama'] : '',
+					'umur'              => isset($newData['umur']) ? $newData['umur'] : '',
+					'tindak_lanjut'     => isset($newData['tindak_lanjut']) ? $newData['tindak_lanjut'] : '',
+					'hasil_akhir'       => isset($newData['hasil_akhir']) ? $newData['hasil_akhir'] : '',
+					'status_pengobatan' => isset($newData['status_pengobatan']) ? $newData['status_pengobatan'] : '',
+					'tahun_anggaran'    => $_POST['tahun_anggaran'],
+					'active'            => 1,
+					'update_at'         => current_time('mysql'),
+				);
+				$wpdb->last_error = "";
+				if(empty($newData['nik'])){
+					$cek_id = $wpdb->get_var($wpdb->prepare("
+						SELECT id FROM data_malaria
+						WHERE nama = %s
+							AND kabkot = %s
+							AND kecamatan = %s
+							AND desa = %s
+							AND tahun_anggaran = %d
+							AND (nik IS NULL OR nik = '')",
+						$newData['nama'], $newData['kabkot'], $newData['kecamatan'], $newData['desa'], $_POST['tahun_anggaran']
+					));
+				} else {
+					$cek_id = $wpdb->get_var($wpdb->prepare("
+						SELECT id FROM data_malaria
+						WHERE nik = %s
+							AND tahun_anggaran = %d",
+						$newData['nik'], $_POST['tahun_anggaran']
+					));
+				}
+				if(empty($cek_id)){
+					$wpdb->insert("data_malaria", $data_db);
+					$ret['data']['insert']++;
+				} else {
+					$wpdb->update("data_malaria", $data_db, array("id" => $cek_id));
 					$ret['data']['update']++;
 				}
 				if(!empty($wpdb->last_error)){

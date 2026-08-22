@@ -154,7 +154,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-homepage.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/misc/wp-satset-public-homepage.php';
 	}
 
 	function data_p3ke(){
@@ -162,7 +162,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-p3ke.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/p3ke/wp-satset-public-p3ke.php';
 	}
 
 	function data_dtks(){
@@ -170,7 +170,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-dtks.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/dtks/wp-satset-public-dtks.php';
 	}
 
 	function data_dtsen(){
@@ -178,7 +178,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-dtsen.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/dtsen/wp-satset-public-dtsen.php';
 	}
 
 	function data_ats(){
@@ -186,7 +186,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-ats.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/ats/wp-satset-public-ats.php';
 	}
 
 	function data_aids(){
@@ -194,7 +194,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-aids.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/aids/wp-satset-public-aids.php';
 	}
 
 	function data_detail_aids(){
@@ -202,7 +202,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-detail-aids.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/aids/wp-satset-public-detail-aids.php';
 	}
 
 	function mapping_desa_aids(){
@@ -210,7 +210,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-mapping-desa-aids.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/aids/wp-satset-public-mapping-desa-aids.php';
 	}
 	
 	function data_detail_ats(){
@@ -218,7 +218,31 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-detail-ats.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/ats/wp-satset-public-detail-ats.php';
+	}
+
+	function data_malaria(){
+		// untuk disable render shortcode di halaman edit page/post
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/malaria/wp-satset-public-malaria.php';
+	}
+
+	function data_detail_malaria(){
+		// untuk disable render shortcode di halaman edit page/post
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/malaria/wp-satset-public-detail-malaria.php';
+	}
+
+	function mapping_desa_malaria(){
+		// untuk disable render shortcode di halaman edit page/post
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/malaria/wp-satset-public-mapping-desa-malaria.php';
 	}
 	
 	function data_detail_tbc(){
@@ -226,7 +250,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-detail-tbc.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/tbc/wp-satset-public-detail-tbc.php';
 	}
 	
 	function data_detail_dtsen(){
@@ -234,7 +258,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-detail-dtsen.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/dtsen/wp-satset-public-detail-dtsen.php';
 	}
 
 	function data_detail_kk_dtsen(){
@@ -242,7 +266,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-detail-kk-dtsen.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/dtsen/wp-satset-public-detail-kk-dtsen.php';
 	}
 
 	function data_stunting(){
@@ -250,7 +274,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-stunting.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/stunting/wp-satset-public-stunting.php';
 	}
 
 	function data_tbc(){
@@ -258,7 +282,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-tbc.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/tbc/wp-satset-public-tbc.php';
 	}
 
 	function data_rtlh(){
@@ -266,7 +290,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-rtlh.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/rtlh/wp-satset-public-rtlh.php';
 	}
 
 	function peta_satset(){
@@ -274,7 +298,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-peta.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/peta/wp-satset-public-peta.php';
 	}
 
 	function conversi_peta_satset(){
@@ -282,7 +306,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-conversi-peta.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/peta/wp-satset-public-conversi-peta.php';
 	}
 
 	function peta_satset_desa(){
@@ -290,7 +314,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-peta-batas-desa.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/peta/wp-satset-public-peta-batas-desa.php';
 	}
 
 	function peta_satset_kecamatan(){
@@ -298,7 +322,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-peta-batas-kecamatan.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/peta/wp-satset-public-peta-batas-kecamatan.php';
 	}
 
 	function cek_nik_satset(){
@@ -306,7 +330,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-public-cek-nik.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/misc/wp-satset-public-cek-nik.php';
 	}
 
 	function data_irisan_satset(){
@@ -314,7 +338,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-data-irisan.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/irisan/wp-satset-data-irisan.php';
 	}
 
 	function filter_data_irisan_satset(){
@@ -322,7 +346,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-filter-data-irisan.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/irisan/wp-satset-filter-data-irisan.php';
 	}
 
 	function management_data_p3ke_satset($atts){
@@ -330,7 +354,7 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-p3ke.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/p3ke/wp-satset-management-data-p3ke.php';
 	}
 
 	function management_data_p3ke_anggota_keluarga($atts){
@@ -338,49 +362,56 @@ class Wp_Satset_Public {
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-p3ke-anggota-keluarga.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/p3ke/wp-satset-management-data-p3ke-anggota-keluarga.php';
 	}
 	function management_data_stunting_satset(){
 		// untuk disable render shortcode di halaman edit page/post
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-stunting.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/stunting/wp-satset-management-data-stunting.php';
 	}
 	function management_data_tbc_satset(){
 		// untuk disable render shortcode di halaman edit page/post
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-tbc.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/tbc/wp-satset-management-data-tbc.php';
 	}
 	function management_data_aids_satset(){
 		// untuk disable render shortcode di halaman edit page/post
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-aids.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/aids/wp-satset-management-data-aids.php';
+	}
+	function management_data_malaria_satset(){
+		// untuk disable render shortcode di halaman edit page/post
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/malaria/wp-satset-management-data-malaria.php';
 	}
 	function management_data_rtlh_satset(){
 		// untuk disable render shortcode di halaman edit page/post
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-rtlh.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/rtlh/wp-satset-management-data-rtlh.php';
 	}
 	function management_data_batas_desa_satset(){
 		// untuk disable render shortcode di halaman edit page/post
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-batas-desa.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/misc/wp-satset-management-data-batas-desa.php';
 	}
 	function management_data_batas_kecamatan_satset(){
 		// untuk disable render shortcode di halaman edit page/post
 		if(!empty($_GET) && !empty($_GET['post'])){
 			return '';
 		}
-		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/wp-satset-management-data-batas-kecamatan.php';
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/misc/wp-satset-management-data-batas-kecamatan.php';
 	}
 
 	function get_polygon($options = array( 'type' => 'desa' )){
@@ -3705,6 +3736,183 @@ public function mapping_kode_desa_aids(){
 		} else {
 			$ret['status']  = 'error';
 			$ret['message'] = 'Format Salah!';
+		}
+		die(json_encode($ret));
+	}
+
+	public function get_data_malaria_by_id(){
+		global $wpdb;
+		$ret = array('status' => 'success', 'message' => 'Berhasil get data!', 'data' => array());
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option(SATSET_APIKEY)){
+				$ret['data'] = $wpdb->get_row($wpdb->prepare('SELECT * FROM data_malaria WHERE id=%d', $_POST['id']), ARRAY_A);
+			} else {
+				$ret['status'] = 'error'; $ret['message'] = 'Api key tidak ditemukan!';
+			}
+		} else {
+			$ret['status'] = 'error'; $ret['message'] = 'Format Salah!';
+		}
+		die(json_encode($ret));
+	}
+
+	public function hapus_data_malaria_by_id(){
+		global $wpdb;
+		$ret = array('status' => 'success', 'message' => 'Berhasil hapus data!', 'data' => array());
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option(SATSET_APIKEY)){
+				$ret['data'] = $wpdb->update('data_malaria', array('active' => 0), array('id' => $_POST['id']));
+			} else {
+				$ret['status'] = 'error'; $ret['message'] = 'Api key tidak ditemukan!';
+			}
+		} else {
+			$ret['status'] = 'error'; $ret['message'] = 'Format Salah!';
+		}
+		die(json_encode($ret));
+	}
+
+	public function tambah_data_malaria(){
+		global $wpdb;
+		$ret = array('status' => 'success', 'message' => 'Berhasil simpan data!', 'data' => array());
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option(SATSET_APIKEY)){
+				if(empty($_POST['nama'])){
+					die(json_encode(array('status' => 'error', 'message' => 'Nama tidak boleh kosong!')));
+				}
+				if(empty($_POST['tahun_anggaran'])){
+					die(json_encode(array('status' => 'error', 'message' => 'Tahun anggaran tidak boleh kosong!')));
+				}
+				$data = array(
+					'provinsi'          => !empty($_POST['provinsi'])          ? $_POST['provinsi']          : '',
+					'kabkot'            => !empty($_POST['kabkot'])            ? $_POST['kabkot']            : '',
+					'kecamatan'         => !empty($_POST['kecamatan'])         ? $_POST['kecamatan']         : '',
+					'desa'              => !empty($_POST['desa'])              ? $_POST['desa']              : '',
+					'rt'                => !empty($_POST['rt'])                ? $_POST['rt']                : '',
+					'rw'                => !empty($_POST['rw'])                ? $_POST['rw']                : '',
+					'nik'               => !empty($_POST['nik'])               ? $_POST['nik']               : '',
+					'nama'              => $_POST['nama'],
+					'umur'              => !empty($_POST['umur'])              ? $_POST['umur']              : '',
+					'tindak_lanjut'     => !empty($_POST['tindak_lanjut'])     ? $_POST['tindak_lanjut']     : '',
+					'hasil_akhir'       => !empty($_POST['hasil_akhir'])       ? $_POST['hasil_akhir']       : '',
+					'status_pengobatan' => !empty($_POST['status_pengobatan']) ? $_POST['status_pengobatan'] : '',
+					'tahun_anggaran'    => $_POST['tahun_anggaran'],
+					'active'            => 1,
+					'update_at'         => current_time('mysql'),
+				);
+				if(!empty($_POST['id_data'])){
+					$wpdb->update('data_malaria', $data, array('id' => $_POST['id_data']));
+					$ret['message'] = 'Berhasil update data!';
+				} else {
+					$cek_id = $wpdb->get_var($wpdb->prepare(
+						"SELECT id FROM data_malaria WHERE nama = %s AND kabkot = %s AND tahun_anggaran = %d",
+						$_POST['nama'], !empty($_POST['kabkot']) ? $_POST['kabkot'] : '', $_POST['tahun_anggaran']
+					));
+					if(empty($cek_id)){
+						$wpdb->insert('data_malaria', $data);
+					} else {
+						$ret['status']  = 'error';
+						$ret['message'] = 'Data Malaria dengan nama tersebut sudah ada!';
+					}
+				}
+			} else {
+				$ret['status'] = 'error'; $ret['message'] = 'Api key tidak ditemukan!';
+			}
+		} else {
+			$ret['status'] = 'error'; $ret['message'] = 'Format Salah!';
+		}
+		die(json_encode($ret));
+	}
+
+	public function get_datatable_malaria(){
+		global $wpdb;
+		$ret = array('status' => 'success', 'message' => 'Berhasil get data!', 'data' => array());
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option(SATSET_APIKEY)){
+				$params  = $_REQUEST;
+				$columns = array(
+					0  => 'provinsi',
+					1  => 'kabkot',
+					2  => 'kecamatan',
+					3  => 'desa',
+					4  => 'rt',
+					5  => 'rw',
+					6  => 'nik',
+					7  => 'nama',
+					8  => 'umur',
+					9  => 'tindak_lanjut',
+					10 => 'hasil_akhir',
+					11 => 'status_pengobatan',
+					12 => 'tahun_anggaran',
+					13 => 'id',
+				);
+				if(empty($params['tahun_anggaran'])){
+					die(json_encode(array('status' => 'error', 'message' => 'Parameter tahun anggaran diperlukan!')));
+				}
+				$tahun_anggaran = $params['tahun_anggaran'];
+				$where = " AND tahun_anggaran = " . $wpdb->prepare('%s', $tahun_anggaran);
+				if(!empty($params['search']['value'])){
+					$s = $params['search']['value'];
+					$where .= " AND (nik LIKE " . $wpdb->prepare('%s', "%$s%");
+					$where .= " OR nama LIKE "  . $wpdb->prepare('%s', "%$s%") . ")";
+				}
+				$sql_tot = "SELECT count(id) as jml FROM `data_malaria`";
+				$sql     = "SELECT " . implode(', ', $columns) . " FROM `data_malaria`";
+				$where_first = " WHERE 1=1 AND active = 1";
+				$sqlTot  = $sql_tot . $where_first . $where;
+				$sqlRec  = $sql     . $where_first . $where;
+				$limit   = '';
+				if($params['length'] != -1){
+					$limit = " LIMIT " . $wpdb->prepare('%d', $params['start']) . "," . $wpdb->prepare('%d', $params['length']);
+				}
+				$sqlRec .= " ORDER BY " . $columns[$params['order'][0]['column']] . " " . $params['order'][0]['dir'] . $limit;
+				$totalRecords = $wpdb->get_results($sqlTot, ARRAY_A)[0]['jml'];
+				$queryRecords = $wpdb->get_results($sqlRec, ARRAY_A);
+				foreach($queryRecords as $k => $v){
+					$btn  = '<a class="btn btn-sm btn-warning" onclick="edit_data(\''.$v['id'].'\'); return false;" href="#"><i class="dashicons dashicons-edit"></i></a>';
+					$btn .= '<a class="btn btn-sm btn-danger"  onclick="hapus_data(\''.$v['id'].'\'); return false;" href="#"><i class="dashicons dashicons-trash"></i></a>';
+					$queryRecords[$k]['aksi'] = $btn;
+				}
+				die(json_encode(array(
+					'draw'            => intval($params['draw']),
+					'recordsTotal'    => intval($totalRecords),
+					'recordsFiltered' => intval($totalRecords),
+					'data'            => $queryRecords,
+				)));
+			} else {
+				$ret['status'] = 'error'; $ret['message'] = 'Api Key tidak sesuai!';
+			}
+		} else {
+			$ret['status'] = 'error'; $ret['message'] = 'Format tidak sesuai!';
+		}
+		die(json_encode($ret));
+	}
+
+	public function mapping_kode_desa_malaria(){
+		global $wpdb;
+		$ret = array('status' => 'success', 'message' => 'Berhasil mapping data!', 'data' => array());
+		if(!empty($_POST)){
+			if(!empty($_POST['api_key']) && $_POST['api_key'] == get_option(SATSET_APIKEY)){
+				if(empty($_POST['kode_desa_malaria'])){
+					$ret['status']  = 'error';
+					$ret['message'] = 'Parameter kode_desa_malaria tidak boleh kosong!';
+				} else {
+					$kode_desa_malaria = sanitize_text_field($_POST['kode_desa_malaria']);
+					$kode_desa_satset  = isset($_POST['kode_desa_satset']) ? sanitize_text_field($_POST['kode_desa_satset']) : '';
+					$existing = $wpdb->get_var($wpdb->prepare(
+						"SELECT id FROM mapping_malaria WHERE kode_desa_malaria = %s", $kode_desa_malaria
+					));
+					if($existing){
+						$wpdb->update('mapping_malaria', array('kode_desa_satset' => $kode_desa_satset), array('kode_desa_malaria' => $kode_desa_malaria));
+						$ret['message'] = 'Mapping berhasil diperbarui!';
+					} else {
+						$wpdb->insert('mapping_malaria', array('kode_desa_malaria' => $kode_desa_malaria, 'kode_desa_satset' => $kode_desa_satset));
+						$ret['message'] = 'Mapping berhasil disimpan!';
+					}
+				}
+			} else {
+				$ret['status'] = 'error'; $ret['message'] = 'Api key tidak ditemukan!';
+			}
+		} else {
+			$ret['status'] = 'error'; $ret['message'] = 'Format Salah!';
 		}
 		die(json_encode($ret));
 	}

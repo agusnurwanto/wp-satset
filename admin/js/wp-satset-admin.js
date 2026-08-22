@@ -380,6 +380,76 @@ function import_excel_aids(){
     }
 }
 
+function import_excel_malaria(){
+    var tahun_anggaran = jQuery('#data-tahun-malaria').val();
+    if (!tahun_anggaran.match(/^\d{4}$/)) {
+        return alert('Tahun anggaran tidak valid!');
+    }
+    var data = jQuery('#data-excel').val();
+    if(!data){
+        return alert('Excel Data can not empty!');
+    }else{
+        var update_active = prompt("Apakah anda mau menonaktifkan data sebelumnya? ketik 1 jika iya dan kosongkan saja jika tidak.");
+        data = JSON.parse(data);
+        jQuery('#wrap-loading').show();
+
+        var data_all = [];
+        var data_sementara = [];
+        var max = 100;
+        data.map(function(b, i){
+            data_sementara.push(b);
+            if(data_sementara.length%max == 0){
+                data_all.push(data_sementara);
+                data_sementara = [];
+            }
+        });
+        if(data_sementara.length > 0){
+            data_all.push(data_sementara);
+        }
+        var page = 0;
+        var last = data_all.length - 1;
+        data_all.reduce(function(sequence, nextData){
+            return sequence.then(function(current_data){
+                return new Promise(function(resolve_reduce, reject_reduce){
+                    relayAjax({
+                        url: ajaxurl,
+                        type: 'post',
+                        data: {
+                            action: 'import_excel_malaria',
+                            data: current_data,
+                            tahun_anggaran: tahun_anggaran,
+                            update_active: update_active
+                        },
+                        success: function(res){
+                            resolve_reduce(nextData);
+                        },
+                        error: function(e){
+                            console.log('Error import excel', e);
+                        }
+                    });
+                })
+                .catch(function(e){
+                    console.log(e);
+                    return Promise.resolve(nextData);
+                });
+            })
+            .catch(function(e){
+                console.log(e);
+                return Promise.resolve(nextData);
+            });
+        }, Promise.resolve(data_all[last]))
+        .then(function(data_last){
+            jQuery('#wrap-loading').hide();
+            alert('Success import data Malaria dari excel!');
+        })
+        .catch(function(e){
+            console.log(e);
+            jQuery('#wrap-loading').hide();
+            alert('Error!');
+        });
+    }
+}
+
 function import_excel_rtlh(){
     var tahun_anggaran = jQuery('#data-tahun-rtlh').val();
     if (!tahun_anggaran.match(/^\d{4}$/)) {

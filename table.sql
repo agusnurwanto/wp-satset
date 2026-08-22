@@ -600,3 +600,35 @@ CREATE TABLE `mapping_aids` (
     PRIMARY KEY (`id`),
     INDEX(`kode_desa_aids`)
 );
+
+CREATE TABLE `data_malaria` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `provinsi` VARCHAR(255) DEFAULT NULL,
+    `kabkot` VARCHAR(255) DEFAULT NULL,
+    `kecamatan` VARCHAR(255) DEFAULT NULL,
+    `desa` VARCHAR(255) DEFAULT NULL,
+    `rt` VARCHAR(10) DEFAULT NULL,
+    `rw` VARCHAR(10) DEFAULT NULL,
+    `nik` VARCHAR(50) DEFAULT NULL,
+    `nama` VARCHAR(255) DEFAULT NULL,
+    `umur` VARCHAR(10)  DEFAULT NULL,
+    `tindak_lanjut` VARCHAR(255) DEFAULT NULL,
+    `hasil_akhir` VARCHAR(255) DEFAULT NULL,
+    `status_pengobatan` VARCHAR(255) DEFAULT NULL,
+    `tahun_anggaran` INT(4) DEFAULT NULL,
+    `active` TINYINT(1) NOT NULL DEFAULT 1,
+    `update_at` DATETIME DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    KEY `idx_malaria_tahun` (`tahun_anggaran`),
+    KEY `idx_malaria_wilayah` (`kabkot`, `kecamatan`, `desa`),
+    KEY `idx_malaria_nik` (`nik`)
+);
+
+CREATE TABLE `mapping_malaria` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `kode_desa_malaria` VARCHAR(100) DEFAULT NULL,
+    `kode_desa_satset` VARCHAR(100) DEFAULT NULL,
+    `update_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_mapping_malaria_kode` (`kode_desa_malaria`)
+);
