@@ -173,6 +173,7 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_import_excel_rtlh',  $plugin_admin, 'import_excel_rtlh');
 		$this->loader->add_action('wp_ajax_import_excel_aids',  $plugin_admin, 'import_excel_aids');
 		$this->loader->add_action('wp_ajax_import_excel_malaria',  $plugin_admin, 'import_excel_malaria');
+		$this->loader->add_action('wp_ajax_import_geojson_infrastruktur', $plugin_admin, 'import_geojson_infrastruktur');
 		$this->loader->add_action('wp_ajax_get_data_dtks',  $plugin_admin, 'get_data_dtks');
 		$this->loader->add_action('wp_ajax_get_data_dtsen',  $plugin_admin, 'get_data_dtsen');
 		$this->loader->add_action('wp_ajax_get_data_ats',  $plugin_admin, 'get_data_ats');
@@ -217,6 +218,8 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_tambah_data_p3ke_anggota_keluarga', $plugin_public, 'tambah_data_p3ke_anggota_keluarga');
 		$this->loader->add_action('wp_ajax_hapus_data_p3ke_anggota_keluarga_by_id', $plugin_public, 'hapus_data_p3ke_anggota_keluarga_by_id');
 		$this->loader->add_action('wp_ajax_hapus_data_stunting_by_id', $plugin_public, 'hapus_data_stunting_by_id');
+		$this->loader->add_action('wp_ajax_satset_get_data_infrastruktur', $plugin_public, 'get_data_infrastruktur_management');
+		$this->loader->add_action('wp_ajax_satset_update_custom_infrastruktur', $plugin_public, 'update_custom_data_infrastruktur');
 		$this->loader->add_action('wp_ajax_get_data_stunting_by_id', $plugin_public, 'get_data_stunting_by_id');
 		$this->loader->add_action('wp_ajax_tambah_data_stunting', $plugin_public, 'tambah_data_stunting');
 		$this->loader->add_action('wp_ajax_hapus_data_tbc_by_id', $plugin_public, 'hapus_data_tbc_by_id');
@@ -257,6 +260,7 @@ class Wp_Satset {
 		add_shortcode('management_data_p3ke_satset', array($plugin_public, 'management_data_p3ke_satset'));
 		add_shortcode('management_data_p3ke_anggota_keluarga', array($plugin_public, 'management_data_p3ke_anggota_keluarga'));
 		add_shortcode('management_data_stunting_satset', array($plugin_public, 'management_data_stunting_satset'));
+		add_shortcode('management_data_infrastruktur_satset', array($plugin_public, 'management_data_infrastruktur_satset'));
 		add_shortcode('management_data_tbc_satset', array($plugin_public, 'management_data_tbc_satset'));
 		add_shortcode('management_data_rtlh_satset', array($plugin_public, 'management_data_rtlh_satset'));
 		add_shortcode('management_data_aids_satset', array($plugin_public, 'management_data_aids_satset'));

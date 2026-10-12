@@ -55,6 +55,24 @@ class Wp_Satset_Public {
 	private $version;
 	private $functions;
 
+	private function is_infrastruktur_management_page(){
+		if (!is_singular()) {
+			return false;
+		}
+		$post = get_queried_object();
+		return is_object($post)
+			&& isset($post->post_content)
+			&& has_shortcode($post->post_content, 'management_data_infrastruktur_satset');
+	}
+
+	private function has_data_infrastruktur_custom_attribute_column(){
+		global $wpdb;
+		return (bool) $wpdb->get_var($wpdb->prepare(
+			'SHOW COLUMNS FROM data_infrastruktur LIKE %s',
+			'custom_attribute'
+		));
+	}
+
 	/**
 	 * Initialize the class and set its properties.
 	 *
@@ -94,6 +112,10 @@ class Wp_Satset_Public {
 		wp_enqueue_style($this->plugin_name . 'select2', plugin_dir_url(__FILE__) . 'css/select2.min.css', array(), $this->version, 'all');
 		wp_enqueue_style($this->plugin_name . 'datatables', plugin_dir_url(__FILE__) . 'css/jquery.dataTables.min.css', array(), $this->version, 'all');
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wp-satset-public.css', array(), $this->version, 'all' );
+		if ($this->is_infrastruktur_management_page()) {
+			wp_enqueue_style('satset-leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', array(), '1.9.4');
+			wp_enqueue_style($this->plugin_name . 'infrastruktur', plugin_dir_url(__FILE__) . 'css/wp-satset-infrastruktur.css', array($this->plugin_name . 'bootstrap', 'satset-leaflet'), $this->version, 'all');
+		}
 
 	}
 
@@ -125,7 +147,40 @@ class Wp_Satset_Public {
 		    'url' => admin_url( 'admin-ajax.php' )
 		));
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-satset-public.js', array( 'jquery' ), $this->version, false );
-
+		if ($this->is_infrastruktur_management_page()) {
+			wp_enqueue_script('satset-leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', array(), '1.9.4', true);
+			$google_maps_api_key = trim((string) get_option('_crb_google_api_satset'));
+			$infrastruktur_dependencies = array('jquery', $this->plugin_name . 'bootstrap', $this->plugin_name . 'datatables', 'satset-leaflet');
+			if ($google_maps_api_key !== '') {
+				wp_enqueue_script(
+					'satset-google-maps',
+					add_query_arg('key', $google_maps_api_key, 'https://maps.googleapis.com/maps/api/js'),
+					array(),
+					null,
+					true
+				);
+				wp_enqueue_script(
+					'satset-leaflet-google-mutant',
+					'https://unpkg.com/leaflet.gridlayer.googlemutant@0.13.5/dist/Leaflet.GoogleMutant.js',
+					array('satset-leaflet', 'satset-google-maps'),
+					'0.13.5',
+					true
+				);
+				$infrastruktur_dependencies[] = 'satset-leaflet-google-mutant';
+			}
+			wp_enqueue_script(
+				$this->plugin_name . 'infrastruktur',
+				plugin_dir_url(__FILE__) . 'js/wp-satset-infrastruktur.js',
+				$infrastruktur_dependencies,
+				$this->version,
+				true
+			);
+			wp_localize_script($this->plugin_name . 'infrastruktur', 'satsetInfrastructure', array(
+				'ajaxUrl' => admin_url('admin-ajax.php'),
+				'nonce' => wp_create_nonce('satset_infrastruktur_management'),
+				'hasGoogleMapsApiKey' => $google_maps_api_key !== ''
+			));
+		}
 	}
 
 	function get_center(){
@@ -371,6 +426,190 @@ class Wp_Satset_Public {
 		}
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/stunting/wp-satset-management-data-stunting.php';
 	}
+	function management_data_infrastruktur_satset(){
+		if(!current_user_can('manage_options')){
+			return '<p>Anda tidak memiliki izin untuk mengelola data infrastruktur.</p>';
+		}
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/infrastruktur/wp-satset-management-data-infrastruktur.php';
+	}
+
+	public function get_data_infrastruktur_management(){
+		check_ajax_referer('satset_infrastruktur_management', 'nonce');
+		if (!current_user_can('manage_options')) {
+			wp_send_json_error(array('message' => 'Anda tidak memiliki izin untuk melihat data infrastruktur.'), 403);
+		}
+
+		global $wpdb;
+		$table = 'data_infrastruktur';
+		$existing_table = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)));
+		if ($existing_table !== $table) {
+			wp_send_json_error(array('message' => 'Tabel data_infrastruktur belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options.'), 500);
+		}
+		if (!$this->has_data_infrastruktur_custom_attribute_column()) {
+			wp_send_json_error(array('message' => 'Kolom custom_attribute belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options.'), 500);
+		}
+
+		$fields = $this->functions->get_data_infrastruktur_fields();
+		$columns = array_merge(array('id'), array_keys($fields), array('custom_attribute', 'geometry'));
+		$column_sql = implode(', ', array_map(function($column) {
+			return '`' . esc_sql($column) . '`';
+		}, $columns));
+		$rows = $wpdb->get_results("SELECT {$column_sql} FROM {$table} ORDER BY id ASC", ARRAY_A);
+		if ($wpdb->last_error !== '') {
+			wp_send_json_error(array('message' => 'Gagal membaca data infrastruktur: ' . $wpdb->last_error), 500);
+		}
+
+		$records = array();
+		$years = array();
+		$invalid_geometry_count = 0;
+		$invalid_custom_attribute_count = 0;
+		foreach ($rows as $row) {
+			$attributes = array();
+			foreach ($fields as $column => $field) {
+				$attributes[$column] = $row[$column];
+			}
+
+			$custom_attributes = array();
+			if (!empty($row['custom_attribute'])) {
+				$decoded_custom_attributes = json_decode($row['custom_attribute'], true);
+				if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_custom_attributes)) {
+					$custom_attributes = $decoded_custom_attributes;
+				} else {
+					$invalid_custom_attribute_count++;
+				}
+			}
+
+			$geometry = json_decode($row['geometry'], true);
+			if (
+				json_last_error() !== JSON_ERROR_NONE
+				|| !is_array($geometry)
+				|| empty($geometry['type'])
+				|| !in_array($geometry['type'], array('LineString', 'MultiLineString'), true)
+				|| empty($geometry['coordinates'])
+				|| !is_array($geometry['coordinates'])
+			) {
+				$geometry = null;
+				$invalid_geometry_count++;
+			}
+
+			$year = isset($attributes['thn_data']) ? (string) $attributes['thn_data'] : '';
+			if ($year !== '' && !in_array($year, $years, true)) {
+				$years[] = $year;
+			}
+
+			$records[] = array(
+				'id' => (int) $row['id'],
+				'attributes' => $attributes,
+				'custom_attribute' => $custom_attributes,
+				'geometry' => $geometry
+			);
+		}
+
+		sort($years, SORT_NATURAL);
+		wp_send_json_success(array(
+			'fields' => array_map(function($field) {
+				return $field['label'];
+			}, $fields),
+			'years' => $years,
+			'records' => $records,
+			'invalid_geometry_count' => $invalid_geometry_count,
+			'invalid_custom_attribute_count' => $invalid_custom_attribute_count
+		));
+	}
+
+	public function update_custom_data_infrastruktur(){
+		check_ajax_referer('satset_infrastruktur_management', 'nonce');
+		if (!current_user_can('manage_options')) {
+			wp_send_json_error(array('message' => 'Anda tidak memiliki izin untuk mengubah atribut custom data infrastruktur.'), 403);
+		}
+
+		$id_value = isset($_POST['id']) && is_scalar($_POST['id'])
+			? sanitize_text_field(wp_unslash($_POST['id']))
+			: '';
+		if (!ctype_digit($id_value) || absint($id_value) < 1) {
+			wp_send_json_error(array('message' => 'ID data infrastruktur tidak valid.'), 400);
+		}
+		if (!isset($_POST['custom_attribute']) || !is_scalar($_POST['custom_attribute'])) {
+			wp_send_json_error(array('message' => 'Format atribut custom tidak valid.'), 400);
+		}
+
+		$raw_custom_attributes = wp_unslash($_POST['custom_attribute']);
+		$custom_attributes = json_decode($raw_custom_attributes);
+		if (json_last_error() !== JSON_ERROR_NONE || !is_object($custom_attributes)) {
+			wp_send_json_error(array('message' => 'Atribut custom harus berupa objek JSON yang valid.'), 400);
+		}
+		if (count(get_object_vars($custom_attributes)) > 100) {
+			wp_send_json_error(array('message' => 'Maksimal 100 atribut custom per ruas.'), 400);
+		}
+
+		$clean_attributes = array();
+		$seen_names = array();
+		foreach ($custom_attributes as $name => $value) {
+			if (!is_string($name) || !is_scalar($value)) {
+				wp_send_json_error(array('message' => 'Nama dan nilai atribut custom harus berupa teks.'), 400);
+			}
+
+			$name = trim(sanitize_text_field($name));
+			$name_length = preg_match_all('/./us', $name, $name_characters);
+			if ($name === '' || $name_length === false || $name_length > 100) {
+				wp_send_json_error(array('message' => 'Nama atribut custom harus berisi 1-100 karakter.'), 400);
+			}
+
+			$name_key = function_exists('mb_strtolower') ? mb_strtolower($name, 'UTF-8') : strtolower($name);
+			if (isset($seen_names[$name_key])) {
+				wp_send_json_error(array('message' => 'Nama atribut custom tidak boleh duplikat.'), 400);
+			}
+			$seen_names[$name_key] = true;
+
+			$value = sanitize_textarea_field((string) $value);
+			$value_length = preg_match_all('/./us', $value, $value_characters);
+			if ($value_length === false || $value_length > 5000) {
+				wp_send_json_error(array('message' => 'Nilai atribut custom maksimal 5.000 karakter.'), 400);
+			}
+			$clean_attributes[$name] = $value;
+		}
+
+		$encoded_attributes = wp_json_encode((object) $clean_attributes, JSON_UNESCAPED_UNICODE);
+		if ($encoded_attributes === false) {
+			wp_send_json_error(array('message' => 'Atribut custom tidak dapat dikodekan sebagai JSON.'), 400);
+		}
+
+		global $wpdb;
+		$table = 'data_infrastruktur';
+		$existing_table = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)));
+		if ($existing_table !== $table) {
+			wp_send_json_error(array('message' => 'Tabel data_infrastruktur belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options.'), 500);
+		}
+		if (!$this->has_data_infrastruktur_custom_attribute_column()) {
+			wp_send_json_error(array('message' => 'Kolom custom_attribute belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options.'), 500);
+		}
+
+		$id = absint($id_value);
+		$exists = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table} WHERE id = %d LIMIT 1", $id));
+		if (!$exists) {
+			wp_send_json_error(array('message' => 'Data infrastruktur tidak ditemukan.'), 404);
+		}
+
+		$updated = $wpdb->update(
+			$table,
+			array('custom_attribute' => $encoded_attributes),
+			array('id' => $id),
+			array('%s'),
+			array('%d')
+		);
+		if ($updated === false) {
+			wp_send_json_error(array('message' => 'Gagal menyimpan atribut custom: ' . $wpdb->last_error), 500);
+		}
+
+		wp_send_json_success(array(
+			'message' => 'Atribut custom berhasil disimpan.',
+			'custom_attribute' => $clean_attributes
+		));
+	}
+
 	function management_data_tbc_satset(){
 		// untuk disable render shortcode di halaman edit page/post
 		if(!empty($_GET) && !empty($_GET['post'])){

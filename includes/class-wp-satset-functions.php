@@ -34,6 +34,57 @@ class SATSET_Functions
 		$this->version = $version;
 	}
 
+	public function get_data_infrastruktur_fields(){
+		return array(
+			'objectid' => array('label' => 'OBJECTID', 'type' => 'integer', 'maxlength' => 20),
+			'wilayah' => array('label' => 'Wilayah', 'type' => 'text', 'maxlength' => 50),
+			'nomor' => array('label' => 'Nomor', 'type' => 'text', 'maxlength' => 50),
+			'kl_dat_das' => array('label' => 'Klasifikasi Data Dasar', 'type' => 'textarea'),
+			'nm_ruas' => array('label' => 'Nama Ruas', 'type' => 'text', 'maxlength' => 191, 'required' => true),
+			'thn_data' => array('label' => 'Tahun Data', 'type' => 'integer', 'maxlength' => 5),
+			'status' => array('label' => 'Status', 'type' => 'text', 'maxlength' => 100),
+			'fungsi' => array('label' => 'Fungsi', 'type' => 'text', 'maxlength' => 100),
+			'mendukung' => array('label' => 'Mendukung', 'type' => 'text', 'maxlength' => 150),
+			'ura_dukung' => array('label' => 'Uraian Dukungan', 'type' => 'textarea'),
+			'kd_bd_pu' => array('label' => 'Kode Bidang PU', 'type' => 'text', 'maxlength' => 50),
+			'kd_jns_inf' => array('label' => 'Kode Jenis Infrastruktur', 'type' => 'text', 'maxlength' => 50),
+			'kd_inf' => array('label' => 'Kode Infrastruktur', 'type' => 'text', 'maxlength' => 50),
+			'propinsi' => array('label' => 'Provinsi', 'type' => 'text', 'maxlength' => 150),
+			'kab_kot' => array('label' => 'Kabupaten / Kota', 'type' => 'text', 'maxlength' => 150),
+			'kecamatan' => array('label' => 'Kecamatan', 'type' => 'text', 'maxlength' => 150),
+			'desa_kel' => array('label' => 'Desa / Kelurahan', 'type' => 'text', 'maxlength' => 150),
+			'tk_ruas_aw' => array('label' => 'Titik Ruas Awal', 'type' => 'textarea'),
+			'tk_ruas_ak' => array('label' => 'Titik Ruas Akhir', 'type' => 'textarea'),
+			'kd_patok' => array('label' => 'Kode Patok', 'type' => 'text', 'maxlength' => 100),
+			'km_awal' => array('label' => 'KM Awal', 'type' => 'text', 'maxlength' => 50),
+			'km_akhir' => array('label' => 'KM Akhir', 'type' => 'text', 'maxlength' => 50),
+			'nm_lintas' => array('label' => 'Nama Lintas', 'type' => 'text', 'maxlength' => 150),
+			'kon_baik' => array('label' => 'Kondisi Baik', 'type' => 'text', 'maxlength' => 50),
+			'kon_sdg' => array('label' => 'Kondisi Sedang', 'type' => 'text', 'maxlength' => 50),
+			'kon_rgn' => array('label' => 'Kondisi Ringan', 'type' => 'text', 'maxlength' => 50),
+			'kon_rusak' => array('label' => 'Kondisi Rusak', 'type' => 'text', 'maxlength' => 50),
+			'kon_mntp' => array('label' => 'Kondisi Mantap', 'type' => 'text', 'maxlength' => 50),
+			'kon_t_mntp' => array('label' => 'Kondisi Tidak Mantap', 'type' => 'text', 'maxlength' => 50),
+			'panjang' => array('label' => 'Panjang', 'type' => 'text', 'maxlength' => 50),
+			'lbr_keras' => array('label' => 'Lebar Keras', 'type' => 'text', 'maxlength' => 50),
+			'lhrt' => array('label' => 'LHRT', 'type' => 'text', 'maxlength' => 50),
+			'vcr' => array('label' => 'VCR', 'type' => 'text', 'maxlength' => 50),
+			'tipe_jln' => array('label' => 'Tipe Jalan', 'type' => 'text', 'maxlength' => 50),
+			'mst' => array('label' => 'MST', 'type' => 'text', 'maxlength' => 50),
+			'tipe_keras' => array('label' => 'Tipe Perkerasan', 'type' => 'text', 'maxlength' => 100),
+			'tanah_kri' => array('label' => 'Tanah Kritis', 'type' => 'text', 'maxlength' => 50),
+			'macadam' => array('label' => 'Macadam', 'type' => 'text', 'maxlength' => 50),
+			'aspal' => array('label' => 'Aspal', 'type' => 'text', 'maxlength' => 50),
+			'rigid' => array('label' => 'Rigid', 'type' => 'text', 'maxlength' => 50),
+			'thn_pen_ak' => array('label' => 'Tahun Penanganan Akhir', 'type' => 'text', 'maxlength' => 50),
+			'jns_pen' => array('label' => 'Jenis Penanganan', 'type' => 'text', 'maxlength' => 100),
+			'koord_x_aw' => array('label' => 'Koordinat X Awal', 'type' => 'decimal', 'maxlength' => 15),
+			'koord_y_aw' => array('label' => 'Koordinat Y Awal', 'type' => 'decimal', 'maxlength' => 15),
+			'koord_x_ak' => array('label' => 'Koordinat X Akhir', 'type' => 'decimal', 'maxlength' => 15),
+			'koord_y_ak' => array('label' => 'Koordinat Y Akhir', 'type' => 'decimal', 'maxlength' => 15)
+		);
+	}
+
     function allow_access_private_post(){
     	if(
     		!empty($_GET) 

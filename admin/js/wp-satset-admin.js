@@ -665,6 +665,7 @@ function get_data_dtsen() {
                     kd_wil: checkbox.attr('kd_wil') || '',
                 });
             }
+
         }
     });
 
@@ -938,5 +939,62 @@ function get_data_unit_wpsipd_satset() {
             console.log(e);
             return alert(e);
         },
+    });
+}
+
+function import_geojson_infrastruktur() {
+    var fileInput = document.getElementById('infrastruktur-geojson-file');
+    var file = fileInput && fileInput.files ? fileInput.files[0] : null;
+    if (!file) {
+        alert('Pilih file GeoJSON terlebih dahulu.');
+        return;
+    }
+    if (!/\.geojson$/i.test(file.name)) {
+        alert('File harus menggunakan ekstensi .geojson.');
+        return;
+    }
+
+    var formData = new FormData();
+    formData.append('action', 'import_geojson_infrastruktur');
+    formData.append('nonce', satset.import_geojson_nonce);
+    formData.append('geojson', file);
+
+    var button = jQuery('#infrastruktur-geojson-import');
+    var status = jQuery('#infrastruktur-geojson-status');
+    button.prop('disabled', true);
+    status.text('Mengimpor GeoJSON...');
+    jQuery('#wrap-loading').show();
+
+    jQuery.ajax({
+        url: ajaxurl,
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        timeout: 900000,
+        success: function(response) {
+            if (!response || !response.success || !response.data || !response.data.message) {
+                var errorMessage = response && response.data && response.data.message
+                    ? response.data.message
+                    : 'Server tidak memberikan hasil impor yang valid.';
+                status.text(errorMessage);
+                alert(errorMessage);
+                return;
+            }
+            status.text(response.data.message);
+            alert(response.data.message);
+        },
+        error: function(xhr) {
+            var errorMessage = xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message
+                ? xhr.responseJSON.data.message
+                : 'Impor gagal. Periksa file dan log server, lalu coba lagi.';
+            status.text(errorMessage);
+            alert(errorMessage);
+        },
+        complete: function() {
+            button.prop('disabled', false);
+            jQuery('#wrap-loading').hide();
+        }
     });
 }

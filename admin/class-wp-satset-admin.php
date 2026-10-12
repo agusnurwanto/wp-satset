@@ -105,7 +105,8 @@ class Wp_Satset_Admin {
 		wp_enqueue_script( $this->plugin_name.'xlsx', plugin_dir_url( __FILE__ ) . 'js/xlsx.js', array( 'jquery' ), $this->version, false );
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-satset-admin.js', array( 'jquery' ), $this->version, false );
 		wp_localize_script($this->plugin_name, 'satset', array(
-			'api_key' => get_option(SATSET_APIKEY)
+			'api_key' => get_option(SATSET_APIKEY),
+			'import_geojson_nonce' => wp_create_nonce('satset_import_geojson_infrastruktur')
 		));
 
 	}
@@ -455,6 +456,14 @@ class Wp_Satset_Admin {
 			'show_header' => 1,
 			'no_key' => 1,
 			'post_status' => 'private'
+		));
+		$management_data_infrastruktur = $this->functions->generatePage(array(
+			'nama_page' => 'Management Data Infrastruktur',
+			'content' => '[management_data_infrastruktur_satset]',
+			'show_header' => 1,
+			'no_key' => 1,
+			'post_status' => 'private',
+			'update' => 1
 		));
 
 		$basic_options_container = Container::make( 'theme_options', __( 'WP SATSET Options' ) )
@@ -943,6 +952,16 @@ class Wp_Satset_Admin {
 	            	</ol>
 		        	' )
 	        ) );
+		Container::make( 'theme_options', __( 'Data Infrastruktur' ) )
+			->set_page_parent( $basic_options_container )
+			->add_fields( array(
+				Field::make( 'html', 'crb_infrastruktur_management_link' )
+					->set_html( '<h5>HALAMAN TERKAIT</h5><ol><li><a target="_blank" rel="noopener noreferrer" href="' . esc_url($management_data_infrastruktur['url']) . '">' . esc_html($management_data_infrastruktur['title']) . '</a></li></ol>' ),
+				Field::make( 'html', 'crb_infrastruktur_import_help' )
+					->set_html( '<h3>Import GeoJSON Data Infrastruktur</h3>Pilih file GeoJSON jalan (.geojson). Geometri LineString dan MultiLineString akan disimpan bersama atribut jalan. Sebelum impor pertama, jalankan SQL Migrate pada menu WP SATSET Options untuk membuat tabel data_infrastruktur.' ),
+				Field::make( 'html', 'crb_infrastruktur_upload' )
+					->set_html( '<input type="file" id="infrastruktur-geojson-file" accept=".geojson,application/geo+json,application/json"><p><button type="button" class="button button-primary" id="infrastruktur-geojson-import" onclick="import_geojson_infrastruktur(); return false;">Import GeoJSON</button></p><div id="infrastruktur-geojson-status" role="status" aria-live="polite"></div>' )
+			) );
 	}
 
 	function import_excel_p3ke(){ 
@@ -1661,6 +1680,192 @@ class Wp_Satset_Admin {
 			$ret['message'] = 'Format Salah!';
 		}
 		die(json_encode($ret));
+	}
+
+	function import_geojson_infrastruktur(){
+		check_ajax_referer('satset_import_geojson_infrastruktur', 'nonce');
+		if (!current_user_can('manage_options')) {
+			wp_send_json_error(array('message' => 'Anda tidak memiliki izin untuk mengimpor data infrastruktur.'), 403);
+		}
+
+		if (
+			empty($_FILES['geojson'])
+			|| !is_array($_FILES['geojson'])
+			|| !isset($_FILES['geojson']['error'], $_FILES['geojson']['name'], $_FILES['geojson']['tmp_name'])
+			|| $_FILES['geojson']['error'] !== UPLOAD_ERR_OK
+		) {
+			wp_send_json_error(array('message' => 'File GeoJSON tidak berhasil diunggah.'), 400);
+		}
+
+		$upload = $_FILES['geojson'];
+		if (strtolower(pathinfo($upload['name'], PATHINFO_EXTENSION)) !== 'geojson') {
+			wp_send_json_error(array('message' => 'File harus menggunakan ekstensi .geojson.'), 400);
+		}
+
+		$contents = file_get_contents($upload['tmp_name']);
+		if ($contents === false) {
+			wp_send_json_error(array('message' => 'File GeoJSON tidak dapat dibaca.'), 400);
+		}
+
+		$geojson = json_decode($contents, true);
+		if (json_last_error() !== JSON_ERROR_NONE) {
+			wp_send_json_error(array('message' => 'Isi file bukan JSON yang valid: ' . json_last_error_msg()), 400);
+		}
+		if (
+			!is_array($geojson)
+			|| empty($geojson['type'])
+			|| $geojson['type'] !== 'FeatureCollection'
+			|| empty($geojson['features'])
+			|| !is_array($geojson['features'])
+		) {
+			wp_send_json_error(array('message' => 'Format GeoJSON harus berupa FeatureCollection dengan daftar features.'), 400);
+		}
+
+		$property_map = array(
+			'objectid' => 'OBJECTID',
+			'wilayah' => 'Wilayah',
+			'nomor' => 'nomor',
+			'kl_dat_das' => 'Kl_Dat_Das',
+			'nm_ruas' => 'Nm_Ruas',
+			'thn_data' => 'Thn_Data',
+			'status' => 'Status',
+			'fungsi' => 'Fungsi',
+			'mendukung' => 'Mendukung',
+			'ura_dukung' => 'Ura_Dukung',
+			'kd_bd_pu' => 'Kd_Bd_PU',
+			'kd_jns_inf' => 'Kd_Jns_Inf',
+			'kd_inf' => 'Kd_Inf',
+			'propinsi' => 'Propinsi',
+			'kab_kot' => 'Kab_Kot',
+			'kecamatan' => 'Kecamatan',
+			'desa_kel' => 'Desa_Kel',
+			'tk_ruas_aw' => 'Tk_Ruas_Aw',
+			'tk_ruas_ak' => 'Tk_Ruas_Ak',
+			'kd_patok' => 'Kd_Patok',
+			'km_awal' => 'Km_Awal',
+			'km_akhir' => 'Km_Akhir',
+			'nm_lintas' => 'Nm_Lintas',
+			'kon_baik' => 'Kon_Baik',
+			'kon_sdg' => 'Kon_Sdg',
+			'kon_rgn' => 'Kon_Rgn',
+			'kon_rusak' => 'Kon_Rusak',
+			'kon_mntp' => 'Kon_Mntp',
+			'kon_t_mntp' => 'Kon_T_Mntp',
+			'panjang' => 'Panjang',
+			'lbr_keras' => 'Lbr_Keras',
+			'lhrt' => 'LHRT',
+			'vcr' => 'VCR',
+			'tipe_jln' => 'Tipe_Jln',
+			'mst' => 'MST',
+			'tipe_keras' => 'Tipe_Keras',
+			'tanah_kri' => 'Tanah_Kri',
+			'macadam' => 'Macadam',
+			'aspal' => 'Aspal',
+			'rigid' => 'Rigid',
+			'thn_pen_ak' => 'Thn_Pen_Ak',
+			'jns_pen' => 'Jns_Pen',
+			'koord_x_aw' => 'Koord_X_Aw',
+			'koord_y_aw' => 'Koord_Y_Aw',
+			'koord_x_ak' => 'Koord_X_Ak',
+			'koord_y_ak' => 'Koord_Y_Ak'
+		);
+		$rows = array();
+		foreach ($geojson['features'] as $index => $feature) {
+			if (
+				!is_array($feature)
+				|| empty($feature['type'])
+				|| $feature['type'] !== 'Feature'
+				|| empty($feature['properties'])
+				|| !is_array($feature['properties'])
+				|| empty($feature['geometry'])
+				|| !is_array($feature['geometry'])
+				|| empty($feature['geometry']['type'])
+				|| !in_array($feature['geometry']['type'], array('LineString', 'MultiLineString'), true)
+				|| empty($feature['geometry']['coordinates'])
+				|| !is_array($feature['geometry']['coordinates'])
+			) {
+				wp_send_json_error(array('message' => sprintf('Feature ke-%d tidak memiliki atribut atau geometri jalan yang valid.', $index + 1)), 400);
+			}
+
+			$properties = $feature['properties'];
+			if (!array_key_exists('Nm_Ruas', $properties) || !is_scalar($properties['Nm_Ruas'])) {
+				wp_send_json_error(array('message' => sprintf('Feature ke-%d tidak memiliki atribut Nm_Ruas yang valid.', $index + 1)), 400);
+			}
+			$nm_ruas = trim((string) $properties['Nm_Ruas']);
+			$nm_ruas_length = preg_match_all('/./us', $nm_ruas, $nm_ruas_characters);
+			if ($nm_ruas === '' || $nm_ruas_length === false || $nm_ruas_length > 191) {
+				wp_send_json_error(array('message' => sprintf('Nm_Ruas pada feature ke-%d harus berisi 1-191 karakter UTF-8.', $index + 1)), 400);
+			}
+
+			$row = array();
+			foreach ($property_map as $column => $property) {
+				if (!array_key_exists($property, $properties) || $properties[$property] === null) {
+					$row[$column] = null;
+				} elseif (!is_scalar($properties[$property])) {
+					wp_send_json_error(array('message' => sprintf('Atribut %s pada feature ke-%d harus berupa nilai sederhana.', $property, $index + 1)), 400);
+				} else {
+					$row[$column] = (string) $properties[$property];
+				}
+			}
+			$row['nm_ruas'] = $nm_ruas;
+
+			$geometry_json = wp_json_encode($feature['geometry']);
+			if ($geometry_json === false) {
+				wp_send_json_error(array('message' => sprintf('Geometri feature ke-%d tidak dapat dikodekan sebagai JSON.', $index + 1)), 400);
+			}
+			$row['geometry'] = $geometry_json;
+			$rows[] = $row;
+		}
+
+		global $wpdb;
+		$table = 'data_infrastruktur';
+		$existing_table = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)));
+		if ($existing_table !== $table) {
+			wp_send_json_error(array('message' => 'Tabel data_infrastruktur belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options terlebih dahulu.'), 500);
+		}
+
+		if ($wpdb->query('START TRANSACTION') === false) {
+			wp_send_json_error(array('message' => 'Transaksi impor tidak dapat dimulai: ' . $wpdb->last_error), 500);
+		}
+
+		$inserted = 0;
+		$updated = 0;
+		foreach ($rows as $index => $row) {
+			$existing_id = $wpdb->get_var($wpdb->prepare(
+				"SELECT id FROM {$table} WHERE nm_ruas = %s LIMIT 1",
+				$row['nm_ruas']
+			));
+			if ($existing_id) {
+				$result = $wpdb->update($table, $row, array('id' => (int) $existing_id));
+				if ($result === false) {
+					$error_message = $wpdb->last_error;
+					$wpdb->query('ROLLBACK');
+					wp_send_json_error(array('message' => sprintf('Gagal memperbarui feature ke-%d: %s', $index + 1, $error_message)), 500);
+				}
+				$updated++;
+			} else {
+				$result = $wpdb->insert($table, $row);
+				if ($result === false) {
+					$error_message = $wpdb->last_error;
+					$wpdb->query('ROLLBACK');
+					wp_send_json_error(array('message' => sprintf('Gagal menambahkan feature ke-%d: %s', $index + 1, $error_message)), 500);
+				}
+				$inserted++;
+			}
+		}
+
+		if ($wpdb->query('COMMIT') === false) {
+			$error_message = $wpdb->last_error;
+			$wpdb->query('ROLLBACK');
+			wp_send_json_error(array('message' => 'Impor gagal disimpan: ' . $error_message), 500);
+		}
+
+		wp_send_json_success(array(
+			'message' => sprintf('Impor selesai: %d data baru dan %d data diperbarui.', $inserted, $updated),
+			'inserted' => $inserted,
+			'updated' => $updated,
+			'total' => count($rows)
+		));
 	}
 
 	function sql_migrate_satset(){

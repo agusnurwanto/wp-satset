@@ -1,0 +1,268 @@
+.satset-infrastruktur-page {
+	width: 100%;
+	max-width: none;
+	margin: 0 auto;
+	padding: 24px clamp(16px, 3vw, 48px) 48px;
+	box-sizing: border-box;
+}
+
+.satset-infrastruktur-page h1 {
+	margin: 0 0 8px;
+}
+
+.satset-infrastruktur-page .satset-infrastruktur-intro {
+	margin-bottom: 20px;
+	color: #50575e;
+}
+
+.satset-infrastruktur-map-wrap {
+	position: relative;
+	width: 100%;
+	height: 100vh;
+	min-height: 480px;
+	margin: 0 0 28px;
+	border-radius: 10px;
+	overflow: hidden;
+	background: #e8eef2;
+	box-shadow: 0 8px 28px rgba(20, 45, 65, .14);
+}
+
+#satset-infrastruktur-map {
+	width: 100%;
+	height: 100%;
+	z-index: 1;
+}
+
+.satset-infrastruktur-map-status {
+	position: absolute;
+	z-index: 500;
+	top: 68px;
+	left: 50%;
+	transform: translateX(-50%);
+	max-width: calc(100% - 32px);
+	padding: 9px 14px;
+	border-radius: 6px;
+	background: rgba(255, 255, 255, .96);
+	box-shadow: 0 2px 10px rgba(0, 0, 0, .18);
+}
+
+#satset-infrastruktur-my-location {
+    white-space: nowrap;
+    width: auto;
+}
+
+.satset-infrastruktur-map-controls {
+	position: absolute;
+	z-index: 600;
+	top: 16px;
+	left: 16px;
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: center;
+	gap: 8px;
+	max-width: calc(100% - 32px);
+	padding: 8px 10px;
+	border-radius: 6px;
+	background: rgba(255, 255, 255, .96);
+	box-shadow: 0 2px 10px rgba(0, 0, 0, .18);
+}
+
+.satset-infrastruktur-map-controls label {
+	margin: 0;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.satset-infrastruktur-map-controls select {
+	max-width: 210px;
+	min-height: 34px;
+}
+
+.satset-infrastruktur-controls {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+    align-items: center;
+	gap: 14px;
+	margin: 22px 0 14px;
+}
+
+.satset-infrastruktur-controls label {
+	display: block;
+	margin-bottom: 5px;
+	font-weight: 600;
+}
+
+.satset-infrastruktur-controls select,
+.satset-infrastruktur-controls input {
+	min-width: 210px;
+	min-height: 38px;
+}
+
+#satset-infrastruktur-table {
+	width: 100%;
+}
+
+#satset-infrastruktur-table td,
+#satset-infrastruktur-table th {
+	vertical-align: middle;
+}
+
+.satset-infrastruktur-actions {
+	display: flex;
+	gap: 6px;
+	white-space: nowrap;
+}
+
+.satset-infrastruktur-readonly-grid,
+.satset-infrastruktur-custom-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 12px;
+}
+
+.satset-infrastruktur-readonly-field,
+.satset-infrastruktur-custom-field {
+	min-width: 0;
+	padding: 10px 12px;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	background: #fff;
+}
+
+.satset-infrastruktur-readonly-field label,
+.satset-infrastruktur-custom-field label {
+	display: block;
+	margin-bottom: 5px;
+	font-size: 12px;
+	font-weight: 600;
+	color: #50575e;
+}
+
+.satset-infrastruktur-custom-field input,
+.satset-infrastruktur-custom-field textarea {
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.satset-infrastruktur-readonly-value {
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+}
+
+.satset-infrastruktur-custom-field textarea {
+	min-height: 72px;
+	resize: vertical;
+}
+
+.satset-infrastruktur-custom-field {
+	position: relative;
+	padding-right: 48px;
+}
+
+.satset-infrastruktur-custom-field .satset-remove-custom {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+}
+
+.satset-infrastruktur-region-legend {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px 16px;
+	margin: -14px 0 28px;
+	padding: 12px 16px;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	background: #fff;
+}
+
+.satset-infrastruktur-region-legend-title {
+	font-size: 13px;
+}
+
+.satset-infrastruktur-region-legend-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	font-size: 13px;
+}
+
+.satset-infrastruktur-region-legend-swatch {
+	display: inline-block;
+	width: 24px;
+	border-top: 4px solid;
+	border-radius: 2px;
+}
+
+.satset-infrastruktur-popup {
+	max-height: 320px;
+	overflow: auto;
+}
+
+.satset-infrastruktur-popup h4 {
+	margin: 0 0 8px;
+}
+
+.satset-infrastruktur-popup table {
+	border-collapse: collapse;
+	font-size: 12px;
+}
+
+.satset-infrastruktur-popup th,
+.satset-infrastruktur-popup td {
+	padding: 4px 6px;
+	border-bottom: 1px solid #e5e5e5;
+	text-align: left;
+	vertical-align: top;
+	overflow-wrap: anywhere;
+}
+
+.satset-infrastruktur-popup th {
+	min-width: 105px;
+}
+
+.satset-infrastruktur-section-title {
+	margin: 18px 0 10px;
+}
+
+.satset-infrastruktur-modal-alert {
+	display: none;
+}
+
+@media (max-width: 767px) {
+	.satset-infrastruktur-page {
+		padding-right: 12px;
+		padding-left: 12px;
+	}
+
+	.satset-infrastruktur-map-wrap {
+		height: 100vh;
+		min-height: 420px;
+		border-radius: 6px;
+	}
+
+	.satset-infrastruktur-map-controls {
+		top: 10px;
+		left: 10px;
+		gap: 6px;
+		padding: 6px;
+	}
+
+	.satset-infrastruktur-map-controls label {
+		display: none;
+	}
+
+	.satset-infrastruktur-map-controls select {
+		width: auto;
+		min-width: 0;
+		max-width: 165px;
+	}
+
+	.satset-infrastruktur-controls select,
+	.satset-infrastruktur-controls input {
+		width: 100%;
+		min-width: 0;
+	}
+}
