@@ -351,7 +351,8 @@ $last_update_text =
 <div style="width: 95%; margin: 0 auto; min-height: 90vh; padding-bottom: 75px; padding-top: 50px;">
     <button
         id="btn-label-map"
-        style="margin: 15px 0;"
+        style="margin: 15px 0; display: none;"
+        hidden
         class="btn btn-sm btn-primary"
         onclick="toggleLabelMap();">
         Hidupkan Label
@@ -430,29 +431,8 @@ $last_update_text =
     window.labelMapAktif = false;
 
     function toggleLabelMap() {
-        if (window.labelMapAktif) {
-            map.setOptions({
-                styles: [
-                    {
-                        featureType: "all",
-                        elementType: "labels",
-                        stylers: [
-                            { visibility: "off" }
-                        ]
-                    }
-                ]
-            });
-
-            jQuery('#btn-label-map').text('Hidupkan Label');
-            window.labelMapAktif = false;
-        } else {
-            map.setOptions({
-                styles: []
-            });
-
-            jQuery('#btn-label-map').text('Matikan Label');
-            window.labelMapAktif = true;
+        if (typeof window.satsetLeafletToggleLabels === 'function') {
+            window.satsetLeafletToggleLabels();
         }
     }
 </script>
-<script async defer src="<?php echo $this->get_map_url(); ?>"></script>

@@ -55,14 +55,59 @@ class Wp_Satset_Public {
 	private $version;
 	private $functions;
 
-	private function is_infrastruktur_management_page(){
+	private function is_infrastruktur_map_page(){
 		if (!is_singular()) {
 			return false;
 		}
 		$post = get_queried_object();
 		return is_object($post)
 			&& isset($post->post_content)
-			&& has_shortcode($post->post_content, 'management_data_infrastruktur_satset');
+			&& (
+				has_shortcode($post->post_content, 'management_data_infrastruktur_satset')
+				|| has_shortcode($post->post_content, 'data_infrastruktur_publik_satset')
+			);
+	}
+
+	private function is_infrastruktur_public_page(){
+		if (!is_singular()) {
+			return false;
+		}
+		$post = get_queried_object();
+		return is_object($post)
+			&& isset($post->post_content)
+			&& has_shortcode($post->post_content, 'data_infrastruktur_publik_satset');
+	}
+
+	private function is_leaflet_public_map_page(){
+		if (!is_singular()) {
+			return false;
+		}
+		$post = get_queried_object();
+		if (!is_object($post) || !isset($post->post_content)) {
+			return false;
+		}
+
+		$map_shortcodes = array(
+			'peta_satset',
+			'peta_satset_desa',
+			'peta_satset_kecamatan',
+			'data_irisan_satset',
+			'data_p3ke',
+			'data_stunting',
+			'data_tbc',
+			'data_aids',
+			'data_malaria',
+			'data_rtlh',
+			'data_dtks',
+			'data_dtsen',
+			'data_ats',
+		);
+		foreach ($map_shortcodes as $shortcode) {
+			if (has_shortcode($post->post_content, $shortcode)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private function has_data_infrastruktur_custom_attribute_column(){
@@ -112,9 +157,13 @@ class Wp_Satset_Public {
 		wp_enqueue_style($this->plugin_name . 'select2', plugin_dir_url(__FILE__) . 'css/select2.min.css', array(), $this->version, 'all');
 		wp_enqueue_style($this->plugin_name . 'datatables', plugin_dir_url(__FILE__) . 'css/jquery.dataTables.min.css', array(), $this->version, 'all');
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wp-satset-public.css', array(), $this->version, 'all' );
-		if ($this->is_infrastruktur_management_page()) {
+		if ($this->is_infrastruktur_map_page()) {
 			wp_enqueue_style('satset-leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', array(), '1.9.4');
 			wp_enqueue_style($this->plugin_name . 'infrastruktur', plugin_dir_url(__FILE__) . 'css/wp-satset-infrastruktur.css', array($this->plugin_name . 'bootstrap', 'satset-leaflet'), $this->version, 'all');
+		}
+		if ($this->is_leaflet_public_map_page()) {
+			wp_enqueue_style('satset-leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', array(), '1.9.4');
+			wp_enqueue_style($this->plugin_name . 'leaflet-public-map', plugin_dir_url(__FILE__) . 'css/wp-satset-leaflet-public.css', array($this->plugin_name . 'bootstrap', 'satset-leaflet'), filemtime(plugin_dir_path(__FILE__) . 'css/wp-satset-leaflet-public.css'), 'all');
 		}
 
 	}
@@ -146,8 +195,12 @@ class Wp_Satset_Public {
 			'api_key' => get_option(SATSET_APIKEY),
 		    'url' => admin_url( 'admin-ajax.php' )
 		));
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-satset-public.js', array( 'jquery' ), $this->version, false );
-		if ($this->is_infrastruktur_management_page()) {
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-satset-public.js', array( 'jquery' ), filemtime(plugin_dir_path(__FILE__) . 'js/wp-satset-public.js'), false );
+		$leaflet_public_map_page = $this->is_leaflet_public_map_page();
+		wp_localize_script($this->plugin_name, 'satsetPublicMap', array(
+			'useLeaflet' => $leaflet_public_map_page,
+		));
+		if ($this->is_infrastruktur_map_page()) {
 			wp_enqueue_script('satset-leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', array(), '1.9.4', true);
 			$google_maps_api_key = trim((string) get_option('_crb_google_api_satset'));
 			$infrastruktur_dependencies = array('jquery', $this->plugin_name . 'bootstrap', $this->plugin_name . 'datatables', 'satset-leaflet');
@@ -178,7 +231,40 @@ class Wp_Satset_Public {
 			wp_localize_script($this->plugin_name . 'infrastruktur', 'satsetInfrastructure', array(
 				'ajaxUrl' => admin_url('admin-ajax.php'),
 				'nonce' => wp_create_nonce('satset_infrastruktur_management'),
-				'hasGoogleMapsApiKey' => $google_maps_api_key !== ''
+				'hasGoogleMapsApiKey' => $google_maps_api_key !== '',
+				'isPublic' => $this->is_infrastruktur_public_page()
+			));
+		}
+		if ($leaflet_public_map_page) {
+			wp_enqueue_script('satset-leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', array(), '1.9.4', true);
+			$google_maps_api_key = trim((string) get_option('_crb_google_api_satset'));
+			$leaflet_dependencies = array('jquery', $this->plugin_name . 'chart', 'satset-leaflet');
+			if ($google_maps_api_key !== '') {
+				wp_enqueue_script(
+					'satset-google-maps',
+					add_query_arg('key', $google_maps_api_key, 'https://maps.googleapis.com/maps/api/js'),
+					array(),
+					null,
+					true
+				);
+				wp_enqueue_script(
+					'satset-leaflet-google-mutant',
+					'https://unpkg.com/leaflet.gridlayer.googlemutant@0.13.5/dist/Leaflet.GoogleMutant.js',
+					array('satset-leaflet', 'satset-google-maps'),
+					'0.13.5',
+					true
+				);
+				$leaflet_dependencies[] = 'satset-leaflet-google-mutant';
+			}
+			wp_enqueue_script(
+				$this->plugin_name . 'leaflet-public-map',
+				plugin_dir_url(__FILE__) . 'js/wp-satset-leaflet-public.js',
+				$leaflet_dependencies,
+				filemtime(plugin_dir_path(__FILE__) . 'js/wp-satset-leaflet-public.js'),
+				true
+			);
+			wp_localize_script($this->plugin_name . 'leaflet-public-map', 'satsetLeafletPublic', array(
+				'hasGoogleMapsApiKey' => $google_maps_api_key !== '',
 			));
 		}
 	}
@@ -436,6 +522,13 @@ class Wp_Satset_Public {
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/infrastruktur/wp-satset-management-data-infrastruktur.php';
 	}
 
+	function data_infrastruktur_publik_satset(){
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/infrastruktur/wp-satset-public-data-infrastruktur.php';
+	}
+
 	public function get_data_infrastruktur_management(){
 		check_ajax_referer('satset_infrastruktur_management', 'nonce');
 		if (!current_user_can('manage_options')) {
@@ -517,6 +610,74 @@ class Wp_Satset_Public {
 			'records' => $records,
 			'invalid_geometry_count' => $invalid_geometry_count,
 			'invalid_custom_attribute_count' => $invalid_custom_attribute_count
+		));
+	}
+
+	public function get_data_infrastruktur_public(){
+		global $wpdb;
+		$table = 'data_infrastruktur';
+		$existing_table = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)));
+		if ($existing_table !== $table) {
+			wp_send_json_error(array('message' => 'Tabel data_infrastruktur belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options.'), 500);
+		}
+
+		$fields = array(
+			'nm_ruas' => 'Nama Ruas',
+			'wilayah' => 'Wilayah',
+			'kecamatan' => 'Kecamatan',
+			'desa_kel' => 'Desa / Kelurahan',
+			'status' => 'Status',
+			'thn_data' => 'Tahun Data'
+		);
+		$columns = array_merge(array('id'), array_keys($fields), array('geometry'));
+		$column_sql = implode(', ', array_map(function($column) {
+			return '`' . esc_sql($column) . '`';
+		}, $columns));
+		$rows = $wpdb->get_results("SELECT {$column_sql} FROM {$table} ORDER BY id ASC", ARRAY_A);
+		if ($wpdb->last_error !== '') {
+			wp_send_json_error(array('message' => 'Gagal membaca data infrastruktur: ' . $wpdb->last_error), 500);
+		}
+
+		$records = array();
+		$years = array();
+		$invalid_geometry_count = 0;
+		foreach ($rows as $row) {
+			$attributes = array();
+			foreach ($fields as $column => $label) {
+				$attributes[$column] = $row[$column];
+			}
+
+			$geometry = json_decode($row['geometry'], true);
+			if (
+				json_last_error() !== JSON_ERROR_NONE
+				|| !is_array($geometry)
+				|| empty($geometry['type'])
+				|| !in_array($geometry['type'], array('LineString', 'MultiLineString'), true)
+				|| empty($geometry['coordinates'])
+				|| !is_array($geometry['coordinates'])
+			) {
+				$geometry = null;
+				$invalid_geometry_count++;
+			}
+
+			$year = isset($attributes['thn_data']) ? (string) $attributes['thn_data'] : '';
+			if ($year !== '' && !in_array($year, $years, true)) {
+				$years[] = $year;
+			}
+
+			$records[] = array(
+				'id' => (int) $row['id'],
+				'attributes' => $attributes,
+				'geometry' => $geometry
+			);
+		}
+
+		sort($years, SORT_NATURAL);
+		wp_send_json_success(array(
+			'fields' => $fields,
+			'years' => $years,
+			'records' => $records,
+			'invalid_geometry_count' => $invalid_geometry_count
 		));
 	}
 

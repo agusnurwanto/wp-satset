@@ -1,0 +1,49 @@
+#map-canvas.satset-public-leaflet-map {
+	position: relative;
+	border-radius: 8px;
+	overflow: hidden;
+	background: #e8eef2;
+	box-shadow: 0 6px 22px rgba(20, 45, 65, .14);
+}
+
+.satset-public-leaflet-controls {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 10px;
+	border: 0;
+	border-radius: 6px;
+	background: rgba(255, 255, 255, .96);
+	box-shadow: 0 2px 10px rgba(0, 0, 0, .18);
+}
+
+.satset-public-leaflet-controls label {
+	margin: 0;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.satset-public-leaflet-controls select {
+	min-height: 34px;
+	max-width: 210px;
+}
+
+.satset-public-map-alert {
+	margin: 10px auto;
+	width: 95%;
+}
+
+@media (max-width: 767px) {
+	.satset-public-leaflet-controls {
+		gap: 5px;
+		padding: 6px;
+	}
+
+	.satset-public-leaflet-controls label {
+		display: none;
+	}
+
+	.satset-public-leaflet-controls select {
+		max-width: 165px;
+	}
+}

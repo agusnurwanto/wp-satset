@@ -293,7 +293,6 @@ foreach($tahun as $tahun_value){
         location.href = url;
     }
 </script>
-<script async defer src="<?php echo $this->get_map_url(); ?>"></script>
 
 <!-- untuk edit datalabels chart.js -->
 <script src="<?php echo SATSET_PLUGIN_URL . '/public/js/chart-plugin-datalabels.min.js'; ?>"></script>

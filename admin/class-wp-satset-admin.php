@@ -465,6 +465,14 @@ class Wp_Satset_Admin {
 			'post_status' => 'private',
 			'update' => 1
 		));
+		$data_infrastruktur_publik = $this->functions->generatePage(array(
+			'nama_page' => 'Data Infrastruktur Publik',
+			'content' => '[data_infrastruktur_publik_satset]',
+			'show_header' => 1,
+			'no_key' => 1,
+			'post_status' => 'publish',
+			'update' => 1
+		));
 
 		$basic_options_container = Container::make( 'theme_options', __( 'WP SATSET Options' ) )
 			->set_page_menu_position( 4 )
@@ -490,6 +498,7 @@ class Wp_Satset_Admin {
 	            		<li><a target="_blank" href="'.$data_dtks['url'].'">'.$data_dtks['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_dtsen['url'].'">'.$data_dtsen['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_ats['url'].'">'.$data_ats['title'].'</a></li>
+					<li><a target="_blank" rel="noopener noreferrer" href="' . esc_url($data_infrastruktur_publik['url']) . '">' . esc_html($data_infrastruktur_publik['title']) . '</a></li>
 	            		<li><a target="_blank" href="'.$petunjuk_penggunaan['url'].'">'.$petunjuk_penggunaan['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$dokumentasi_sistem['url'].'">'.$dokumentasi_sistem['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$tanggapan_publik['url'].'">'.$tanggapan_publik['title'].'</a></li>

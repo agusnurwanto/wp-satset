@@ -317,4 +317,3 @@ foreach ($maps_all as $i => $desa) {
         }
     }
 </script>
-<script async defer src="<?php echo $this->get_map_url(); ?>"></script>

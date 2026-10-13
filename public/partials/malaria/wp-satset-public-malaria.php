@@ -308,7 +308,8 @@ foreach ($tahun_list as $t) {
 
 <div style="width: 95%; margin: 0 auto; min-height: 90vh; padding-bottom: 75px; padding-top: 20px;">
 
-    <button id="btn-label-map" style="margin: 10px 0;"
+    <button id="btn-label-map" style="margin: 10px 0; display: none;"
+            hidden
             class="btn btn-sm btn-primary"
             onclick="toggleLabelMap();">Hidupkan Label</button>
 
@@ -381,17 +382,8 @@ foreach ($tahun_list as $t) {
     window.labelMapAktif = false;
 
     function toggleLabelMap() {
-        if (window.labelMapAktif) {
-            map.setOptions({ styles: [{
-                featureType: 'all', elementType: 'labels',
-                stylers: [{ visibility: 'off' }]
-            }]});
-            jQuery('#btn-label-map').text('Hidupkan Label');
-            window.labelMapAktif = false;
-        } else {
-            map.setOptions({ styles: [] });
-            jQuery('#btn-label-map').text('Matikan Label');
-            window.labelMapAktif = true;
+        if (typeof window.satsetLeafletToggleLabels === 'function') {
+            window.satsetLeafletToggleLabels();
         }
     }
 
@@ -401,4 +393,3 @@ foreach ($tahun_list as $t) {
         location.href = window.location.href.split('?')[0] + '?tahun_anggaran=' + tahun;
     }
 </script>
-<script async defer src="<?php echo $this->get_map_url(); ?>"></script>

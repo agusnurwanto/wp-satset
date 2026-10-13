@@ -10,6 +10,12 @@ jQuery(document).ready(function(){
 });
 
 function cari_alamat(text) {
+    if (window.satsetPublicMap && window.satsetPublicMap.useLeaflet) {
+        if (typeof window.satsetLeafletFocus === 'function') {
+            window.satsetLeafletFocus(text);
+        }
+        return;
+    }
     if(text){
         var alamat = text;
     }else{
@@ -31,6 +37,12 @@ function cari_alamat(text) {
 }
 
 function setCenter(lng, ltd){
+    if (window.satsetPublicMap && window.satsetPublicMap.useLeaflet) {
+        if (typeof window.satsetLeafletSetCenter === 'function') {
+            window.satsetLeafletSetCenter(lng, ltd);
+        }
+        return;
+    }
     var lokasi_aset = new google.maps.LatLng(lng, ltd);
     map.setCenter(lokasi_aset);
     map.setZoom(15);
@@ -40,6 +52,9 @@ function setCenter(lng, ltd){
 }
 
 jQuery(document).ready(function(){
+    if (window.satsetPublicMap && window.satsetPublicMap.useLeaflet) {
+        return;
+    }
     var search = ''
         +'<div class="input-group" style="margin-bottom: 5px; display: block;">'
             +'<div class="input-group-prepend">'

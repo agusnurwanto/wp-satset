@@ -219,6 +219,8 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_hapus_data_p3ke_anggota_keluarga_by_id', $plugin_public, 'hapus_data_p3ke_anggota_keluarga_by_id');
 		$this->loader->add_action('wp_ajax_hapus_data_stunting_by_id', $plugin_public, 'hapus_data_stunting_by_id');
 		$this->loader->add_action('wp_ajax_satset_get_data_infrastruktur', $plugin_public, 'get_data_infrastruktur_management');
+		$this->loader->add_action('wp_ajax_satset_get_public_infrastruktur', $plugin_public, 'get_data_infrastruktur_public');
+		$this->loader->add_action('wp_ajax_nopriv_satset_get_public_infrastruktur', $plugin_public, 'get_data_infrastruktur_public');
 		$this->loader->add_action('wp_ajax_satset_update_custom_infrastruktur', $plugin_public, 'update_custom_data_infrastruktur');
 		$this->loader->add_action('wp_ajax_get_data_stunting_by_id', $plugin_public, 'get_data_stunting_by_id');
 		$this->loader->add_action('wp_ajax_tambah_data_stunting', $plugin_public, 'tambah_data_stunting');
@@ -261,6 +263,7 @@ class Wp_Satset {
 		add_shortcode('management_data_p3ke_anggota_keluarga', array($plugin_public, 'management_data_p3ke_anggota_keluarga'));
 		add_shortcode('management_data_stunting_satset', array($plugin_public, 'management_data_stunting_satset'));
 		add_shortcode('management_data_infrastruktur_satset', array($plugin_public, 'management_data_infrastruktur_satset'));
+		add_shortcode('data_infrastruktur_publik_satset', array($plugin_public, 'data_infrastruktur_publik_satset'));
 		add_shortcode('management_data_tbc_satset', array($plugin_public, 'management_data_tbc_satset'));
 		add_shortcode('management_data_rtlh_satset', array($plugin_public, 'management_data_rtlh_satset'));
 		add_shortcode('management_data_aids_satset', array($plugin_public, 'management_data_aids_satset'));

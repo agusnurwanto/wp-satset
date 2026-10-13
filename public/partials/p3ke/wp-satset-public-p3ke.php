@@ -168,4 +168,3 @@ foreach($tahun as $tahun_value){
         location.href = url;
     }
 </script>
-<script async defer src="<?php echo $this->get_map_url(); ?>"></script>

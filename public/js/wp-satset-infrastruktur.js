@@ -187,8 +187,12 @@
 		var title = document.createElement('h4');
 		title.textContent = displayValue(record.attributes.nm_ruas);
 		popup.appendChild(title);
-		appendDetailTable(popup, 'Atribut Hasil Impor', record.attributes, importedFields);
-		appendDetailTable(popup, 'Atribut Custom', record.custom_attribute, {});
+		if (satsetInfrastructure.isPublic) {
+			appendDetailTable(popup, 'Informasi Infrastruktur', record.attributes, importedFields);
+		} else {
+			appendDetailTable(popup, 'Atribut Hasil Impor', record.attributes, importedFields);
+			appendDetailTable(popup, 'Atribut Custom', record.custom_attribute, {});
+		}
 		return popup;
 	}
 
@@ -414,6 +418,53 @@
 	}
 
 	function initializeTable() {
+		var columns = [
+			{ data: 'attributes.nm_ruas', render: escapeHtml },
+			{ data: 'attributes.wilayah', render: escapeHtml }
+		];
+		if (satsetInfrastructure.isPublic) {
+			columns.push(
+				{ data: 'attributes.kecamatan', render: escapeHtml },
+				{ data: 'attributes.desa_kel', render: escapeHtml },
+				{ data: 'attributes.status', render: escapeHtml },
+				{ data: 'attributes.thn_data', render: escapeHtml },
+				{
+					data: null,
+					orderable: false,
+					searchable: false,
+					render: function (data, type, record) {
+						if (type !== 'display') {
+							return '';
+						}
+						return '<div class="satset-infrastruktur-actions"><button type="button" class="btn btn-danger btn-sm satset-infrastruktur-map-focus" data-record-id="' + Number(record.id) + '">Map</button></div>';
+					}
+				}
+			);
+		} else {
+			columns.push(
+				{ data: 'attributes.propinsi', render: escapeHtml },
+				{ data: 'attributes.kab_kot', render: escapeHtml },
+				{ data: 'attributes.kecamatan', render: escapeHtml },
+				{ data: 'attributes.desa_kel', render: escapeHtml },
+				{ data: 'attributes.status', render: escapeHtml },
+				{ data: 'attributes.thn_data', render: escapeHtml },
+				{
+					data: null,
+					orderable: false,
+					searchable: false,
+					render: function (data, type, record) {
+						if (type !== 'display') {
+							return '';
+						}
+						return '<div class="satset-infrastruktur-actions">' +
+							'<button type="button" class="btn btn-danger btn-sm satset-infrastruktur-map-focus" data-record-id="' + Number(record.id) + '">Map</button>' +
+							'<button type="button" class="btn btn-primary btn-sm satset-infrastruktur-edit" data-record-id="' + Number(record.id) + '">Edit</button>' +
+							'</div>';
+					}
+				}
+			);
+		}
+
 		table = $('#satset-infrastruktur-table').DataTable({
 			data: records,
 			pageLength: 25,
@@ -437,30 +488,7 @@
 					previous: 'Sebelumnya'
 				}
 			},
-			columns: [
-				{ data: 'attributes.nm_ruas', render: escapeHtml },
-				{ data: 'attributes.wilayah', render: escapeHtml },
-				{ data: 'attributes.propinsi', render: escapeHtml },
-				{ data: 'attributes.kab_kot', render: escapeHtml },
-				{ data: 'attributes.kecamatan', render: escapeHtml },
-				{ data: 'attributes.desa_kel', render: escapeHtml },
-				{ data: 'attributes.status', render: escapeHtml },
-				{ data: 'attributes.thn_data', render: escapeHtml },
-				{
-					data: null,
-					orderable: false,
-					searchable: false,
-					render: function (data, type, record) {
-						if (type !== 'display') {
-							return '';
-						}
-						return '<div class="satset-infrastruktur-actions">' +
-							'<button type="button" class="btn btn-danger btn-sm satset-infrastruktur-map-focus" data-record-id="' + Number(record.id) + '">Map</button>' +
-							'<button type="button" class="btn btn-primary btn-sm satset-infrastruktur-edit" data-record-id="' + Number(record.id) + '">Edit</button>' +
-							'</div>';
-					}
-				}
-			]
+			columns: columns
 		});
 
 		$.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
@@ -477,14 +505,17 @@
 	}
 
 	function loadData() {
+		var requestData = {
+			action: satsetInfrastructure.isPublic ? 'satset_get_public_infrastruktur' : 'satset_get_data_infrastruktur'
+		};
+		if (!satsetInfrastructure.isPublic) {
+			requestData.nonce = satsetInfrastructure.nonce;
+		}
 		$.ajax({
 			url: satsetInfrastructure.ajaxUrl,
 			method: 'POST',
 			dataType: 'json',
-			data: {
-				action: 'satset_get_data_infrastruktur',
-				nonce: satsetInfrastructure.nonce
-			}
+			data: requestData
 		}).done(function (response) {
 			if (!response || !response.success || !response.data) {
 				showPageAlert(response && response.data && response.data.message ? response.data.message : 'Data infrastruktur gagal dimuat.');
@@ -530,10 +561,12 @@
 			return;
 		}
 
-		map = L.map('satset-infrastruktur-map', { preferCanvas: true }).setView([-2.5, 118], 5);
+		map = L.map('satset-infrastruktur-map', { 
+			preferCanvas: true,
+			attributionControl: false 
+		}).setView([-2.5, 118], 5);
 		baseLayers.osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			maxZoom: 19,
-			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+			maxZoom: 19
 		});
 		currentBaseLayer = baseLayers.osm.addTo(map);
 		addGoogleBaseLayers();

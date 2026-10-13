@@ -447,4 +447,3 @@ foreach ($tahun_list as $t) {
         location.href = window.location.href.split('?')[0] + '?tahun_anggaran=' + tahun;
     }
 </script>
-<script async defer src="<?php echo $this->get_map_url(); ?>"></script>

@@ -14,4 +14,3 @@ foreach($maps_all as $i => $desa){
     window.maps_all = <?php echo json_encode($maps_all); ?>;
     window.maps_center = <?php echo json_encode($center); ?>;
 </script>
-<script async defer src="<?php echo $this->get_map_url(); ?>"></script>
