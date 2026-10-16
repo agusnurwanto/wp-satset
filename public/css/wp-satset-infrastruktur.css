@@ -145,6 +145,39 @@
 	width: 100%;
 }
 
+.satset-infrastruktur-custom-field .satset-custom-type {
+	margin: 12px 0;
+	padding: 0;
+	border: 0;
+}
+
+.satset-infrastruktur-custom-field .satset-custom-type legend {
+	display: block;
+	margin-bottom: 5px;
+	font-size: 12px;
+	font-weight: 600;
+	color: #50575e;
+}
+
+.satset-custom-type-options {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 14px;
+}
+
+.satset-infrastruktur-custom-field .satset-custom-type-options label {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	margin: 0;
+	font-weight: 400;
+}
+
+.satset-infrastruktur-custom-field .satset-custom-type-options input[type="radio"] {
+	width: auto;
+	margin: 0;
+}
+
 .satset-infrastruktur-readonly-value {
 	white-space: pre-wrap;
 	overflow-wrap: anywhere;
@@ -164,6 +197,13 @@
 	position: absolute;
 	top: 8px;
 	right: 8px;
+}
+
+.satset-infrastruktur-custom-image {
+	display: block;
+	max-width: min(100%, 320px);
+	max-height: 240px;
+	object-fit: contain;
 }
 
 .satset-infrastruktur-region-legend {
@@ -203,6 +243,11 @@
 
 .satset-infrastruktur-popup h4 {
 	margin: 0 0 8px;
+}
+
+.satset-infrastruktur-street-view-link {
+	display: inline-block;
+	margin-bottom: 8px;
 }
 
 .satset-infrastruktur-popup table {

@@ -110,12 +110,44 @@ class Wp_Satset_Public {
 		return false;
 	}
 
-	private function has_data_infrastruktur_custom_attribute_column(){
+	private function has_custom_attributes_table(){
 		global $wpdb;
+		$table = 'data_custom_attributes';
 		return (bool) $wpdb->get_var($wpdb->prepare(
-			'SHOW COLUMNS FROM data_infrastruktur LIKE %s',
-			'custom_attribute'
+			'SHOW TABLES LIKE %s',
+			$wpdb->esc_like($table)
 		));
+	}
+
+	private function get_infrastruktur_custom_attributes($entity_ids){
+		global $wpdb;
+
+		$entity_ids = array_values(array_unique(array_filter(array_map('absint', $entity_ids))));
+		if (!$entity_ids) {
+			return array();
+		}
+		$entity_ids_sql = implode(',', $entity_ids);
+		$rows = $wpdb->get_results($wpdb->prepare(
+			"SELECT entity_id, attribute_name, attribute_type, attribute_value
+			FROM data_custom_attributes
+			WHERE entity_type = %s AND entity_id IN ({$entity_ids_sql})
+			ORDER BY id ASC",
+			'infrastruktur'
+		), ARRAY_A);
+		if ($wpdb->last_error !== '') {
+			return false;
+		}
+
+		$attributes_by_entity = array();
+		$valid_types = array('text', 'url', 'image');
+		foreach ($rows as $row) {
+			$type = in_array($row['attribute_type'], $valid_types, true) ? $row['attribute_type'] : 'text';
+			$attributes_by_entity[(int) $row['entity_id']][$row['attribute_name']] = array(
+				'type' => $type,
+				'value' => $row['attribute_value']
+			);
+		}
+		return $attributes_by_entity;
 	}
 
 	/**
@@ -541,12 +573,12 @@ class Wp_Satset_Public {
 		if ($existing_table !== $table) {
 			wp_send_json_error(array('message' => 'Tabel data_infrastruktur belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options.'), 500);
 		}
-		if (!$this->has_data_infrastruktur_custom_attribute_column()) {
-			wp_send_json_error(array('message' => 'Kolom custom_attribute belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options.'), 500);
+		if (!$this->has_custom_attributes_table()) {
+			wp_send_json_error(array('message' => 'Tabel data_custom_attributes belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options.'), 500);
 		}
 
 		$fields = $this->functions->get_data_infrastruktur_fields();
-		$columns = array_merge(array('id'), array_keys($fields), array('custom_attribute', 'geometry'));
+		$columns = array_merge(array('id'), array_keys($fields), array('geometry'));
 		$column_sql = implode(', ', array_map(function($column) {
 			return '`' . esc_sql($column) . '`';
 		}, $columns));
@@ -554,25 +586,18 @@ class Wp_Satset_Public {
 		if ($wpdb->last_error !== '') {
 			wp_send_json_error(array('message' => 'Gagal membaca data infrastruktur: ' . $wpdb->last_error), 500);
 		}
+		$custom_attributes_by_entity = $this->get_infrastruktur_custom_attributes(array_column($rows, 'id'));
+		if ($custom_attributes_by_entity === false) {
+			wp_send_json_error(array('message' => 'Gagal membaca atribut custom Infrastruktur: ' . $wpdb->last_error), 500);
+		}
 
 		$records = array();
 		$years = array();
 		$invalid_geometry_count = 0;
-		$invalid_custom_attribute_count = 0;
 		foreach ($rows as $row) {
 			$attributes = array();
 			foreach ($fields as $column => $field) {
 				$attributes[$column] = $row[$column];
-			}
-
-			$custom_attributes = array();
-			if (!empty($row['custom_attribute'])) {
-				$decoded_custom_attributes = json_decode($row['custom_attribute'], true);
-				if (json_last_error() === JSON_ERROR_NONE && is_array($decoded_custom_attributes)) {
-					$custom_attributes = $decoded_custom_attributes;
-				} else {
-					$invalid_custom_attribute_count++;
-				}
 			}
 
 			$geometry = json_decode($row['geometry'], true);
@@ -596,7 +621,9 @@ class Wp_Satset_Public {
 			$records[] = array(
 				'id' => (int) $row['id'],
 				'attributes' => $attributes,
-				'custom_attribute' => $custom_attributes,
+				'custom_attribute' => isset($custom_attributes_by_entity[(int) $row['id']])
+					? $custom_attributes_by_entity[(int) $row['id']]
+					: array(),
 				'geometry' => $geometry
 			);
 		}
@@ -608,8 +635,7 @@ class Wp_Satset_Public {
 			}, $fields),
 			'years' => $years,
 			'records' => $records,
-			'invalid_geometry_count' => $invalid_geometry_count,
-			'invalid_custom_attribute_count' => $invalid_custom_attribute_count
+			'invalid_geometry_count' => $invalid_geometry_count
 		));
 	}
 
@@ -619,6 +645,9 @@ class Wp_Satset_Public {
 		$existing_table = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)));
 		if ($existing_table !== $table) {
 			wp_send_json_error(array('message' => 'Tabel data_infrastruktur belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options.'), 500);
+		}
+		if (!$this->has_custom_attributes_table()) {
+			wp_send_json_error(array('message' => 'Tabel data_custom_attributes belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options.'), 500);
 		}
 
 		$fields = array(
@@ -636,6 +665,10 @@ class Wp_Satset_Public {
 		$rows = $wpdb->get_results("SELECT {$column_sql} FROM {$table} ORDER BY id ASC", ARRAY_A);
 		if ($wpdb->last_error !== '') {
 			wp_send_json_error(array('message' => 'Gagal membaca data infrastruktur: ' . $wpdb->last_error), 500);
+		}
+		$custom_attributes_by_entity = $this->get_infrastruktur_custom_attributes(array_column($rows, 'id'));
+		if ($custom_attributes_by_entity === false) {
+			wp_send_json_error(array('message' => 'Gagal membaca atribut custom Infrastruktur: ' . $wpdb->last_error), 500);
 		}
 
 		$records = array();
@@ -668,6 +701,9 @@ class Wp_Satset_Public {
 			$records[] = array(
 				'id' => (int) $row['id'],
 				'attributes' => $attributes,
+				'custom_attribute' => isset($custom_attributes_by_entity[(int) $row['id']])
+					? $custom_attributes_by_entity[(int) $row['id']]
+					: array(),
 				'geometry' => $geometry
 			);
 		}
@@ -699,18 +735,34 @@ class Wp_Satset_Public {
 
 		$raw_custom_attributes = wp_unslash($_POST['custom_attribute']);
 		$custom_attributes = json_decode($raw_custom_attributes);
-		if (json_last_error() !== JSON_ERROR_NONE || !is_object($custom_attributes)) {
-			wp_send_json_error(array('message' => 'Atribut custom harus berupa objek JSON yang valid.'), 400);
+		if (
+			json_last_error() !== JSON_ERROR_NONE
+			|| (!is_array($custom_attributes) && !is_object($custom_attributes))
+		) {
+			wp_send_json_error(array('message' => 'Atribut custom harus berupa JSON yang valid.'), 400);
 		}
-		if (count(get_object_vars($custom_attributes)) > 100) {
+		if (count($custom_attributes) > 100) {
 			wp_send_json_error(array('message' => 'Maksimal 100 atribut custom per ruas.'), 400);
 		}
 
+		$is_list = is_array($custom_attributes);
 		$clean_attributes = array();
 		$seen_names = array();
-		foreach ($custom_attributes as $name => $value) {
-			if (!is_string($name) || !is_scalar($value)) {
-				wp_send_json_error(array('message' => 'Nama dan nilai atribut custom harus berupa teks.'), 400);
+		foreach ($custom_attributes as $key => $attribute) {
+			if ($is_list) {
+				if (!is_object($attribute) || !isset($attribute->name) || !isset($attribute->value)) {
+					wp_send_json_error(array('message' => 'Setiap atribut custom harus memiliki nama dan nilai.'), 400);
+				}
+				$name = $attribute->name;
+				$type = isset($attribute->type) ? $attribute->type : 'text';
+				$value = $attribute->value;
+			} else {
+				$name = (string) $key;
+				$type = 'text';
+				$value = $attribute;
+			}
+			if (!is_scalar($name) || !is_scalar($type) || !is_scalar($value)) {
+				wp_send_json_error(array('message' => 'Nama, jenis, dan nilai atribut custom harus berupa teks.'), 400);
 			}
 
 			$name = trim(sanitize_text_field($name));
@@ -725,17 +777,27 @@ class Wp_Satset_Public {
 			}
 			$seen_names[$name_key] = true;
 
+			$type = sanitize_key($type);
+			if (!in_array($type, array('text', 'url', 'image'), true)) {
+				wp_send_json_error(array('message' => 'Jenis atribut custom tidak valid.'), 400);
+			}
+
 			$value = sanitize_textarea_field((string) $value);
 			$value_length = preg_match_all('/./us', $value, $value_characters);
 			if ($value_length === false || $value_length > 5000) {
 				wp_send_json_error(array('message' => 'Nilai atribut custom maksimal 5.000 karakter.'), 400);
 			}
-			$clean_attributes[$name] = $value;
-		}
-
-		$encoded_attributes = wp_json_encode((object) $clean_attributes, JSON_UNESCAPED_UNICODE);
-		if ($encoded_attributes === false) {
-			wp_send_json_error(array('message' => 'Atribut custom tidak dapat dikodekan sebagai JSON.'), 400);
+			if ($type === 'url' || $type === 'image') {
+				$sanitized_url = esc_url_raw($value, array('http', 'https'));
+				if ($value !== '' && $sanitized_url === '') {
+					wp_send_json_error(array('message' => 'Nilai jenis URL atau gambar harus berupa URL HTTP/HTTPS yang valid.'), 400);
+				}
+				$value = $sanitized_url;
+			}
+			$clean_attributes[$name] = array(
+				'type' => $type,
+				'value' => $value
+			);
 		}
 
 		global $wpdb;
@@ -744,8 +806,8 @@ class Wp_Satset_Public {
 		if ($existing_table !== $table) {
 			wp_send_json_error(array('message' => 'Tabel data_infrastruktur belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options.'), 500);
 		}
-		if (!$this->has_data_infrastruktur_custom_attribute_column()) {
-			wp_send_json_error(array('message' => 'Kolom custom_attribute belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options.'), 500);
+		if (!$this->has_custom_attributes_table()) {
+			wp_send_json_error(array('message' => 'Tabel data_custom_attributes belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options.'), 500);
 		}
 
 		$id = absint($id_value);
@@ -754,15 +816,41 @@ class Wp_Satset_Public {
 			wp_send_json_error(array('message' => 'Data infrastruktur tidak ditemukan.'), 404);
 		}
 
-		$updated = $wpdb->update(
-			$table,
-			array('custom_attribute' => $encoded_attributes),
-			array('id' => $id),
-			array('%s'),
-			array('%d')
+		if ($wpdb->query('START TRANSACTION') === false) {
+			wp_send_json_error(array('message' => 'Transaksi penyimpanan atribut tidak dapat dimulai: ' . $wpdb->last_error), 500);
+		}
+		$deleted = $wpdb->delete(
+			'data_custom_attributes',
+			array('entity_type' => 'infrastruktur', 'entity_id' => $id),
+			array('%s', '%d')
 		);
-		if ($updated === false) {
-			wp_send_json_error(array('message' => 'Gagal menyimpan atribut custom: ' . $wpdb->last_error), 500);
+		if ($deleted === false) {
+			$error_message = $wpdb->last_error;
+			$wpdb->query('ROLLBACK');
+			wp_send_json_error(array('message' => 'Gagal menghapus atribut lama: ' . $error_message), 500);
+		}
+		foreach ($clean_attributes as $name => $attribute) {
+			$inserted = $wpdb->insert(
+				'data_custom_attributes',
+				array(
+					'entity_type' => 'infrastruktur',
+					'entity_id' => $id,
+					'attribute_name' => $name,
+					'attribute_type' => $attribute['type'],
+					'attribute_value' => $attribute['value']
+				),
+				array('%s', '%d', '%s', '%s', '%s')
+			);
+			if ($inserted === false) {
+				$error_message = $wpdb->last_error;
+				$wpdb->query('ROLLBACK');
+				wp_send_json_error(array('message' => 'Gagal menyimpan atribut custom: ' . $error_message), 500);
+			}
+		}
+		if ($wpdb->query('COMMIT') === false) {
+			$error_message = $wpdb->last_error;
+			$wpdb->query('ROLLBACK');
+			wp_send_json_error(array('message' => 'Atribut custom gagal disimpan: ' . $error_message), 500);
 		}
 
 		wp_send_json_success(array(

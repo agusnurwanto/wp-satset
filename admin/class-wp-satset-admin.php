@@ -519,7 +519,7 @@ class Wp_Satset_Admin {
 					->set_help_text('Tahun anggaran diatas digunakan untuk default filter tahun.'),
             	Field::make( 'html', 'crb_satset_sql_migrate' )
 	            	->set_html( '<a onclick="sql_migrate_satset(); return false" href="javascript:void(0);" class="button button-primary">SQL Migrate</a>' )
-	            	->set_help_text('Tombol ini untuk melakukan perbaikan struktur tabel database.'),
+					->set_help_text('Membuat atau memperbaiki struktur tabel database dan memindahkan atribut custom Infrastruktur lama ke tabel terpisah.'),
 
 				Field::make('text', 'crb_url_server_satset', 'URL Server WP-SIPD')
 					->set_default_value(admin_url('admin-ajax.php'))
@@ -1691,6 +1691,103 @@ class Wp_Satset_Admin {
 		die(json_encode($ret));
 	}
 
+	private function get_infrastruktur_geometry_midpoint($geometry){
+		if (
+			!is_array($geometry)
+			|| empty($geometry['type'])
+			|| !in_array($geometry['type'], array('LineString', 'MultiLineString'), true)
+			|| empty($geometry['coordinates'])
+			|| !is_array($geometry['coordinates'])
+		) {
+			return new WP_Error('invalid_infrastruktur_geometry', 'Geometri ruas tidak valid untuk membuat tautan Google Street View.');
+		}
+
+		$lines = $geometry['type'] === 'LineString'
+			? array($geometry['coordinates'])
+			: $geometry['coordinates'];
+		$segments = array();
+		$first_point = null;
+		$total_distance = 0.0;
+		foreach ($lines as $line) {
+			if (!is_array($line)) {
+				return new WP_Error('invalid_infrastruktur_geometry', 'Koordinat geometri ruas tidak valid untuk membuat tautan Google Street View.');
+			}
+			$points = array();
+			foreach ($line as $coordinate) {
+				if (
+					!is_array($coordinate)
+					|| !isset($coordinate[0], $coordinate[1])
+					|| !is_numeric($coordinate[0])
+					|| !is_numeric($coordinate[1])
+				) {
+					return new WP_Error('invalid_infrastruktur_geometry', 'Koordinat geometri ruas tidak valid untuk membuat tautan Google Street View.');
+				}
+				$longitude = (float) $coordinate[0];
+				$latitude = (float) $coordinate[1];
+				if (
+					!is_finite($longitude)
+					|| !is_finite($latitude)
+					|| $longitude < -180
+					|| $longitude > 180
+					|| $latitude < -90
+					|| $latitude > 90
+				) {
+					return new WP_Error('invalid_infrastruktur_geometry', 'Koordinat geometri ruas berada di luar rentang yang valid.');
+				}
+				$point = array($longitude, $latitude);
+				if ($first_point === null) {
+					$first_point = $point;
+				}
+				$points[] = $point;
+			}
+
+			for ($index = 1; $index < count($points); $index++) {
+				$start = $points[$index - 1];
+				$end = $points[$index];
+				$latitude_delta = deg2rad($end[1] - $start[1]);
+				$longitude_delta = deg2rad($end[0] - $start[0]);
+				$start_latitude = deg2rad($start[1]);
+				$end_latitude = deg2rad($end[1]);
+				$haversine = sin($latitude_delta / 2) ** 2
+					+ cos($start_latitude) * cos($end_latitude) * sin($longitude_delta / 2) ** 2;
+				$distance = 2 * 6371000 * asin(min(1, sqrt($haversine)));
+				$segments[] = array($start, $end, $distance);
+				$total_distance += $distance;
+			}
+		}
+
+		if ($first_point === null) {
+			return new WP_Error('invalid_infrastruktur_geometry', 'Geometri ruas tidak memiliki koordinat untuk membuat tautan Google Street View.');
+		}
+		if ($total_distance <= 0) {
+			return array($first_point[1], $first_point[0]);
+		}
+
+		$target_distance = $total_distance / 2;
+		foreach ($segments as $segment) {
+			if ($target_distance <= $segment[2]) {
+				$ratio = $target_distance / $segment[2];
+				$longitude = $segment[0][0] + ($segment[1][0] - $segment[0][0]) * $ratio;
+				$latitude = $segment[0][1] + ($segment[1][1] - $segment[0][1]) * $ratio;
+				return array($latitude, $longitude);
+			}
+			$target_distance -= $segment[2];
+		}
+
+		return array($first_point[1], $first_point[0]);
+	}
+
+	private function get_infrastruktur_street_view_url($geometry){
+		$midpoint = $this->get_infrastruktur_geometry_midpoint($geometry);
+		if (is_wp_error($midpoint)) {
+			return $midpoint;
+		}
+		return 'https://www.google.com/maps?q=&layer=c&cbll='
+			. number_format($midpoint[0], 9, '.', '')
+			. ','
+			. number_format($midpoint[1], 9, '.', '');
+	}
+
 	function import_geojson_infrastruktur(){
 		check_ajax_referer('satset_import_geojson_infrastruktur', 'nonce');
 		if (!current_user_can('manage_options')) {
@@ -1779,6 +1876,7 @@ class Wp_Satset_Admin {
 			'koord_y_ak' => 'Koord_Y_Ak'
 		);
 		$rows = array();
+		$street_view_urls = array();
 		foreach ($geojson['features'] as $index => $feature) {
 			if (
 				!is_array($feature)
@@ -1818,6 +1916,14 @@ class Wp_Satset_Admin {
 			}
 			$row['nm_ruas'] = $nm_ruas;
 
+			$street_view_url = $this->get_infrastruktur_street_view_url($feature['geometry']);
+			if (is_wp_error($street_view_url)) {
+				wp_send_json_error(array(
+					'message' => sprintf('Feature ke-%d tidak dapat dibuatkan tautan Google Street View: %s', $index + 1, $street_view_url->get_error_message())
+				), 400);
+			}
+			$street_view_urls[] = $street_view_url;
+
 			$geometry_json = wp_json_encode($feature['geometry']);
 			if ($geometry_json === false) {
 				wp_send_json_error(array('message' => sprintf('Geometri feature ke-%d tidak dapat dikodekan sebagai JSON.', $index + 1)), 400);
@@ -1831,6 +1937,14 @@ class Wp_Satset_Admin {
 		$existing_table = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)));
 		if ($existing_table !== $table) {
 			wp_send_json_error(array('message' => 'Tabel data_infrastruktur belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options terlebih dahulu.'), 500);
+		}
+		$custom_attributes_table = 'data_custom_attributes';
+		$existing_custom_attributes_table = $wpdb->get_var($wpdb->prepare(
+			'SHOW TABLES LIKE %s',
+			$wpdb->esc_like($custom_attributes_table)
+		));
+		if ($existing_custom_attributes_table !== $custom_attributes_table) {
+			wp_send_json_error(array('message' => 'Tabel data_custom_attributes belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options terlebih dahulu.'), 500);
 		}
 
 		if ($wpdb->query('START TRANSACTION') === false) {
@@ -1852,6 +1966,7 @@ class Wp_Satset_Admin {
 					wp_send_json_error(array('message' => sprintf('Gagal memperbarui feature ke-%d: %s', $index + 1, $error_message)), 500);
 				}
 				$updated++;
+				$infrastructure_id = (int) $existing_id;
 			} else {
 				$result = $wpdb->insert($table, $row);
 				if ($result === false) {
@@ -1860,6 +1975,23 @@ class Wp_Satset_Admin {
 					wp_send_json_error(array('message' => sprintf('Gagal menambahkan feature ke-%d: %s', $index + 1, $error_message)), 500);
 				}
 				$inserted++;
+				$infrastructure_id = (int) $wpdb->insert_id;
+			}
+
+			$street_view_saved = $wpdb->query($wpdb->prepare(
+				"INSERT INTO data_custom_attributes (entity_type, entity_id, attribute_name, attribute_type, attribute_value)
+				VALUES (%s, %d, %s, %s, %s)
+				ON DUPLICATE KEY UPDATE attribute_name = attribute_name",
+				'infrastruktur',
+				$infrastructure_id,
+				'Google Street View',
+				'url',
+				$street_view_urls[$index]
+			));
+			if ($street_view_saved === false) {
+				$error_message = $wpdb->last_error;
+				$wpdb->query('ROLLBACK');
+				wp_send_json_error(array('message' => sprintf('Gagal menyimpan tautan Google Street View feature ke-%d: %s', $index + 1, $error_message)), 500);
 			}
 		}
 
@@ -1875,6 +2007,127 @@ class Wp_Satset_Admin {
 			'updated' => $updated,
 			'total' => count($rows)
 		));
+	}
+
+	private function migrate_legacy_infrastruktur_custom_attributes(){
+		global $wpdb;
+		if (get_option('_wp_satset_custom_attribute_legacy_migrated')) {
+			return array('migrated' => 0, 'invalid' => 0);
+		}
+
+		$table = 'data_infrastruktur';
+		$existing_table = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)));
+		if ($existing_table !== $table) {
+			return array('migrated' => 0, 'invalid' => 0);
+		}
+		$has_custom_attribute = $wpdb->get_var($wpdb->prepare(
+			'SHOW COLUMNS FROM data_infrastruktur LIKE %s',
+			'custom_attribute'
+		));
+		if (!$has_custom_attribute) {
+			return array('migrated' => 0, 'invalid' => 0);
+		}
+
+		$rows = $wpdb->get_results(
+			"SELECT id, custom_attribute FROM data_infrastruktur WHERE custom_attribute IS NOT NULL AND custom_attribute <> ''",
+			ARRAY_A
+		);
+		if ($wpdb->last_error !== '') {
+			return new WP_Error('custom_attribute_read_failed', 'Gagal membaca atribut custom lama: ' . $wpdb->last_error);
+		}
+
+		$migrated = 0;
+		$invalid = 0;
+		foreach ($rows as $row) {
+			$attributes = json_decode($row['custom_attribute'], true);
+			if (json_last_error() !== JSON_ERROR_NONE || !is_array($attributes)) {
+				$invalid++;
+				continue;
+			}
+
+			foreach ($attributes as $name => $value) {
+				$name = (string) $name;
+				$name_length = preg_match_all('/./us', $name, $name_characters);
+				if (
+					!is_scalar($value)
+					|| trim($name) === ''
+					|| $name_length === false
+					|| $name_length > 100
+				) {
+					$invalid++;
+					continue;
+				}
+
+				$result = $wpdb->query($wpdb->prepare(
+					"INSERT INTO data_custom_attributes (entity_type, entity_id, attribute_name, attribute_type, attribute_value)
+					VALUES (%s, %d, %s, %s, %s)
+					ON DUPLICATE KEY UPDATE attribute_value = attribute_value",
+					'infrastruktur',
+					(int) $row['id'],
+					$name,
+					'text',
+					(string) $value
+				));
+				if ($result === false) {
+					return new WP_Error('custom_attribute_migration_failed', 'Gagal memindahkan atribut custom lama: ' . $wpdb->last_error);
+				}
+				if ($result === 1) {
+					$migrated++;
+				}
+			}
+		}
+
+		update_option('_wp_satset_custom_attribute_legacy_migrated', 1, false);
+		return array('migrated' => $migrated, 'invalid' => $invalid);
+	}
+
+	private function migrate_default_infrastruktur_street_view_attributes(){
+		global $wpdb;
+
+		$rows = $wpdb->get_results(
+			"SELECT infrastructure.id, infrastructure.geometry
+			FROM data_infrastruktur AS infrastructure
+			LEFT JOIN data_custom_attributes AS custom_attribute
+				ON custom_attribute.entity_type = 'infrastruktur'
+				AND custom_attribute.entity_id = infrastructure.id
+				AND custom_attribute.attribute_name = 'Google Street View'
+			WHERE custom_attribute.id IS NULL
+			ORDER BY infrastructure.id ASC",
+			ARRAY_A
+		);
+		if ($wpdb->last_error !== '') {
+			return new WP_Error('street_view_read_failed', 'Gagal membaca data Infrastruktur untuk tautan Google Street View: ' . $wpdb->last_error);
+		}
+
+		$inserted_count = 0;
+		$skipped_count = 0;
+		foreach ($rows as $row) {
+			$geometry = json_decode($row['geometry'], true);
+			$street_view_url = $this->get_infrastruktur_street_view_url($geometry);
+			if (is_wp_error($street_view_url)) {
+				$skipped_count++;
+				continue;
+			}
+
+			$result = $wpdb->query($wpdb->prepare(
+				"INSERT INTO data_custom_attributes (entity_type, entity_id, attribute_name, attribute_type, attribute_value)
+				VALUES (%s, %d, %s, %s, %s)
+				ON DUPLICATE KEY UPDATE attribute_name = attribute_name",
+				'infrastruktur',
+				(int) $row['id'],
+				'Google Street View',
+				'url',
+				$street_view_url
+			));
+			if ($result === false) {
+				return new WP_Error('street_view_insert_failed', 'Gagal menyimpan tautan Google Street View: ' . $wpdb->last_error);
+			}
+			if ($result === 1) {
+				$inserted_count++;
+			}
+		}
+
+		return array('inserted' => $inserted_count, 'skipped' => $skipped_count);
 	}
 
 	function sql_migrate_satset(){
@@ -1893,11 +2146,39 @@ class Wp_Satset_Admin {
 			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 			$wpdb->hide_errors();
 			$rows_affected = dbDelta($sql);
-			if(empty($rows_affected)){
+			if ($wpdb->last_error !== '') {
 				$ret['status'] = 'error';
 				$ret['message'] = $wpdb->last_error;
-			}else{
+			} elseif (!empty($rows_affected)) {
 				$ret['message'] = implode(' | ', $rows_affected);
+			} else {
+				$ret['message'] = 'Struktur database sudah sesuai.';
+			}
+			if ($ret['status'] === 'success') {
+				$migration = $this->migrate_legacy_infrastruktur_custom_attributes();
+				if (is_wp_error($migration)) {
+					$ret['status'] = 'error';
+					$ret['message'] = $migration->get_error_message();
+				} elseif ($migration['migrated'] || $migration['invalid']) {
+					$ret['message'] .= sprintf(
+						' Atribut custom Infrastruktur dipindahkan: %d; data lama tidak valid: %d.',
+						$migration['migrated'],
+						$migration['invalid']
+					);
+				}
+			}
+			if ($ret['status'] === 'success') {
+				$street_view_migration = $this->migrate_default_infrastruktur_street_view_attributes();
+				if (is_wp_error($street_view_migration)) {
+					$ret['status'] = 'error';
+					$ret['message'] = $street_view_migration->get_error_message();
+				} elseif ($street_view_migration['inserted'] || $street_view_migration['skipped']) {
+					$ret['message'] .= sprintf(
+						' Google Street View ditambahkan: %d; data tanpa geometri yang sesuai: %d.',
+						$street_view_migration['inserted'],
+						$street_view_migration['skipped']
+					);
+				}
 			}
 			if($ret['status'] == 'success'){
 				$ret['version'] = $this->version;

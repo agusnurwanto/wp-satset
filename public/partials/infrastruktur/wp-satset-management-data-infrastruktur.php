@@ -70,7 +70,8 @@ if (!defined('WPINC') || !current_user_can('manage_options')) {
 				<h6 class="satset-infrastruktur-section-title">Atribut Hasil Impor (Hanya Baca)</h6>
 				<div id="satset-infrastruktur-imported-fields" class="satset-infrastruktur-readonly-grid"></div>
 				<h6 class="satset-infrastruktur-section-title">Atribut Custom</h6>
-				<p>Atribut di bawah ini hanya tersimpan pada ruas ini. Atribut impor tidak dapat diubah dari halaman ini.</p>
+				<p>Atribut di bawah ini hanya tersimpan pada ruas ini. Atribut impor tidak dapat diubah dari halaman ini. Pilih jenis nilai untuk menentukan tampilannya.</p>
+				<datalist id="satset-infrastruktur-custom-name-options"></datalist>
 				<div id="satset-infrastruktur-custom-fields" class="satset-infrastruktur-custom-grid"></div>
 				<button type="button" id="satset-infrastruktur-add-custom" class="btn btn-outline-primary btn-sm">Tambah Atribut Custom</button>
 			</div>

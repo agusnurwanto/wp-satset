@@ -10,6 +10,8 @@
 	var baseLayers = {};
 	var currentBaseLayer;
 	var activeRecord = null;
+	var customFieldId = 0;
+	var customAttributeNames = [];
 
 	function escapeHtml(value) {
 		return String(value === null || value === undefined ? '' : value)
@@ -25,6 +27,35 @@
 			return '—';
 		}
 		return String(value);
+	}
+
+	function refreshCustomAttributeNameOptions() {
+		var optionList = document.getElementById('satset-infrastruktur-custom-name-options');
+		if (!optionList) {
+			return;
+		}
+
+		var namesByKey = Object.create(null);
+		records.forEach(function (record) {
+			Object.keys(record.custom_attribute || {}).forEach(function (name) {
+				var key = name.toLowerCase();
+				if (!Object.prototype.hasOwnProperty.call(namesByKey, key)) {
+					namesByKey[key] = name;
+				}
+			});
+		});
+		customAttributeNames = Object.keys(namesByKey).map(function (key) {
+			return namesByKey[key];
+		}).sort(function (left, right) {
+			return left.localeCompare(right);
+		});
+
+		optionList.replaceChildren();
+		customAttributeNames.forEach(function (name) {
+			var option = document.createElement('option');
+			option.value = name;
+			optionList.appendChild(option);
+		});
 	}
 
 	function showPageAlert(message, type) {
@@ -104,11 +135,16 @@
 		}
 	}
 
-	function appendDetailTable(container, title, attributes, labels) {
+	function appendDetailTable(container, title, attributes, labels, headingLink) {
 		var section = document.createElement('section');
 		var heading = document.createElement('h6');
-		heading.textContent = title;
-		section.appendChild(heading);
+		if (headingLink) {
+			heading.appendChild(headingLink);
+			section.appendChild(heading);
+		} else if (title) {
+			heading.textContent = title;
+			section.appendChild(heading);
+		}
 
 		var tableElement = document.createElement('table');
 		var body = document.createElement('tbody');
@@ -118,6 +154,79 @@
 			var value = document.createElement('td');
 			label.textContent = labels && labels[key] ? labels[key] : key;
 			value.textContent = displayValue(attributes[key]);
+			row.appendChild(label);
+			row.appendChild(value);
+			body.appendChild(row);
+		});
+		if (!Object.keys(attributes || {}).length) {
+			var emptyRow = document.createElement('tr');
+			var emptyCell = document.createElement('td');
+			emptyCell.colSpan = 2;
+			emptyCell.textContent = 'Belum ada atribut.';
+			emptyRow.appendChild(emptyCell);
+			body.appendChild(emptyRow);
+		}
+		tableElement.appendChild(body);
+		section.appendChild(tableElement);
+		container.appendChild(section);
+	}
+
+	function getSafeHttpUrl(value) {
+		try {
+			var url = new URL(String(value), window.location.href);
+			return url.protocol === 'http:' || url.protocol === 'https:' ? url.href : '';
+		} catch (error) {
+			return '';
+		}
+	}
+
+	function appendCustomDetailTable(container, attributes) {
+		var section = document.createElement('section');
+		var heading = document.createElement('h6');
+		heading.textContent = 'Atribut Custom';
+		section.appendChild(heading);
+
+		var tableElement = document.createElement('table');
+		var body = document.createElement('tbody');
+		Object.keys(attributes || {}).forEach(function (key) {
+			var attribute = attributes[key];
+			if (!attribute || typeof attribute !== 'object') {
+				attribute = { type: 'text', value: attribute };
+			}
+			var type = ['url', 'image'].indexOf(attribute.type) !== -1 ? attribute.type : 'text';
+			var rawValue = attribute.value;
+			var row = document.createElement('tr');
+			var label = document.createElement('th');
+			var value = document.createElement('td');
+			label.textContent = key;
+
+			if (type === 'url' && rawValue) {
+				var safeUrl = getSafeHttpUrl(rawValue);
+				if (safeUrl) {
+					var link = document.createElement('a');
+					link.href = safeUrl;
+					link.target = '_blank';
+					link.rel = 'noopener noreferrer';
+					link.textContent = String(rawValue);
+					value.appendChild(link);
+				} else {
+					value.textContent = displayValue(rawValue);
+				}
+			} else if (type === 'image' && rawValue) {
+				var imageUrl = getSafeHttpUrl(rawValue);
+				if (imageUrl) {
+					var image = document.createElement('img');
+					image.src = imageUrl;
+					image.alt = key;
+					image.loading = 'lazy';
+					image.className = 'satset-infrastruktur-custom-image';
+					value.appendChild(image);
+				} else {
+					value.textContent = displayValue(rawValue);
+				}
+			} else {
+				value.textContent = displayValue(rawValue);
+			}
 			row.appendChild(label);
 			row.appendChild(value);
 			body.appendChild(row);
@@ -181,17 +290,47 @@
 		});
 	}
 
-	function createPopupContent(record) {
+	function createStreetViewLink(latLng) {
+		if (
+			!latLng ||
+			!Number.isFinite(latLng.lat) ||
+			!Number.isFinite(latLng.lng) ||
+			latLng.lat < -90 ||
+			latLng.lat > 90 ||
+			latLng.lng < -180 ||
+			latLng.lng > 180
+		) {
+			return null;
+		}
+
+		var link = document.createElement('a');
+		link.className = 'satset-infrastruktur-street-view-link';
+		link.href = 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=' +
+			encodeURIComponent(latLng.lat + ',' + latLng.lng);
+		link.target = '_blank';
+		link.rel = 'noopener noreferrer';
+		link.textContent = 'Google Street View';
+		return link;
+	}
+
+	function createPopupContent(record, latLng) {
 		var popup = document.createElement('div');
 		popup.className = 'satset-infrastruktur-popup';
+		var streetViewLink = createStreetViewLink(latLng);
 		var title = document.createElement('h4');
 		title.textContent = displayValue(record.attributes.nm_ruas);
 		popup.appendChild(title);
 		if (satsetInfrastructure.isPublic) {
+			if (streetViewLink) {
+				popup.appendChild(streetViewLink);
+			}
 			appendDetailTable(popup, 'Informasi Infrastruktur', record.attributes, importedFields);
+			if (Object.keys(record.custom_attribute || {}).length) {
+				appendCustomDetailTable(popup, record.custom_attribute);
+			}
 		} else {
-			appendDetailTable(popup, 'Atribut Hasil Impor', record.attributes, importedFields);
-			appendDetailTable(popup, 'Atribut Custom', record.custom_attribute, {});
+			appendDetailTable(popup, null, record.attributes, importedFields, streetViewLink);
+			appendCustomDetailTable(popup, record.custom_attribute);
 		}
 		return popup;
 	}
@@ -295,7 +434,7 @@
 					path.on('click', function (event) {
 						L.popup({ maxWidth: 420 })
 							.setLatLng(event.latlng)
-							.setContent(createPopupContent(record))
+							.setContent(createPopupContent(record, event.latlng))
 							.openOn(map);
 					});
 				}
@@ -323,7 +462,8 @@
 		}
 	}
 
-	function addCustomField(name, value) {
+	function addCustomField(name, attribute) {
+		attribute = attribute && typeof attribute === 'object' ? attribute : { type: 'text', value: attribute || '' };
 		var container = document.getElementById('satset-infrastruktur-custom-fields');
 		var field = document.createElement('div');
 		field.className = 'satset-infrastruktur-custom-field';
@@ -334,15 +474,42 @@
 		nameInput.type = 'text';
 		nameInput.maxLength = 100;
 		nameInput.className = 'satset-custom-name';
+		nameInput.setAttribute('list', 'satset-infrastruktur-custom-name-options');
 		nameInput.value = name || '';
 		nameInput.required = true;
+
+		var typeFieldset = document.createElement('fieldset');
+		typeFieldset.className = 'satset-custom-type';
+		var typeLegend = document.createElement('legend');
+		typeLegend.textContent = 'Jenis atribut';
+		typeFieldset.appendChild(typeLegend);
+		var typeOptions = document.createElement('div');
+		typeOptions.className = 'satset-custom-type-options';
+		var fieldId = ++customFieldId;
+		[
+			{ value: 'text', label: 'Teks biasa' },
+			{ value: 'url', label: 'Link URL' },
+			{ value: 'image', label: 'Gambar' }
+		].forEach(function (option) {
+			var optionLabel = document.createElement('label');
+			var typeInput = document.createElement('input');
+			typeInput.type = 'radio';
+			typeInput.name = 'satset-custom-type-' + fieldId;
+			typeInput.value = option.value;
+			typeInput.className = 'satset-custom-type-value';
+			typeInput.checked = (attribute.type || 'text') === option.value;
+			optionLabel.appendChild(typeInput);
+			optionLabel.appendChild(document.createTextNode(option.label));
+			typeOptions.appendChild(optionLabel);
+		});
+		typeFieldset.appendChild(typeOptions);
 
 		var valueLabel = document.createElement('label');
 		valueLabel.textContent = 'Nilai';
 		var valueInput = document.createElement('textarea');
 		valueInput.maxLength = 5000;
 		valueInput.className = 'satset-custom-value';
-		valueInput.value = value || '';
+		valueInput.value = attribute.value || '';
 
 		var removeButton = document.createElement('button');
 		removeButton.type = 'button';
@@ -355,6 +522,7 @@
 
 		field.appendChild(nameLabel);
 		field.appendChild(nameInput);
+		field.appendChild(typeFieldset);
 		field.appendChild(valueLabel);
 		field.appendChild(valueInput);
 		field.appendChild(removeButton);
@@ -408,9 +576,10 @@
 		window.setTimeout(function () {
 			map.invalidateSize();
 			map.once('moveend', function () {
+				var popupLatLng = getLineMidpoint(layer);
 				L.popup({ maxWidth: 420 })
-					.setLatLng(getLineMidpoint(layer))
-					.setContent(createPopupContent(record))
+					.setLatLng(popupLatLng)
+					.setContent(createPopupContent(record, popupLatLng))
 					.openOn(map);
 			});
 			map.fitBounds(layer.getBounds(), { padding: [32, 32], maxZoom: 16 });
@@ -525,6 +694,7 @@
 
 			records = response.data.records || [];
 			importedFields = response.data.fields || {};
+			refreshCustomAttributeNameOptions();
 			buildRegionColors();
 			(response.data.years || []).forEach(function (year) {
 				var option = document.createElement('option');
@@ -536,9 +706,6 @@
 			var warnings = [];
 			if (response.data.invalid_geometry_count > 0) {
 				warnings.push(response.data.invalid_geometry_count + ' data tidak memiliki geometri GeoJSON valid dan tidak ditampilkan pada peta.');
-			}
-			if (response.data.invalid_custom_attribute_count > 0) {
-				warnings.push(response.data.invalid_custom_attribute_count + ' data memiliki JSON atribut custom yang tidak valid.');
 			}
 			if (warnings.length) {
 				showPageAlert(warnings.join(' '), 'warning');
@@ -636,23 +803,30 @@
 				return;
 			}
 
-			var customAttributes = Object.create(null);
+			var customAttributes = [];
 			var invalidName = false;
 			document.querySelectorAll('#satset-infrastruktur-custom-fields .satset-infrastruktur-custom-field').forEach(function (field) {
 				var nameInput = field.querySelector('.satset-custom-name');
 				var valueInput = field.querySelector('.satset-custom-value');
+				var typeInput = field.querySelector('.satset-custom-type-value:checked');
 				var name = nameInput.value.trim();
 				if (!name) {
 					invalidName = true;
 					nameInput.focus();
 					return;
 				}
-				if (Object.prototype.hasOwnProperty.call(customAttributes, name)) {
+				if (customAttributes.some(function (attribute) {
+					return attribute.name.toLowerCase() === name.toLowerCase();
+				})) {
 					invalidName = true;
 					nameInput.focus();
 					return;
 				}
-				customAttributes[name] = valueInput.value;
+				customAttributes.push({
+					name: name,
+					type: typeInput ? typeInput.value : 'text',
+					value: valueInput.value
+				});
 			});
 			if (invalidName) {
 				showModalAlert('Isi nama setiap atribut custom dan pastikan tidak ada nama duplikat.');
@@ -678,9 +852,11 @@
 					return;
 				}
 				activeRecord.custom_attribute = response.data.custom_attribute || {};
+				refreshCustomAttributeNameOptions();
 				var featureLayer = featureLayers.get(activeRecord.id);
-				if (featureLayer && featureLayer.getPopup()) {
-					featureLayer.setPopupContent(createPopupContent(activeRecord));
+				var featurePopup = featureLayer && featureLayer.getPopup();
+				if (featurePopup) {
+					featureLayer.setPopupContent(createPopupContent(activeRecord, featurePopup.getLatLng()));
 				}
 				$('#satset-infrastruktur-edit-modal').modal('hide');
 				showPageAlert(response.data.message, 'success');

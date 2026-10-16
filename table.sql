@@ -687,3 +687,15 @@ CREATE TABLE `data_infrastruktur` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `uk_data_infrastruktur_nm_ruas` (`nm_ruas`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `data_custom_attributes` (
+    `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `entity_type` VARCHAR(50) NOT NULL,
+    `entity_id` BIGINT(20) UNSIGNED NOT NULL,
+    `attribute_name` VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
+    `attribute_type` VARCHAR(16) NOT NULL DEFAULT 'text',
+    `attribute_value` LONGTEXT NOT NULL,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_data_custom_attribute` (`entity_type`, `entity_id`, `attribute_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
