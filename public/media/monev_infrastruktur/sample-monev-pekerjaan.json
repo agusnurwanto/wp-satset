@@ -1,0 +1,41 @@
+{
+  "programs": [
+    {
+      "kode": "1.03.10",
+      "nama": "PROGRAM PENYELENGGARAAN JALAN",
+      "kegiatan": [
+        {
+          "kode": "1.03.10.2.01",
+          "nama": "Penyelenggaraan Jalan Kabupaten/Kota",
+          "sub_kegiatan": [
+            {
+              "kode": "1.03.10.2.01.0044",
+              "nama": "Rehabilitasi Jalan",
+              "paket_pekerjaan": [
+                {
+                  "nama": "Rehabilitasi Jalan Contoh",
+                  "no": "1",
+                  "pagu_anggaran_rp": "500,000,000",
+                  "sumber_dana": "DAU",
+                  "metode_pemilihan_penyedia": "Tender",
+                  "nilai_kontrak_rp": "480,000,000",
+                  "nama_penyedia": "PT Contoh",
+                  "tmt_pelaksanaan_kontrak_mulai": "1 Maret 2025",
+                  "tmt_pelaksanaan_kontrak_selesai": "30 Juni 2025",
+                  "progres_pekerjaan_persen": "75%",
+                  "catatan_progres_pekerjaan": "Pekerjaan sedang berjalan",
+                  "progres_serapan_anggaran_rp": "360,000,000",
+                  "permasalahan": "-",
+                  "solusi": "-",
+                  "keterangan": "Data contoh",
+                  "nomor_kontrak": "001/CONTOH/2025",
+                  "kode_rup": "12345678"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

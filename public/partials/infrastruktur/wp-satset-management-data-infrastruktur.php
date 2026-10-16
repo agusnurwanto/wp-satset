@@ -8,6 +8,12 @@ if (!defined('WPINC') || !current_user_can('manage_options')) {
 	<header class="satset-infrastruktur-header text-center">
 		<h1>Management Data Infrastruktur</h1>
 		<p class="satset-infrastruktur-intro">Data hasil impor GeoJSON bersifat hanya-baca. Admin dapat menambahkan dan mengelola atribut custom tanpa mengubah data impor.</p>
+		<?php
+		$monev_management_page = get_page_by_path('management-monev-pekerjaan-infrastruktur', OBJECT, 'page');
+		if ($monev_management_page) :
+		?>
+			<p><a class="btn btn-primary" href="<?php echo esc_url(get_permalink($monev_management_page)); ?>">Management Monev Pekerjaan Infrastruktur</a></p>
+		<?php endif; ?>
 	</header>
 
 	<div class="satset-infrastruktur-map-wrap">

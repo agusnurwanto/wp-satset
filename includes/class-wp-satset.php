@@ -174,6 +174,7 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_import_excel_aids',  $plugin_admin, 'import_excel_aids');
 		$this->loader->add_action('wp_ajax_import_excel_malaria',  $plugin_admin, 'import_excel_malaria');
 		$this->loader->add_action('wp_ajax_import_geojson_infrastruktur', $plugin_admin, 'import_geojson_infrastruktur');
+		$this->loader->add_action('wp_ajax_import_monev_infrastruktur', $plugin_admin, 'import_monev_infrastruktur');
 		$this->loader->add_action('wp_ajax_get_data_dtks',  $plugin_admin, 'get_data_dtks');
 		$this->loader->add_action('wp_ajax_get_data_dtsen',  $plugin_admin, 'get_data_dtsen');
 		$this->loader->add_action('wp_ajax_get_data_ats',  $plugin_admin, 'get_data_ats');
@@ -222,6 +223,11 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_satset_get_public_infrastruktur', $plugin_public, 'get_data_infrastruktur_public');
 		$this->loader->add_action('wp_ajax_nopriv_satset_get_public_infrastruktur', $plugin_public, 'get_data_infrastruktur_public');
 		$this->loader->add_action('wp_ajax_satset_update_custom_infrastruktur', $plugin_public, 'update_custom_data_infrastruktur');
+		$this->loader->add_action('wp_ajax_satset_get_monev_infrastruktur', $plugin_public, 'get_monev_infrastruktur_management');
+		$this->loader->add_action('wp_ajax_satset_save_monev_infrastruktur', $plugin_public, 'save_monev_infrastruktur_management');
+		$this->loader->add_action('wp_ajax_satset_delete_monev_infrastruktur', $plugin_public, 'delete_monev_infrastruktur_management');
+		$this->loader->add_action('wp_ajax_satset_map_monev_infrastruktur', $plugin_public, 'map_monev_infrastruktur_management');
+		$this->loader->add_action('wp_ajax_satset_auto_map_monev_infrastruktur', $plugin_public, 'auto_map_monev_infrastruktur_management');
 		$this->loader->add_action('wp_ajax_get_data_stunting_by_id', $plugin_public, 'get_data_stunting_by_id');
 		$this->loader->add_action('wp_ajax_tambah_data_stunting', $plugin_public, 'tambah_data_stunting');
 		$this->loader->add_action('wp_ajax_hapus_data_tbc_by_id', $plugin_public, 'hapus_data_tbc_by_id');
@@ -263,6 +269,7 @@ class Wp_Satset {
 		add_shortcode('management_data_p3ke_anggota_keluarga', array($plugin_public, 'management_data_p3ke_anggota_keluarga'));
 		add_shortcode('management_data_stunting_satset', array($plugin_public, 'management_data_stunting_satset'));
 		add_shortcode('management_data_infrastruktur_satset', array($plugin_public, 'management_data_infrastruktur_satset'));
+		add_shortcode('management_monev_infrastruktur_satset', array($plugin_public, 'management_monev_infrastruktur_satset'));
 		add_shortcode('data_infrastruktur_publik_satset', array($plugin_public, 'data_infrastruktur_publik_satset'));
 		add_shortcode('management_data_tbc_satset', array($plugin_public, 'management_data_tbc_satset'));
 		add_shortcode('management_data_rtlh_satset', array($plugin_public, 'management_data_rtlh_satset'));

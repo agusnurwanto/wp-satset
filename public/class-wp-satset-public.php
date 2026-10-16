@@ -78,6 +78,16 @@ class Wp_Satset_Public {
 			&& has_shortcode($post->post_content, 'data_infrastruktur_publik_satset');
 	}
 
+	private function is_monev_infrastruktur_management_page(){
+		if (!is_singular()) {
+			return false;
+		}
+		$post = get_queried_object();
+		return is_object($post)
+			&& isset($post->post_content)
+			&& has_shortcode($post->post_content, 'management_monev_infrastruktur_satset');
+	}
+
 	private function is_leaflet_public_map_page(){
 		if (!is_singular()) {
 			return false;
@@ -193,6 +203,15 @@ class Wp_Satset_Public {
 			wp_enqueue_style('satset-leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', array(), '1.9.4');
 			wp_enqueue_style($this->plugin_name . 'infrastruktur', plugin_dir_url(__FILE__) . 'css/wp-satset-infrastruktur.css', array($this->plugin_name . 'bootstrap', 'satset-leaflet'), $this->version, 'all');
 		}
+		if ($this->is_monev_infrastruktur_management_page()) {
+			wp_enqueue_style(
+				$this->plugin_name . 'monev-infrastruktur',
+				plugin_dir_url(__FILE__) . 'css/wp-satset-monev-infrastruktur.css',
+				array($this->plugin_name . 'bootstrap'),
+				filemtime(plugin_dir_path(__FILE__) . 'css/wp-satset-monev-infrastruktur.css'),
+				'all'
+			);
+		}
 		if ($this->is_leaflet_public_map_page()) {
 			wp_enqueue_style('satset-leaflet', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', array(), '1.9.4');
 			wp_enqueue_style($this->plugin_name . 'leaflet-public-map', plugin_dir_url(__FILE__) . 'css/wp-satset-leaflet-public.css', array($this->plugin_name . 'bootstrap', 'satset-leaflet'), filemtime(plugin_dir_path(__FILE__) . 'css/wp-satset-leaflet-public.css'), 'all');
@@ -265,6 +284,19 @@ class Wp_Satset_Public {
 				'nonce' => wp_create_nonce('satset_infrastruktur_management'),
 				'hasGoogleMapsApiKey' => $google_maps_api_key !== '',
 				'isPublic' => $this->is_infrastruktur_public_page()
+			));
+		}
+		if ($this->is_monev_infrastruktur_management_page()) {
+			wp_enqueue_script(
+				$this->plugin_name . 'monev-infrastruktur',
+				plugin_dir_url(__FILE__) . 'js/wp-satset-monev-infrastruktur.js',
+				array('jquery', $this->plugin_name . 'bootstrap', $this->plugin_name . 'datatables'),
+				filemtime(plugin_dir_path(__FILE__) . 'js/wp-satset-monev-infrastruktur.js'),
+				true
+			);
+			wp_localize_script($this->plugin_name . 'monev-infrastruktur', 'satsetMonevInfrastructure', array(
+				'ajaxUrl' => admin_url('admin-ajax.php'),
+				'nonce' => wp_create_nonce('satset_monev_infrastruktur_management')
 			));
 		}
 		if ($leaflet_public_map_page) {
@@ -552,6 +584,314 @@ class Wp_Satset_Public {
 			return '';
 		}
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/infrastruktur/wp-satset-management-data-infrastruktur.php';
+	}
+
+	function management_monev_infrastruktur_satset(){
+		if(!current_user_can('manage_options')){
+			return '<p>Anda tidak memiliki izin untuk mengelola data Monev Infrastruktur.</p>';
+		}
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/infrastruktur/wp-satset-management-monev-infrastruktur.php';
+	}
+
+	private function get_monev_infrastruktur_management_table(){
+		check_ajax_referer('satset_monev_infrastruktur_management', 'nonce');
+		if (!current_user_can('manage_options')) {
+			wp_send_json_error(array('message' => 'Anda tidak memiliki izin untuk mengelola data Monev Infrastruktur.'), 403);
+		}
+
+		global $wpdb;
+		$table = 'data_monev_infrastruktur';
+		$existing_table = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)));
+		if ($existing_table !== $table) {
+			wp_send_json_error(array('message' => 'Tabel data_monev_infrastruktur belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options terlebih dahulu.'), 500);
+		}
+		$mapping_column = $wpdb->get_var("SHOW COLUMNS FROM {$table} LIKE 'infrastruktur_id'");
+		if ($mapping_column === null) {
+			if ($wpdb->query("ALTER TABLE {$table} ADD `infrastruktur_id` BIGINT(20) UNSIGNED DEFAULT NULL, ADD KEY `idx_monev_infrastruktur_id` (`infrastruktur_id`)") === false) {
+				wp_send_json_error(array('message' => 'Kolom pemetaan Data Infrastruktur tidak dapat dibuat: ' . $wpdb->last_error), 500);
+			}
+		} elseif ($wpdb->last_error !== '') {
+			wp_send_json_error(array('message' => 'Gagal memeriksa kolom pemetaan Data Infrastruktur: ' . $wpdb->last_error), 500);
+		}
+		return $table;
+	}
+
+	public function get_monev_infrastruktur_management(){
+		$table = $this->get_monev_infrastruktur_management_table();
+		global $wpdb;
+		$columns = 'id, tahun_anggaran, kode_program, nama_program, ringkasan_program, '
+			. 'kode_kegiatan, nama_kegiatan, ringkasan_kegiatan, kode_sub_kegiatan, '
+			. 'nama_sub_kegiatan, ringkasan_sub_kegiatan, urutan_paket, data_paket, infrastruktur_id, created_at';
+		$records = $wpdb->get_results(
+			"SELECT {$columns} FROM {$table} ORDER BY tahun_anggaran DESC, kode_program ASC, kode_kegiatan ASC, kode_sub_kegiatan ASC, urutan_paket ASC, id ASC",
+			ARRAY_A
+		);
+		if ($wpdb->last_error !== '') {
+			wp_send_json_error(array('message' => 'Gagal membaca data Monev Infrastruktur: ' . $wpdb->last_error), 500);
+		}
+		foreach ($records as $record) {
+			$package = json_decode($record['data_paket']);
+			if (json_last_error() !== JSON_ERROR_NONE || (!is_object($package) && !is_array($package))) {
+				wp_send_json_error(array(
+					'message' => sprintf('Data JSON paket pekerjaan dengan ID %d tidak valid dan tidak dapat ditampilkan.', (int) $record['id'])
+				), 500);
+			}
+		}
+		$infrastructure_table = 'data_infrastruktur';
+		$existing_infrastructure_table = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($infrastructure_table)));
+		if ($existing_infrastructure_table !== $infrastructure_table) {
+			wp_send_json_error(array('message' => 'Tabel data_infrastruktur belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options.'), 500);
+		}
+		$infrastructure = $wpdb->get_results("SELECT id, nm_ruas FROM {$infrastructure_table} ORDER BY nm_ruas ASC", ARRAY_A);
+		if ($wpdb->last_error !== '') {
+			wp_send_json_error(array('message' => 'Gagal membaca pilihan Data Infrastruktur: ' . $wpdb->last_error), 500);
+		}
+		wp_send_json_success(array('records' => $records, 'infrastructure' => $infrastructure));
+	}
+
+	private function get_monev_infrastruktur_mapping_tables() {
+		$monev_table = $this->get_monev_infrastruktur_management_table();
+		global $wpdb;
+		$infrastructure_table = 'data_infrastruktur';
+		$existing_table = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($infrastructure_table)));
+		if ($existing_table !== $infrastructure_table) {
+			wp_send_json_error(array('message' => 'Tabel data_infrastruktur belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options.'), 500);
+		}
+		return array($monev_table, $infrastructure_table);
+	}
+
+	private function get_monev_package_name($package_json) {
+		$package = json_decode($package_json, true);
+		if (json_last_error() !== JSON_ERROR_NONE || !is_array($package)) {
+			return '';
+		}
+		foreach (array('nama', 'nama_paket', 'name') as $key) {
+			if (isset($package[$key]) && is_scalar($package[$key])) {
+				return trim((string) $package[$key]);
+			}
+		}
+		return '';
+	}
+
+	public function map_monev_infrastruktur_management() {
+		check_ajax_referer('satset_monev_infrastruktur_management', 'nonce');
+		if (!current_user_can('manage_options')) {
+			wp_send_json_error(array('message' => 'Anda tidak memiliki izin untuk mengelola data Monev Infrastruktur.'), 403);
+		}
+		list($monev_table, $infrastructure_table) = $this->get_monev_infrastruktur_mapping_tables();
+		global $wpdb;
+		$id = isset($_POST['id']) && is_scalar($_POST['id']) ? trim((string) wp_unslash($_POST['id'])) : '';
+		$infrastructure_id = isset($_POST['infrastruktur_id']) && is_scalar($_POST['infrastruktur_id'])
+			? trim((string) wp_unslash($_POST['infrastruktur_id']))
+			: '';
+		if (!ctype_digit($id) || absint($id) < 1) {
+			wp_send_json_error(array('message' => 'ID paket pekerjaan tidak valid.'), 400);
+		}
+		$record_exists = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$monev_table} WHERE id = %d", absint($id)));
+		if ($wpdb->last_error !== '') {
+			wp_send_json_error(array('message' => 'Gagal memeriksa paket pekerjaan: ' . $wpdb->last_error), 500);
+		}
+		if (!$record_exists) {
+			wp_send_json_error(array('message' => 'Paket pekerjaan yang akan dipetakan tidak ditemukan.'), 404);
+		}
+		$mapped_id = null;
+		if ($infrastructure_id !== '') {
+			if (!ctype_digit($infrastructure_id) || absint($infrastructure_id) < 1) {
+				wp_send_json_error(array('message' => 'Pilihan Data Infrastruktur tidak valid.'), 400);
+			}
+			$exists = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$infrastructure_table} WHERE id = %d", absint($infrastructure_id)));
+			if ($wpdb->last_error !== '') {
+				wp_send_json_error(array('message' => 'Gagal memeriksa pilihan Data Infrastruktur: ' . $wpdb->last_error), 500);
+			}
+			if (!$exists) {
+				wp_send_json_error(array('message' => 'Data Infrastruktur yang dipilih tidak ditemukan.'), 404);
+			}
+			$mapped_id = absint($infrastructure_id);
+		}
+		$result = $wpdb->update(
+			$monev_table,
+			array('infrastruktur_id' => $mapped_id),
+			array('id' => absint($id)),
+			array('%d'),
+			array('%d')
+		);
+		if ($result === false) {
+			wp_send_json_error(array('message' => 'Gagal menyimpan pemetaan Data Infrastruktur: ' . $wpdb->last_error), 500);
+		}
+		wp_send_json_success(array('message' => 'Pemetaan Data Infrastruktur berhasil disimpan.'));
+	}
+
+	public function auto_map_monev_infrastruktur_management() {
+		check_ajax_referer('satset_monev_infrastruktur_management', 'nonce');
+		if (!current_user_can('manage_options')) {
+			wp_send_json_error(array('message' => 'Anda tidak memiliki izin untuk mengelola data Monev Infrastruktur.'), 403);
+		}
+		list($monev_table, $infrastructure_table) = $this->get_monev_infrastruktur_mapping_tables();
+		global $wpdb;
+		$infrastructure = $wpdb->get_results("SELECT id, nm_ruas FROM {$infrastructure_table}", ARRAY_A);
+		if ($wpdb->last_error !== '') {
+			wp_send_json_error(array('message' => 'Gagal membaca Data Infrastruktur: ' . $wpdb->last_error), 500);
+		}
+		$infrastructure_by_name = array();
+		foreach ($infrastructure as $item) {
+			$road_name = trim((string) $item['nm_ruas']);
+			if ($road_name !== '') {
+				$infrastructure_by_name[$road_name] = (int) $item['id'];
+			}
+		}
+		$records = $wpdb->get_results("SELECT id, data_paket, infrastruktur_id FROM {$monev_table}", ARRAY_A);
+		if ($wpdb->last_error !== '') {
+			wp_send_json_error(array('message' => 'Gagal membaca paket pekerjaan untuk pemetaan: ' . $wpdb->last_error), 500);
+		}
+		$matches = array();
+		$mapped_count = 0;
+		foreach ($records as $record) {
+			$name = $this->get_monev_package_name($record['data_paket']);
+			$road_name = trim($name);
+			if ($road_name !== '' && isset($infrastructure_by_name[$road_name])) {
+				$infrastructure_id = $infrastructure_by_name[$road_name];
+				$mapped_count++;
+				if ((int) $record['infrastruktur_id'] !== $infrastructure_id) {
+					$matches[(int) $record['id']] = $infrastructure_id;
+				}
+			}
+		}
+		if ($matches && $wpdb->query('START TRANSACTION') === false) {
+			wp_send_json_error(array('message' => 'Transaksi pemetaan tidak dapat dimulai: ' . $wpdb->last_error), 500);
+		}
+		foreach ($matches as $record_id => $infrastructure_id) {
+			if ($wpdb->update($monev_table, array('infrastruktur_id' => $infrastructure_id), array('id' => $record_id), array('%d'), array('%d')) === false) {
+				$error_message = $wpdb->last_error;
+				$wpdb->query('ROLLBACK');
+				wp_send_json_error(array('message' => 'Pemetaan otomatis gagal; seluruh perubahan dibatalkan: ' . $error_message), 500);
+			}
+		}
+		if ($matches && $wpdb->query('COMMIT') === false) {
+			$error_message = $wpdb->last_error;
+			$wpdb->query('ROLLBACK');
+			wp_send_json_error(array('message' => 'Pemetaan otomatis gagal disimpan: ' . $error_message), 500);
+		}
+		wp_send_json_success(array(
+			'message' => sprintf('%d paket cocok; %d pemetaan baru disimpan.', $mapped_count, count($matches)),
+			'mapped' => $mapped_count,
+			'updated' => count($matches)
+		));
+	}
+
+	public function save_monev_infrastruktur_management(){
+		$table = $this->get_monev_infrastruktur_management_table();
+		global $wpdb;
+
+		$get_post_value = function($key) {
+			if (!isset($_POST[$key]) || !is_scalar($_POST[$key])) {
+				return '';
+			}
+			return trim((string) wp_unslash($_POST[$key]));
+		};
+		$year_value = $get_post_value('tahun_anggaran');
+		if (!preg_match('/^\d{4}$/', $year_value) || (int) $year_value < 1900 || (int) $year_value > 2155) {
+			wp_send_json_error(array('message' => 'Tahun anggaran harus berupa tahun 4 digit yang valid.'), 400);
+		}
+
+		$text_fields = array(
+			'kode_program' => array('Kode program', 100, true),
+			'nama_program' => array('Nama program', null, true),
+			'kode_kegiatan' => array('Kode kegiatan', 100, true),
+			'nama_kegiatan' => array('Nama kegiatan', null, true),
+			'kode_sub_kegiatan' => array('Kode subkegiatan', 100, true),
+			'nama_sub_kegiatan' => array('Nama subkegiatan', null, true)
+		);
+		$values = array('tahun_anggaran' => (int) $year_value);
+		foreach ($text_fields as $column => $field) {
+			$value = sanitize_textarea_field($get_post_value($column));
+			if ($field[2] && $value === '') {
+				wp_send_json_error(array('message' => $field[0] . ' wajib diisi.'), 400);
+			}
+			if ($field[1] !== null && strlen($value) > $field[1]) {
+				wp_send_json_error(array('message' => $field[0] . ' maksimal ' . $field[1] . ' karakter.'), 400);
+			}
+			$values[$column] = $value;
+		}
+
+		$summary_fields = array('ringkasan_program', 'ringkasan_kegiatan', 'ringkasan_sub_kegiatan');
+		foreach ($summary_fields as $column) {
+			$summary = $get_post_value($column);
+			if ($summary === '') {
+				$values[$column] = null;
+				continue;
+			}
+			json_decode($summary);
+			if (json_last_error() !== JSON_ERROR_NONE) {
+				wp_send_json_error(array('message' => 'Ringkasan harus berupa JSON yang valid atau dikosongkan.'), 400);
+			}
+			$values[$column] = $summary;
+		}
+
+		$order_value = $get_post_value('urutan_paket');
+		if (!preg_match('/^\d+$/', $order_value) || (float) $order_value > 4294967295) {
+			wp_send_json_error(array('message' => 'Urutan paket harus berupa bilangan bulat positif yang valid.'), 400);
+		}
+		$values['urutan_paket'] = (int) $order_value;
+
+		$package_raw = $get_post_value('data_paket');
+		$package = json_decode($package_raw);
+		if (
+			json_last_error() !== JSON_ERROR_NONE
+			|| (!is_object($package) && !is_array($package))
+		) {
+			wp_send_json_error(array('message' => 'Data paket harus berupa objek atau daftar JSON yang valid.'), 400);
+		}
+		$package_json = wp_json_encode($package);
+		if ($package_json === false) {
+			wp_send_json_error(array('message' => 'Data paket tidak dapat dikodekan sebagai JSON.'), 400);
+		}
+		$values['data_paket'] = $package_json;
+
+		$id_value = $get_post_value('id');
+		if ($id_value !== '' && (!ctype_digit($id_value) || absint($id_value) < 1)) {
+			wp_send_json_error(array('message' => 'ID paket pekerjaan tidak valid.'), 400);
+		}
+		$id = $id_value === '' ? 0 : absint($id_value);
+		$formats = array('%d', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%s');
+
+		if ($id > 0) {
+			$exists = $wpdb->get_var($wpdb->prepare("SELECT id FROM {$table} WHERE id = %d", $id));
+			if (!$exists) {
+				wp_send_json_error(array('message' => 'Paket pekerjaan yang akan diubah tidak ditemukan.'), 404);
+			}
+			$result = $wpdb->update($table, $values, array('id' => $id), $formats, array('%d'));
+			if ($result === false) {
+				wp_send_json_error(array('message' => 'Gagal memperbarui data Monev Infrastruktur: ' . $wpdb->last_error), 500);
+			}
+			wp_send_json_success(array('id' => $id, 'message' => 'Data paket pekerjaan berhasil diperbarui.'));
+		}
+
+		if ($wpdb->insert($table, $values, $formats) === false) {
+			wp_send_json_error(array('message' => 'Gagal menambahkan data Monev Infrastruktur: ' . $wpdb->last_error), 500);
+		}
+		wp_send_json_success(array('id' => (int) $wpdb->insert_id, 'message' => 'Data paket pekerjaan berhasil ditambahkan.'));
+	}
+
+	public function delete_monev_infrastruktur_management(){
+		$table = $this->get_monev_infrastruktur_management_table();
+		global $wpdb;
+		$id_value = isset($_POST['id']) && is_scalar($_POST['id'])
+			? trim((string) wp_unslash($_POST['id']))
+			: '';
+		if (!ctype_digit($id_value) || absint($id_value) < 1) {
+			wp_send_json_error(array('message' => 'ID paket pekerjaan tidak valid.'), 400);
+		}
+		$result = $wpdb->delete($table, array('id' => absint($id_value)), array('%d'));
+		if ($result === false) {
+			wp_send_json_error(array('message' => 'Gagal menghapus data Monev Infrastruktur: ' . $wpdb->last_error), 500);
+		}
+		if ($result === 0) {
+			wp_send_json_error(array('message' => 'Paket pekerjaan yang akan dihapus tidak ditemukan.'), 404);
+		}
+		wp_send_json_success(array('message' => 'Data paket pekerjaan berhasil dihapus.'));
 	}
 
 	function data_infrastruktur_publik_satset(){

@@ -103,10 +103,11 @@ class Wp_Satset_Admin {
 
 		wp_enqueue_script( $this->plugin_name.'jszip', plugin_dir_url( __FILE__ ) . 'js/jszip.js', array( 'jquery' ), $this->version, false );
 		wp_enqueue_script( $this->plugin_name.'xlsx', plugin_dir_url( __FILE__ ) . 'js/xlsx.js', array( 'jquery' ), $this->version, false );
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-satset-admin.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-satset-admin.js', array( 'jquery' ), filemtime(plugin_dir_path(__FILE__) . 'js/wp-satset-admin.js'), false );
 		wp_localize_script($this->plugin_name, 'satset', array(
 			'api_key' => get_option(SATSET_APIKEY),
-			'import_geojson_nonce' => wp_create_nonce('satset_import_geojson_infrastruktur')
+			'import_geojson_nonce' => wp_create_nonce('satset_import_geojson_infrastruktur'),
+			'import_monev_nonce' => wp_create_nonce('satset_import_monev_infrastruktur')
 		));
 
 	}
@@ -460,6 +461,14 @@ class Wp_Satset_Admin {
 		$management_data_infrastruktur = $this->functions->generatePage(array(
 			'nama_page' => 'Management Data Infrastruktur',
 			'content' => '[management_data_infrastruktur_satset]',
+			'show_header' => 1,
+			'no_key' => 1,
+			'post_status' => 'private',
+			'update' => 1
+		));
+		$management_monev_infrastruktur = $this->functions->generatePage(array(
+			'nama_page' => 'Management Monev Pekerjaan Infrastruktur',
+			'content' => '[management_monev_infrastruktur_satset]',
 			'show_header' => 1,
 			'no_key' => 1,
 			'post_status' => 'private',
@@ -965,11 +974,15 @@ class Wp_Satset_Admin {
 			->set_page_parent( $basic_options_container )
 			->add_fields( array(
 				Field::make( 'html', 'crb_infrastruktur_management_link' )
-					->set_html( '<h5>HALAMAN TERKAIT</h5><ol><li><a target="_blank" rel="noopener noreferrer" href="' . esc_url($management_data_infrastruktur['url']) . '">' . esc_html($management_data_infrastruktur['title']) . '</a></li></ol>' ),
+					->set_html( '<h5>HALAMAN TERKAIT</h5><ol><li><a target="_blank" rel="noopener noreferrer" href="' . esc_url($management_data_infrastruktur['url']) . '">' . esc_html($management_data_infrastruktur['title']) . '</a></li><li><a target="_blank" rel="noopener noreferrer" href="' . esc_url($management_monev_infrastruktur['url']) . '">' . esc_html($management_monev_infrastruktur['title']) . '</a></li></ol>' ),
 				Field::make( 'html', 'crb_infrastruktur_import_help' )
 					->set_html( '<h3>Import GeoJSON Data Infrastruktur</h3>Pilih file GeoJSON jalan (.geojson). Geometri LineString dan MultiLineString akan disimpan bersama atribut jalan. Sebelum impor pertama, jalankan SQL Migrate pada menu WP SATSET Options untuk membuat tabel data_infrastruktur.' ),
 				Field::make( 'html', 'crb_infrastruktur_upload' )
-					->set_html( '<input type="file" id="infrastruktur-geojson-file" accept=".geojson,application/geo+json,application/json"><p><button type="button" class="button button-primary" id="infrastruktur-geojson-import" onclick="import_geojson_infrastruktur(); return false;">Import GeoJSON</button></p><div id="infrastruktur-geojson-status" role="status" aria-live="polite"></div>' )
+					->set_html( '<input type="file" id="infrastruktur-geojson-file" accept=".geojson,application/geo+json,application/json"><p><button type="button" class="button button-primary" id="infrastruktur-geojson-import" onclick="import_geojson_infrastruktur(); return false;">Import GeoJSON</button></p><div id="infrastruktur-geojson-status" role="status" aria-live="polite"></div>' ),
+				Field::make( 'html', 'crb_monev_infrastruktur_import_help' )
+					->set_html( '<h3>Import JSON Monev Pekerjaan</h3>Pilih file JSON dengan struktur programs &gt; kegiatan &gt; sub_kegiatan &gt; paket_pekerjaan. Data paket pada tahun yang dipilih akan diganti oleh isi file. Jalankan SQL Migrate terlebih dahulu. <a href="' . esc_url(plugin_dir_url(__FILE__) . '../public/media/monev_infrastruktur/sample-monev-pekerjaan.json') . '" download="sample-monev-pekerjaan.json">Unduh sample JSON</a>.' ),
+				Field::make( 'html', 'crb_monev_infrastruktur_upload' )
+					->set_html( '<p><label for="monev-infrastruktur-year">Tahun Anggaran</label><br><input type="number" id="monev-infrastruktur-year" min="1900" max="2155" step="1" value="' . esc_attr(date('Y')) . '" required></p><p><input type="file" id="monev-infrastruktur-json-file" accept=".json,application/json"></p><p><button type="button" class="button button-primary" id="monev-infrastruktur-import" onclick="import_monev_infrastruktur(); return false;">Import JSON Monev</button></p><div id="monev-infrastruktur-status" role="status" aria-live="polite"></div>' )
 			) );
 	}
 
@@ -1786,6 +1799,196 @@ class Wp_Satset_Admin {
 			. number_format($midpoint[0], 9, '.', '')
 			. ','
 			. number_format($midpoint[1], 9, '.', '');
+	}
+
+	function import_monev_infrastruktur(){
+		check_ajax_referer('satset_import_monev_infrastruktur', 'nonce');
+		if (!current_user_can('manage_options')) {
+			wp_send_json_error(array('message' => 'Anda tidak memiliki izin untuk mengimpor data Monev Infrastruktur.'), 403);
+		}
+
+		if (
+			empty($_FILES['monev_json'])
+			|| !is_array($_FILES['monev_json'])
+			|| !isset($_FILES['monev_json']['error'], $_FILES['monev_json']['name'], $_FILES['monev_json']['tmp_name'])
+			|| $_FILES['monev_json']['error'] !== UPLOAD_ERR_OK
+		) {
+			wp_send_json_error(array('message' => 'File JSON Monev tidak berhasil diunggah.'), 400);
+		}
+		$upload = $_FILES['monev_json'];
+		if (strtolower(pathinfo($upload['name'], PATHINFO_EXTENSION)) !== 'json') {
+			wp_send_json_error(array('message' => 'File harus menggunakan ekstensi .json.'), 400);
+		}
+
+		$year_value = isset($_POST['tahun_anggaran']) ? trim((string) wp_unslash($_POST['tahun_anggaran'])) : '';
+		if (!preg_match('/^\d{4}$/', $year_value) || (int) $year_value < 1900 || (int) $year_value > 2155) {
+			wp_send_json_error(array('message' => 'Tahun anggaran harus berupa tahun 4 digit yang valid.'), 400);
+		}
+		$year = (int) $year_value;
+
+		$contents = file_get_contents($upload['tmp_name']);
+		if ($contents === false) {
+			wp_send_json_error(array('message' => 'File JSON Monev tidak dapat dibaca.'), 400);
+		}
+		$data = json_decode($contents, true);
+		if (json_last_error() !== JSON_ERROR_NONE) {
+			wp_send_json_error(array('message' => 'Isi file bukan JSON yang valid: ' . json_last_error_msg()), 400);
+		}
+
+		$is_list = function($value){
+			if (!is_array($value)) {
+				return false;
+			}
+			$expected_key = 0;
+			foreach ($value as $key => $_item) {
+				if ($key !== $expected_key++) {
+					return false;
+				}
+			}
+			return true;
+		};
+		$encode_json = function($value){
+			if ($value === null) {
+				return null;
+			}
+			$encoded = wp_json_encode($value);
+			return $encoded === false ? false : $encoded;
+		};
+		if (
+			!is_array($data)
+			|| empty($data['programs'])
+			|| !$is_list($data['programs'])
+		) {
+			wp_send_json_error(array('message' => 'Format JSON harus memiliki daftar programs.'), 400);
+		}
+
+		$rows = array();
+		foreach ($data['programs'] as $program_index => $program) {
+			if (
+				!is_array($program)
+				|| !isset($program['kode'], $program['nama'])
+				|| !is_scalar($program['kode'])
+				|| !is_scalar($program['nama'])
+				|| !isset($program['kegiatan'])
+				|| !$is_list($program['kegiatan'])
+			) {
+				wp_send_json_error(array('message' => sprintf('Program ke-%d tidak memiliki kode, nama, atau daftar kegiatan yang valid.', $program_index + 1)), 400);
+			}
+			$program_code = trim((string) $program['kode']);
+			$program_name = trim((string) $program['nama']);
+			if ($program_code === '' || strlen($program_code) > 100 || $program_name === '') {
+				wp_send_json_error(array('message' => sprintf('Kode atau nama program ke-%d tidak valid.', $program_index + 1)), 400);
+			}
+			$program_summary = $encode_json(isset($program['ringkasan']) ? $program['ringkasan'] : null);
+			if ($program_summary === false) {
+				wp_send_json_error(array('message' => sprintf('Ringkasan program ke-%d tidak dapat dikodekan sebagai JSON.', $program_index + 1)), 400);
+			}
+
+			foreach ($program['kegiatan'] as $activity_index => $activity) {
+				if (
+					!is_array($activity)
+					|| !isset($activity['kode'], $activity['nama'])
+					|| !is_scalar($activity['kode'])
+					|| !is_scalar($activity['nama'])
+					|| !isset($activity['sub_kegiatan'])
+					|| !$is_list($activity['sub_kegiatan'])
+				) {
+					wp_send_json_error(array('message' => sprintf('Kegiatan ke-%d pada program %s tidak valid.', $activity_index + 1, $program_code)), 400);
+				}
+				$activity_code = trim((string) $activity['kode']);
+				$activity_name = trim((string) $activity['nama']);
+				if ($activity_code === '' || strlen($activity_code) > 100 || $activity_name === '') {
+					wp_send_json_error(array('message' => sprintf('Kode atau nama kegiatan ke-%d pada program %s tidak valid.', $activity_index + 1, $program_code)), 400);
+				}
+				$activity_summary = $encode_json(isset($activity['ringkasan']) ? $activity['ringkasan'] : null);
+				if ($activity_summary === false) {
+					wp_send_json_error(array('message' => sprintf('Ringkasan kegiatan %s tidak dapat dikodekan sebagai JSON.', $activity_code)), 400);
+				}
+
+				foreach ($activity['sub_kegiatan'] as $sub_activity_index => $sub_activity) {
+					if (
+						!is_array($sub_activity)
+						|| !isset($sub_activity['kode'], $sub_activity['nama'])
+						|| !is_scalar($sub_activity['kode'])
+						|| !is_scalar($sub_activity['nama'])
+						|| !isset($sub_activity['paket_pekerjaan'])
+						|| !$is_list($sub_activity['paket_pekerjaan'])
+					) {
+						wp_send_json_error(array('message' => sprintf('Subkegiatan ke-%d pada kegiatan %s tidak valid.', $sub_activity_index + 1, $activity_code)), 400);
+					}
+					$sub_activity_code = trim((string) $sub_activity['kode']);
+					$sub_activity_name = trim((string) $sub_activity['nama']);
+					if ($sub_activity_code === '' || strlen($sub_activity_code) > 100 || $sub_activity_name === '') {
+						wp_send_json_error(array('message' => sprintf('Kode atau nama subkegiatan ke-%d pada kegiatan %s tidak valid.', $sub_activity_index + 1, $activity_code)), 400);
+					}
+					$sub_activity_summary = $encode_json(isset($sub_activity['ringkasan']) ? $sub_activity['ringkasan'] : null);
+					if ($sub_activity_summary === false) {
+						wp_send_json_error(array('message' => sprintf('Ringkasan subkegiatan %s tidak dapat dikodekan sebagai JSON.', $sub_activity_code)), 400);
+					}
+
+					foreach ($sub_activity['paket_pekerjaan'] as $package_index => $package) {
+						if (!is_array($package) || !$package) {
+							wp_send_json_error(array('message' => sprintf('Paket ke-%d pada subkegiatan %s tidak valid.', $package_index + 1, $sub_activity_code)), 400);
+						}
+						$package_json = $encode_json($package);
+						if ($package_json === false) {
+							wp_send_json_error(array('message' => sprintf('Paket ke-%d pada subkegiatan %s tidak dapat dikodekan sebagai JSON.', $package_index + 1, $sub_activity_code)), 400);
+						}
+						$rows[] = array(
+							'tahun_anggaran' => $year,
+							'kode_program' => $program_code,
+							'nama_program' => $program_name,
+							'ringkasan_program' => $program_summary,
+							'kode_kegiatan' => $activity_code,
+							'nama_kegiatan' => $activity_name,
+							'ringkasan_kegiatan' => $activity_summary,
+							'kode_sub_kegiatan' => $sub_activity_code,
+							'nama_sub_kegiatan' => $sub_activity_name,
+							'ringkasan_sub_kegiatan' => $sub_activity_summary,
+							'urutan_paket' => $package_index + 1,
+							'data_paket' => $package_json
+						);
+					}
+				}
+			}
+		}
+		if (!$rows) {
+			wp_send_json_error(array('message' => 'File JSON tidak berisi paket pekerjaan untuk diimpor.'), 400);
+		}
+
+		global $wpdb;
+		$table = 'data_monev_infrastruktur';
+		$existing_table = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($table)));
+		if ($existing_table !== $table) {
+			wp_send_json_error(array('message' => 'Tabel data_monev_infrastruktur belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options terlebih dahulu.'), 500);
+		}
+		if ($wpdb->query('START TRANSACTION') === false) {
+			wp_send_json_error(array('message' => 'Transaksi impor tidak dapat dimulai: ' . $wpdb->last_error), 500);
+		}
+		$deleted = $wpdb->delete($table, array('tahun_anggaran' => $year), array('%d'));
+		if ($deleted === false) {
+			$error_message = $wpdb->last_error;
+			$wpdb->query('ROLLBACK');
+			wp_send_json_error(array('message' => 'Data Monev tahun ' . $year . ' tidak dapat diperbarui: ' . $error_message), 500);
+		}
+		foreach ($rows as $index => $row) {
+			if ($wpdb->insert($table, $row) === false) {
+				$error_message = $wpdb->last_error;
+				$wpdb->query('ROLLBACK');
+				wp_send_json_error(array('message' => sprintf('Gagal menyimpan paket ke-%d. Seluruh perubahan dibatalkan: %s', $index + 1, $error_message)), 500);
+			}
+		}
+		if ($wpdb->query('COMMIT') === false) {
+			$error_message = $wpdb->last_error;
+			$wpdb->query('ROLLBACK');
+			wp_send_json_error(array('message' => 'Impor gagal disimpan: ' . $error_message), 500);
+		}
+
+		wp_send_json_success(array(
+			'message' => sprintf('Impor Monev tahun %d selesai: %d paket pekerjaan disimpan; %d data lama diganti.', $year, count($rows), (int) $deleted),
+			'total' => count($rows),
+			'deleted' => (int) $deleted
+		));
 	}
 
 	function import_geojson_infrastruktur(){

@@ -688,6 +688,30 @@ CREATE TABLE `data_infrastruktur` (
     UNIQUE KEY `uk_data_infrastruktur_nm_ruas` (`nm_ruas`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `data_monev_infrastruktur` (
+    `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `tahun_anggaran` SMALLINT(5) UNSIGNED NOT NULL,
+    `kode_program` VARCHAR(100) NOT NULL,
+    `nama_program` TEXT NOT NULL,
+    `ringkasan_program` LONGTEXT DEFAULT NULL,
+    `kode_kegiatan` VARCHAR(100) NOT NULL,
+    `nama_kegiatan` TEXT NOT NULL,
+    `ringkasan_kegiatan` LONGTEXT DEFAULT NULL,
+    `kode_sub_kegiatan` VARCHAR(100) NOT NULL,
+    `nama_sub_kegiatan` TEXT NOT NULL,
+    `ringkasan_sub_kegiatan` LONGTEXT DEFAULT NULL,
+    `urutan_paket` INT(11) UNSIGNED NOT NULL,
+    `data_paket` LONGTEXT NOT NULL,
+    `infrastruktur_id` BIGINT(20) UNSIGNED DEFAULT NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    KEY `idx_monev_tahun` (`tahun_anggaran`),
+    KEY `idx_monev_program` (`kode_program`),
+    KEY `idx_monev_kegiatan` (`kode_kegiatan`),
+    KEY `idx_monev_sub_kegiatan` (`kode_sub_kegiatan`),
+    KEY `idx_monev_infrastruktur_id` (`infrastruktur_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `data_custom_attributes` (
     `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
     `entity_type` VARCHAR(50) NOT NULL,

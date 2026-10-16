@@ -998,3 +998,70 @@ function import_geojson_infrastruktur() {
         }
     });
 }
+
+function import_monev_infrastruktur() {
+    var fileInput = document.getElementById('monev-infrastruktur-json-file');
+    var yearInput = document.getElementById('monev-infrastruktur-year');
+    var file = fileInput && fileInput.files ? fileInput.files[0] : null;
+    var year = yearInput ? yearInput.value : '';
+    if (!file) {
+        alert('Pilih file JSON Monev terlebih dahulu.');
+        return;
+    }
+    if (!/\.json$/i.test(file.name)) {
+        alert('File harus menggunakan ekstensi .json.');
+        return;
+    }
+    if (!/^\d{4}$/.test(year) || Number(year) < 1900 || Number(year) > 2155) {
+        alert('Masukkan tahun anggaran yang valid.');
+        return;
+    }
+    if (!window.confirm('Data Monev tahun ' + year + ' yang ada akan diganti dengan isi file. Lanjutkan?')) {
+        return;
+    }
+
+    var formData = new FormData();
+    formData.append('action', 'import_monev_infrastruktur');
+    formData.append('nonce', satset.import_monev_nonce);
+    formData.append('tahun_anggaran', year);
+    formData.append('monev_json', file);
+
+    var button = jQuery('#monev-infrastruktur-import');
+    var status = jQuery('#monev-infrastruktur-status');
+    button.prop('disabled', true);
+    status.text('Mengimpor JSON Monev...');
+    jQuery('#wrap-loading').show();
+
+    jQuery.ajax({
+        url: ajaxurl,
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: 'json',
+        timeout: 900000,
+        success: function(response) {
+            if (!response || !response.success || !response.data || !response.data.message) {
+                var errorMessage = response && response.data && response.data.message
+                    ? response.data.message
+                    : 'Server tidak memberikan hasil impor yang valid.';
+                status.text(errorMessage);
+                alert(errorMessage);
+                return;
+            }
+            status.text(response.data.message);
+            alert(response.data.message);
+        },
+        error: function(xhr) {
+            var errorMessage = xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message
+                ? xhr.responseJSON.data.message
+                : 'Impor gagal. Periksa file dan log server, lalu coba lagi.';
+            status.text(errorMessage);
+            alert(errorMessage);
+        },
+        complete: function() {
+            button.prop('disabled', false);
+            jQuery('#wrap-loading').hide();
+        }
+    });
+}

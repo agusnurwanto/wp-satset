@@ -1,0 +1,207 @@
+.satset-monev-infrastruktur-page {
+	width: 100%;
+	max-width: none;
+	margin: 0 auto;
+	padding: 24px clamp(16px, 3vw, 48px) 48px;
+	box-sizing: border-box;
+}
+
+.satset-monev-infrastruktur-header h1 {
+	margin: 0 0 8px;
+}
+
+.satset-monev-infrastruktur-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: end;
+	gap: 14px;
+	margin: 22px 0 14px;
+	justify-content: center;
+}
+
+.satset-monev-infrastruktur-toolbar label,
+.satset-monev-infrastruktur-form-grid label,
+.satset-monev-infrastruktur-package-field label {
+	display: block;
+	margin-bottom: 5px;
+	font-weight: 600;
+}
+
+.satset-monev-infrastruktur-toolbar select,
+.satset-monev-infrastruktur-toolbar input {
+	min-width: 210px;
+	min-height: 38px;
+}
+
+.satset-monev-infrastruktur-mapping {
+	box-sizing: border-box;
+	width: 100%;
+	min-width: 180px;
+	min-height: 36px;
+}
+
+.satset-monev-infrastruktur-table-wrap {
+	width: 100%;
+	height: auto;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+#satset-monev-infrastruktur-table {
+	width: 100%;
+	min-width: 1100px;
+}
+
+#satset-monev-infrastruktur-table th,
+#satset-monev-infrastruktur-table td {
+	vertical-align: top !important;
+}
+
+.satset-monev-infrastruktur-hierarchy > div {
+	padding: 5px 0;
+}
+
+.satset-monev-infrastruktur-hierarchy > div + div {
+	border-top: 1px solid #d8dee4;
+}
+
+.satset-monev-infrastruktur-package-table {
+	width: 100%;
+	min-width: 300px;
+	border-collapse: collapse;
+}
+
+.satset-monev-infrastruktur-package-table th,
+.satset-monev-infrastruktur-package-table td {
+	padding: 4px 7px;
+	border: 1px solid #dee2e6;
+	text-align: left;
+	vertical-align: top;
+}
+
+.satset-monev-infrastruktur-package-table th {
+	width: 38%;
+	background: #f6f8fa;
+	font-weight: 600;
+}
+
+.satset-monev-infrastruktur-package-details {
+	min-width: 300px;
+}
+
+.satset-monev-infrastruktur-package-details > summary {
+	cursor: pointer;
+}
+
+.satset-monev-infrastruktur-package-details > summary span {
+	display: block;
+	margin-top: 4px;
+	color: #50575e;
+	font-size: 12px;
+}
+
+.satset-monev-infrastruktur-package-details[open] > summary {
+	margin-bottom: 8px;
+}
+
+.satset-monev-infrastruktur-page .dataTables_wrapper {
+	width: 100%;
+}
+
+.satset-monev-infrastruktur-page .dataTables_length,
+.satset-monev-infrastruktur-page .dataTables_filter {
+	margin-bottom: 12px;
+}
+
+.satset-monev-infrastruktur-page .dataTables_filter {
+	display: none;
+}
+
+.satset-monev-infrastruktur-row-actions {
+	display: flex;
+	gap: 6px;
+	white-space: nowrap;
+}
+
+.satset-monev-infrastruktur-editor .modal-content {
+	border: 0;
+	border-radius: 10px;
+	box-shadow: 0 12px 36px rgba(20, 45, 65, .2);
+}
+
+.satset-monev-infrastruktur-editor .modal-header {
+	padding: 18px 24px;
+	border-bottom: 1px solid #e5e7eb;
+}
+
+.satset-monev-infrastruktur-editor .modal-title {
+	margin: 0;
+	font-size: 20px;
+	font-weight: 600;
+}
+
+.satset-monev-infrastruktur-editor .modal-body {
+	padding: 22px 24px;
+}
+
+.satset-monev-infrastruktur-form-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: 0 16px;
+}
+
+.satset-monev-infrastruktur-form-grid p {
+	min-width: 0;
+	margin: 0 0 14px;
+}
+
+.satset-monev-infrastruktur-form-grid input,
+.satset-monev-infrastruktur-form-grid textarea,
+.satset-monev-infrastruktur-package-field textarea {
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.satset-monev-infrastruktur-form-grid input {
+	min-height: 38px;
+}
+
+.satset-monev-infrastruktur-json-field {
+	grid-column: 1 / -1;
+}
+
+.satset-monev-infrastruktur-json-field textarea {
+	font-family: Consolas, Monaco, monospace;
+}
+
+.satset-monev-infrastruktur-package-field textarea {
+	min-height: 240px;
+	font-family: Consolas, Monaco, monospace;
+}
+
+.satset-monev-infrastruktur-package-field small {
+	display: block;
+	margin-top: 5px;
+	color: #50575e;
+}
+
+.satset-monev-infrastruktur-form-actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 8px;
+	padding: 14px 24px;
+	border-top: 1px solid #e5e7eb;
+}
+
+@media (max-width: 600px) {
+	.satset-monev-infrastruktur-editor .modal-header,
+	.satset-monev-infrastruktur-editor .modal-body {
+		padding-right: 16px;
+		padding-left: 16px;
+	}
+
+	.satset-monev-infrastruktur-form-actions {
+		padding-right: 16px;
+		padding-left: 16px;
+	}
+}
