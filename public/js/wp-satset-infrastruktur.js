@@ -29,6 +29,343 @@
 		return String(value);
 	}
 
+	function getWorkYears(record) {
+		return Array.isArray(record.work_years) ? record.work_years.map(String) : [];
+	}
+
+	function getWorkYearLabel(record) {
+		var years = getWorkYears(record);
+		return years.length ? years.join(', ') : '-';
+	}
+
+	function matchesWorkYear(record, year) {
+		return !year || getWorkYears(record).indexOf(year) !== -1;
+	}
+
+	function parseNumericValue(value) {
+		if (typeof value === 'number') {
+			return Number.isFinite(value) ? value : null;
+		}
+		if (value === null || value === undefined) {
+			return null;
+		}
+
+		var normalized = String(value).trim().replace(/[^\d.,+-]/g, '');
+		if (!normalized) {
+			return null;
+		}
+		var commaIndex = normalized.lastIndexOf(',');
+		var dotIndex = normalized.lastIndexOf('.');
+		if (commaIndex !== -1 && dotIndex !== -1) {
+			var decimalSeparator = commaIndex > dotIndex ? ',' : '.';
+			var thousandsSeparator = decimalSeparator === ',' ? '.' : ',';
+			normalized = normalized.split(thousandsSeparator).join('');
+			if (decimalSeparator === ',') {
+				normalized = normalized.replace(',', '.');
+			}
+		} else if (commaIndex !== -1) {
+			normalized = (normalized.match(/,/g) || []).length > 1
+				? normalized.split(',').join('')
+				: normalized.replace(',', '.');
+		} else if ((normalized.match(/\./g) || []).length > 1) {
+			normalized = normalized.split('.').join('');
+		}
+		var numericValue = Number(normalized);
+		return Number.isFinite(numericValue) ? numericValue : null;
+	}
+
+	function getFilterAttributes(record) {
+		return record.filter_attributes || record.attributes || {};
+	}
+
+	function getRoadLength(record) {
+		return parseNumericValue(getFilterAttributes(record).panjang);
+	}
+
+	function getGoodConditionPercentage(record) {
+		var attributes = getFilterAttributes(record);
+		var roadLength = getRoadLength(record);
+		var goodLength = parseNumericValue(attributes.kon_baik);
+		var fairLength = parseNumericValue(attributes.kon_sdg);
+		if (roadLength === null || roadLength <= 0 || goodLength === null || fairLength === null) {
+			return null;
+		}
+		return (goodLength + fairLength) / roadLength * 100;
+	}
+
+	function matchesLengthGroup(record, group) {
+		if (!group) {
+			return true;
+		}
+		var length = getRoadLength(record);
+		if (length === null) {
+			return false;
+		}
+		if (group === 'under-1') {
+			return length < 1;
+		}
+		if (group === '1-to-5') {
+			return length >= 1 && length <= 5;
+		}
+		return length > 5;
+	}
+
+	function matchesGoodPercentageGroup(record, group) {
+		if (!group) {
+			return true;
+		}
+		var percentage = getGoodConditionPercentage(record);
+		if (percentage === null) {
+			return false;
+		}
+		if (group === 'under-50') {
+			return percentage < 50;
+		}
+		if (group === '50-to-80') {
+			return percentage >= 50 && percentage <= 80;
+		}
+		return percentage > 80;
+	}
+
+	function matchesManagementFilters(record) {
+		var selectedFunction = $('#satset-infrastruktur-function').val() || '';
+		var selectedLengthGroup = $('#satset-infrastruktur-length-group').val() || '';
+		var selectedGoodPercentageGroup = $('#satset-infrastruktur-good-percentage').val() || '';
+		var roadFunction = String(getFilterAttributes(record).fungsi || '').trim();
+		return (!selectedFunction || roadFunction === selectedFunction)
+			&& matchesLengthGroup(record, selectedLengthGroup)
+			&& matchesGoodPercentageGroup(record, selectedGoodPercentageGroup);
+	}
+
+	function getRoadFunctionLabel(roadFunction) {
+		var functionNames = {
+			JAP: 'Jalan Arteri Primer',
+			JKP: 'Jalan Kolektor Primer',
+			JLP: 'Jalan Lokal Primer',
+			'JLING.P': 'Jalan Lingkungan Primer',
+			JNS: 'Jalan Strategis Nasional',
+			JSP: 'Jalan Strategis Provinsi',
+			JSK: 'Jalan Strategis Kabupaten',
+			DR: 'Daerah Rawan',
+			APN: 'Aset Penting Negara',
+			PN: 'Pertahanan dan Keamanan',
+			PKN: 'Pusat Kegiatan Nasional',
+			PKW: 'Pusat Kegiatan Wilayah',
+			PKL: 'Pusat Kegiatan Lokal',
+			PKLING: 'Pusat Kegiatan Lingkungan',
+			PKSN: 'Pusat Kawasan Strategis Nasional',
+			KSN: 'Kawasan Strategis Nasional',
+			KSP: 'Kawasan Strategis Provinsi',
+			KSK: 'Kawasan Strategis Kabupaten',
+			'BU/UP': 'Bandar Udara Utama/Pengumpul',
+			PL: 'Pelabuhan Utama/Pengumpul',
+			'JKP-1': 'JKP yang menghubungkan antar ibu kota provinsi',
+			'JKP-2': 'JKP yang menghubungkan ibu kota provinsi dengan ibu kota kabupaten/kota',
+			'JKP-3': 'JKP yang menghubungkan antar ibu kota kabupaten/kota',
+			'JKP-4': 'JKP yang menghubungkan ibu kota kabupaten/kota dengan ibu kota kecamatan',
+			JAS: 'Jalan Arteri Sekunder'
+		};
+		var code = String(roadFunction || '').trim();
+		var name = functionNames[code.toUpperCase()];
+		return name ? code + ' (' + name + ')' : code;
+	}
+
+	function formatLocation(record) {
+		var attributes = getFilterAttributes(record);
+		var district = String(attributes.kab_kot || '').trim();
+		var province = String(attributes.propinsi || '').trim();
+		if (district && province) {
+			return district + ', ' + province;
+		}
+		return district || province || '-';
+	}
+
+	function formatRegionAndStatus(record) {
+		var attributes = record.attributes || {};
+		var region = String(attributes.wilayah || '').trim();
+		var status = String(attributes.status || '').trim();
+		if (region && !/^wilayah(?:\s|$)/i.test(region)) {
+			region = 'Wilayah ' + region;
+		}
+		if (region && status) {
+			return region + ' - ' + status;
+		}
+		return region || status || '-';
+	}
+
+	function formatRoadLength(record) {
+		var length = getRoadLength(record);
+		return length === null ? '-' : length.toLocaleString('id-ID', { maximumFractionDigits: 2 }) + ' km';
+	}
+
+	function getRoadConditionLines(record) {
+		var percentage = getGoodConditionPercentage(record);
+		var attributes = getFilterAttributes(record);
+		return [
+			'Persentase Baik + Sedang: ' + (percentage === null ? '-' : percentage.toLocaleString('id-ID', { maximumFractionDigits: 1 }) + '%'),
+			'Baik: ' + displayValue(attributes.kon_baik),
+			'Sedang: ' + displayValue(attributes.kon_sdg),
+			'Ringan: ' + displayValue(attributes.kon_rgn),
+			'Rusak Berat: ' + displayValue(attributes.kon_rusak)
+		];
+	}
+
+	function renderRoadCondition(record, type) {
+		var percentage = getGoodConditionPercentage(record);
+		if (type !== 'display') {
+			return percentage === null ? '' : percentage;
+		}
+		var lines = getRoadConditionLines(record).map(function (line, index) {
+			return (index ? '<hr>' : '') + '<div>' +
+				(index === 0 ? '<strong>' + escapeHtml(line) + '</strong>' : escapeHtml(line)) +
+				'</div>';
+		});
+		return '<div class="satset-infrastruktur-condition-cell">' + lines.join('') + '</div>';
+	}
+
+	function populateManagementFilters() {
+		var functionSelect = document.getElementById('satset-infrastruktur-function');
+		var roadFunctions = Array.from(new Set(records.map(function (record) {
+			return String(getFilterAttributes(record).fungsi || '').trim();
+		}).filter(Boolean))).sort(function (left, right) {
+			return left.localeCompare(right, 'id');
+		});
+		roadFunctions.forEach(function (roadFunction) {
+			var option = document.createElement('option');
+			option.value = roadFunction;
+			option.textContent = getRoadFunctionLabel(roadFunction);
+			functionSelect.appendChild(option);
+		});
+	}
+
+	function formatPackageKey(key) {
+		var normalizedKey = String(key).toLowerCase();
+		if (['nama', 'nama_paket', 'name'].indexOf(normalizedKey) !== -1) {
+			return 'Nama Paket';
+		}
+		if (['penyedia', 'nama_penyedia', 'vendor'].indexOf(normalizedKey) !== -1) {
+			return 'Penyedia';
+		}
+		return String(key)
+			.replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+			.replace(/[_-]+/g, ' ')
+			.replace(/\b\w/g, function (character) {
+				return character.toUpperCase();
+			});
+	}
+
+	function getPackageName(packageRecord) {
+		if (packageRecord.nama_paket !== undefined && packageRecord.nama_paket !== null && packageRecord.nama_paket !== '') {
+			return String(packageRecord.nama_paket);
+		}
+		var packageData = packageRecord.data_paket;
+		if (packageData && typeof packageData === 'object' && !Array.isArray(packageData)) {
+			for (var keyIndex = 0; keyIndex < 3; keyIndex++) {
+				var key = ['nama', 'nama_paket', 'name'][keyIndex];
+				if (packageData[key] !== undefined && packageData[key] !== null && packageData[key] !== '') {
+					return String(packageData[key]);
+				}
+			}
+		}
+		return 'Paket Pekerjaan';
+	}
+
+	function flattenPackageValue(value) {
+		if (Array.isArray(value)) {
+			return value.map(flattenPackageValue).join(', ');
+		}
+		if (value && typeof value === 'object') {
+			return Object.keys(value).map(function (key) {
+				return formatPackageKey(key) + ': ' + flattenPackageValue(value[key]);
+			}).join('; ');
+		}
+		return displayValue(value);
+	}
+
+	function appendPackageTable(container, packageRecord) {
+		var tableElement = document.createElement('table');
+		var body = document.createElement('tbody');
+		var yearRow = document.createElement('tr');
+		var yearLabel = document.createElement('th');
+		var yearValue = document.createElement('td');
+		yearLabel.textContent = 'Tahun Pekerjaan';
+		yearValue.textContent = displayValue(packageRecord.tahun_anggaran);
+		yearRow.appendChild(yearLabel);
+		yearRow.appendChild(yearValue);
+		body.appendChild(yearRow);
+
+		var packageData = packageRecord.data_paket;
+		var details = Array.isArray(packageData)
+			? packageData.map(function (value, index) {
+				return { key: 'Data Paket ' + (index + 1), value: value };
+			})
+			: Object.keys(packageData || {}).map(function (key) {
+				return { key: formatPackageKey(key), value: packageData[key] };
+			});
+		details.forEach(function (detail) {
+			var row = document.createElement('tr');
+			var label = document.createElement('th');
+			var value = document.createElement('td');
+			label.textContent = detail.key;
+			value.textContent = flattenPackageValue(detail.value);
+			row.appendChild(label);
+			row.appendChild(value);
+			body.appendChild(row);
+		});
+		if (!details.length) {
+			var emptyRow = document.createElement('tr');
+			var emptyCell = document.createElement('td');
+			emptyCell.colSpan = 2;
+			emptyCell.textContent = 'Tidak ada detail paket.';
+			emptyRow.appendChild(emptyCell);
+			body.appendChild(emptyRow);
+		}
+		tableElement.appendChild(body);
+		container.appendChild(tableElement);
+	}
+
+	function appendWorkPackages(container, packages, expandable) {
+		var packageList = Array.isArray(packages) ? packages : [];
+		var wrapper = document.createElement(expandable ? 'details' : 'div');
+		wrapper.className = 'satset-infrastruktur-work-package-list';
+		if (expandable) {
+			var summary = document.createElement('summary');
+			summary.textContent = 'Paket Pekerjaan (' + packageList.length + ')';
+			wrapper.appendChild(summary);
+		}
+		if (!packageList.length) {
+			var emptyMessage = document.createElement('p');
+			emptyMessage.textContent = 'Belum ada paket pekerjaan yang dipetakan.';
+			wrapper.appendChild(emptyMessage);
+		}
+		packageList.forEach(function (packageRecord) {
+			var packageCard = document.createElement('div');
+			packageCard.className = 'satset-infrastruktur-work-package';
+			var heading = document.createElement('h6');
+			heading.textContent = getPackageName(packageRecord) + ' (' + displayValue(packageRecord.tahun_anggaran) + ')';
+			packageCard.appendChild(heading);
+			appendPackageTable(packageCard, packageRecord);
+			wrapper.appendChild(packageCard);
+		});
+		container.appendChild(wrapper);
+	}
+
+	function renderWorkPackageSummary(record, type) {
+		var packages = Array.isArray(record.work_packages) ? record.work_packages : [];
+		if (!packages.length) {
+			return type === 'display' ? '—' : '';
+		}
+		if (type !== 'display') {
+			return packages.map(function (packageRecord) {
+				return displayValue(packageRecord.tahun_anggaran) + ' - ' + getPackageName(packageRecord);
+			}).join(' ');
+		}
+		return packages.map(function (packageRecord) {
+			return '<div>' + escapeHtml(displayValue(packageRecord.tahun_anggaran)) + ' - ' +
+				escapeHtml(getPackageName(packageRecord)) + '</div>';
+		}).join('');
+	}
+
 	function refreshCustomAttributeNameOptions() {
 		var optionList = document.getElementById('satset-infrastruktur-custom-name-options');
 		if (!optionList) {
@@ -321,15 +658,32 @@
 		title.textContent = displayValue(record.attributes.nm_ruas);
 		popup.appendChild(title);
 		if (satsetInfrastructure.isPublic) {
-			if (streetViewLink) {
-				popup.appendChild(streetViewLink);
-			}
-			appendDetailTable(popup, 'Informasi Infrastruktur', record.attributes, importedFields);
-			if (Object.keys(record.custom_attribute || {}).length) {
-				appendCustomDetailTable(popup, record.custom_attribute);
-			}
+			var publicDetails = {
+				'wilayah_status': formatRegionAndStatus(record),
+				'kabupaten_provinsi': formatLocation(record),
+				'kecamatan': displayValue(record.attributes.kecamatan),
+				'desa_kelurahan': displayValue(record.attributes.desa_kel),
+				'fungsi': displayValue(getFilterAttributes(record).fungsi),
+				'panjang': formatRoadLength(record),
+				'kondisi': getRoadConditionLines(record).join('\n'),
+				'tahun_pekerjaan': getWorkYearLabel(record),
+				'paket_pekerjaan': renderWorkPackageSummary(record, 'text')
+			};
+			var publicDetailLabels = {
+				'wilayah_status': 'Wilayah - Status',
+				'kabupaten_provinsi': 'Kabupaten / Kota, Provinsi',
+				'kecamatan': 'Kecamatan',
+				'desa_kelurahan': 'Desa / Kelurahan',
+				'fungsi': 'Fungsi Jalan',
+				'panjang': 'Panjang (Km)',
+				'kondisi': 'Kondisi Jalan',
+				'tahun_pekerjaan': 'Tahun Pekerjaan',
+				'paket_pekerjaan': 'Paket Pekerjaan'
+			};
+			appendDetailTable(popup, null, publicDetails, publicDetailLabels, streetViewLink);
 		} else {
 			appendDetailTable(popup, null, record.attributes, importedFields, streetViewLink);
+			appendWorkPackages(popup, record.work_packages, true);
 			appendCustomDetailTable(popup, record.custom_attribute);
 		}
 		return popup;
@@ -415,7 +769,7 @@
 		featureLayers.clear();
 
 		var visibleRecords = records.filter(function (record) {
-			return (!year || String(record.attributes.thn_data || '') === year) && record.geometry;
+			return matchesWorkYear(record, year) && matchesManagementFilters(record) && record.geometry;
 		});
 		renderRegionLegend(visibleRecords);
 		var bounds = [];
@@ -448,7 +802,7 @@
 		});
 
 		if (!visibleRecords.length) {
-			showMapStatus('Tidak ada geometri untuk filter tahun ini.', 0);
+			showMapStatus('Tidak ada geometri untuk filter yang dipilih.', 0);
 		} else {
 			showMapStatus('', 0);
 		}
@@ -533,8 +887,10 @@
 		activeRecord = record;
 		showModalAlert('');
 		var importedContainer = document.getElementById('satset-infrastruktur-imported-fields');
+		var workPackagesContainer = document.getElementById('satset-infrastruktur-work-packages');
 		var customContainer = document.getElementById('satset-infrastruktur-custom-fields');
 		importedContainer.replaceChildren();
+		workPackagesContainer.replaceChildren();
 		customContainer.replaceChildren();
 
 		Object.keys(importedFields).forEach(function (key) {
@@ -550,6 +906,7 @@
 			importedContainer.appendChild(field);
 		});
 
+		appendWorkPackages(workPackagesContainer, record.work_packages, false);
 		Object.keys(record.custom_attribute || {}).forEach(function (name) {
 			addCustomField(name, record.custom_attribute[name]);
 		});
@@ -563,8 +920,8 @@
 		});
 		if (!layer || !record) {
 			var selectedYear = $('#satset-infrastruktur-year').val();
-			if (selectedYear && record && String(record.attributes.thn_data || '') !== selectedYear) {
-				showPageAlert('Ruas ini berada di luar filter tahun aktif. Pilih tahun "' + displayValue(record.attributes.thn_data) + '" untuk menampilkannya di peta.', 'warning');
+			if (selectedYear && record && !matchesWorkYear(record, selectedYear)) {
+				showPageAlert('Ruas ini berada di luar filter tahun aktif. Pilih tahun pekerjaan "' + getWorkYearLabel(record) + '" untuk menampilkannya di peta.', 'warning');
 			} else {
 				showPageAlert('Geometri data ini tidak tersedia untuk ditampilkan di peta.', 'warning');
 			}
@@ -587,16 +944,51 @@
 	}
 
 	function initializeTable() {
-		var columns = [
-			{ data: 'attributes.nm_ruas', render: escapeHtml },
-			{ data: 'attributes.wilayah', render: escapeHtml }
-		];
+		var columns = [{ data: 'attributes.nm_ruas', render: escapeHtml }];
 		if (satsetInfrastructure.isPublic) {
 			columns.push(
+				{
+					data: null,
+					render: function (data, type, record) {
+						return escapeHtml(formatRegionAndStatus(record));
+					}
+				},
+				{
+					data: null,
+					render: function (data, type, record) {
+						return escapeHtml(formatLocation(record));
+					}
+				},
 				{ data: 'attributes.kecamatan', render: escapeHtml },
 				{ data: 'attributes.desa_kel', render: escapeHtml },
-				{ data: 'attributes.status', render: escapeHtml },
-				{ data: 'attributes.thn_data', render: escapeHtml },
+				{
+					data: null,
+					render: function (data, type, record) {
+						return escapeHtml(getFilterAttributes(record).fungsi || '');
+					}
+				},
+				{
+					data: null,
+					render: function (data, type, record) {
+						var length = getRoadLength(record);
+						if (type !== 'display') {
+							return length === null ? '' : length;
+						}
+						return escapeHtml(formatRoadLength(record));
+					}
+				},
+				{
+					data: null,
+					render: function (data, type, record) {
+						return renderRoadCondition(record, type);
+					}
+				},
+				{
+					data: null,
+					render: function (data, type, record) {
+						return escapeHtml(getWorkYearLabel(record));
+					}
+				},
 				{
 					data: null,
 					orderable: false,
@@ -605,18 +997,51 @@
 						if (type !== 'display') {
 							return '';
 						}
-						return '<div class="satset-infrastruktur-actions"><button type="button" class="btn btn-danger btn-sm satset-infrastruktur-map-focus" data-record-id="' + Number(record.id) + '">Map</button></div>';
+						return '<div class="satset-infrastruktur-actions">' +
+							'<button type="button" class="btn btn-danger btn-sm satset-infrastruktur-map-focus" data-record-id="' + Number(record.id) + '">Map</button>' +
+							'</div>';
 					}
 				}
 			);
 		} else {
 			columns.push(
-				{ data: 'attributes.propinsi', render: escapeHtml },
-				{ data: 'attributes.kab_kot', render: escapeHtml },
+				{
+					data: null,
+					render: function (data, type, record) {
+						return escapeHtml(formatRegionAndStatus(record));
+					}
+				},
+				{
+					data: null,
+					render: function (data, type, record) {
+						return escapeHtml(formatLocation(record));
+					}
+				},
 				{ data: 'attributes.kecamatan', render: escapeHtml },
 				{ data: 'attributes.desa_kel', render: escapeHtml },
-				{ data: 'attributes.status', render: escapeHtml },
-				{ data: 'attributes.thn_data', render: escapeHtml },
+				{ data: 'attributes.fungsi', render: escapeHtml },
+				{
+					data: null,
+					render: function (data, type, record) {
+						var length = getRoadLength(record);
+						if (type !== 'display') {
+							return length === null ? '' : length;
+						}
+						return escapeHtml(formatRoadLength(record));
+					}
+				},
+				{
+					data: null,
+					render: function (data, type, record) {
+						return renderRoadCondition(record, type);
+					}
+				},
+				{
+					data: null,
+					render: function (data, type, record) {
+						return escapeHtml(getWorkYearLabel(record));
+					}
+				},
 				{
 					data: null,
 					orderable: false,
@@ -665,11 +1090,8 @@
 				return true;
 			}
 			var year = $('#satset-infrastruktur-year').val();
-			if (!year) {
-				return true;
-			}
 			var row = table.row(dataIndex).data();
-			return row && String(row.attributes.thn_data || '') === year;
+			return row && matchesWorkYear(row, year) && matchesManagementFilters(row);
 		});
 	}
 
@@ -677,6 +1099,7 @@
 		var requestData = {
 			action: satsetInfrastructure.isPublic ? 'satset_get_public_infrastruktur' : 'satset_get_data_infrastruktur'
 		};
+		$('#warp-loading').show();
 		if (!satsetInfrastructure.isPublic) {
 			requestData.nonce = satsetInfrastructure.nonce;
 		}
@@ -702,6 +1125,7 @@
 				option.textContent = year;
 				document.getElementById('satset-infrastruktur-year').appendChild(option);
 			});
+			populateManagementFilters();
 
 			var warnings = [];
 			if (response.data.invalid_geometry_count > 0) {
@@ -718,6 +1142,8 @@
 				: 'Data infrastruktur gagal dimuat. Periksa koneksi lalu muat ulang halaman.';
 			showPageAlert(message);
 			$('#satset-infrastruktur-map-status').text('Data peta gagal dimuat.').show();
+		}).always(function () {
+			$('#warp-loading').hide();
 		});
 	}
 
@@ -779,6 +1205,12 @@
 				table.draw();
 			}
 			renderMap(this.value);
+		});
+		$('#satset-infrastruktur-function, #satset-infrastruktur-length-group, #satset-infrastruktur-good-percentage').on('change', function () {
+			if (table) {
+				table.draw();
+				renderMap($('#satset-infrastruktur-year').val());
+			}
 		});
 
 		$('#satset-infrastruktur-table').on('click', '.satset-infrastruktur-map-focus', function () {

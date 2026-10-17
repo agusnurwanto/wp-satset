@@ -8,12 +8,6 @@ if (!defined('WPINC') || !current_user_can('manage_options')) {
 	<header class="satset-infrastruktur-header text-center">
 		<h1>Management Data Infrastruktur</h1>
 		<p class="satset-infrastruktur-intro">Data hasil impor GeoJSON bersifat hanya-baca. Admin dapat menambahkan dan mengelola atribut custom tanpa mengubah data impor.</p>
-		<?php
-		$monev_management_page = get_page_by_path('management-monev-pekerjaan-infrastruktur', OBJECT, 'page');
-		if ($monev_management_page) :
-		?>
-			<p><a class="btn btn-primary" href="<?php echo esc_url(get_permalink($monev_management_page)); ?>">Management Monev Pekerjaan Infrastruktur</a></p>
-		<?php endif; ?>
 	</header>
 
 	<div class="satset-infrastruktur-map-wrap">
@@ -36,9 +30,33 @@ if (!defined('WPINC') || !current_user_can('manage_options')) {
 		<h2 id="satset-infrastruktur-list-title" class="text-center">Daftar Infrastruktur</h2>
 		<div class="satset-infrastruktur-controls text-center">
 			<div>
-				<label for="satset-infrastruktur-year">Tahun Anggaran (Thn_Data)</label>
+				<label for="satset-infrastruktur-year">Tahun Pekerjaan</label>
 				<select id="satset-infrastruktur-year">
 					<option value="">Semua Tahun</option>
+				</select>
+			</div>
+			<div>
+				<label for="satset-infrastruktur-function">Fungsi Jalan</label>
+				<select id="satset-infrastruktur-function">
+					<option value="">Semua Fungsi Jalan</option>
+				</select>
+			</div>
+			<div>
+				<label for="satset-infrastruktur-length-group">Kelompok Panjang Jalan</label>
+				<select id="satset-infrastruktur-length-group">
+					<option value="">Semua Panjang</option>
+					<option value="under-1">Kurang dari 1 km</option>
+					<option value="1-to-5">1–5 km</option>
+					<option value="over-5">Lebih dari 5 km</option>
+				</select>
+			</div>
+			<div>
+				<label for="satset-infrastruktur-good-percentage">Persentase Baik + Sedang</label>
+				<select id="satset-infrastruktur-good-percentage">
+					<option value="">Semua Persentase</option>
+					<option value="under-50">Kurang dari 50%</option>
+					<option value="50-to-80">50–80%</option>
+					<option value="over-80">Lebih dari 80%</option>
 				</select>
 			</div>
 		</div>
@@ -48,13 +66,14 @@ if (!defined('WPINC') || !current_user_can('manage_options')) {
 				<thead>
 					<tr>
 						<th>Nama Ruas</th>
-						<th>Wilayah</th>
-						<th>Provinsi</th>
-						<th>Kabupaten / Kota</th>
+						<th>Wilayah - Status</th>
+						<th>Kabupaten / Kota, Provinsi</th>
 						<th>Kecamatan</th>
 						<th>Desa / Kelurahan</th>
-						<th>Status</th>
-						<th>Tahun Anggaran</th>
+						<th>Fungsi Jalan</th>
+						<th>Panjang (Km)</th>
+						<th>Kondisi Jalan</th>
+						<th>Tahun Pekerjaan</th>
 						<th>Aksi</th>
 					</tr>
 				</thead>
@@ -73,6 +92,8 @@ if (!defined('WPINC') || !current_user_can('manage_options')) {
 			</div>
 			<div class="modal-body">
 				<div id="satset-infrastruktur-edit-alert" class="alert alert-danger satset-infrastruktur-modal-alert" role="alert"></div>
+				<h6 class="satset-infrastruktur-section-title">Paket Pekerjaan Terpetakan</h6>
+				<div id="satset-infrastruktur-work-packages" class="satset-infrastruktur-work-packages"></div>
 				<h6 class="satset-infrastruktur-section-title">Atribut Hasil Impor (Hanya Baca)</h6>
 				<div id="satset-infrastruktur-imported-fields" class="satset-infrastruktur-readonly-grid"></div>
 				<h6 class="satset-infrastruktur-section-title">Atribut Custom</h6>

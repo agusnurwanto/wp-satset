@@ -99,6 +99,19 @@
 	min-height: 38px;
 }
 
+.satset-infrastruktur-controls > div {
+	min-width: 210px;
+}
+
+.satset-infrastruktur-condition-cell {
+	min-width: 190px;
+}
+
+#satset-infrastruktur-table .satset-infrastruktur-condition-cell hr {
+	margin: 5px 0;
+	border-top: 1px solid #dcdcde;
+}
+
 #satset-infrastruktur-table {
 	width: 100%;
 }
@@ -106,6 +119,46 @@
 #satset-infrastruktur-table td,
 #satset-infrastruktur-table th {
 	vertical-align: middle;
+}
+
+.satset-infrastruktur-function-legend {
+	margin-top: 20px;
+	padding: 16px;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	background: #fff;
+}
+
+.satset-infrastruktur-function-legend h3,
+.satset-infrastruktur-function-legend h4 {
+	margin: 0 0 12px;
+	font-size: 16px;
+}
+
+.satset-infrastruktur-function-legend h4 {
+	margin-top: 4px;
+}
+
+.satset-infrastruktur-function-legend-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+	gap: 12px 28px;
+}
+
+.satset-infrastruktur-function-legend dl {
+	display: grid;
+	grid-template-columns: max-content 1fr;
+	gap: 4px 10px;
+	margin: 0;
+}
+
+.satset-infrastruktur-function-legend dt,
+.satset-infrastruktur-function-legend dd {
+	margin: 0;
+}
+
+.satset-infrastruktur-function-legend dt {
+	font-weight: 600;
 }
 
 .satset-infrastruktur-actions {
@@ -262,9 +315,54 @@
 	text-align: left;
 	vertical-align: top;
 	overflow-wrap: anywhere;
+	white-space: pre-line;
 }
 
 .satset-infrastruktur-popup th {
+	min-width: 105px;
+}
+
+.satset-infrastruktur-work-package-list {
+	margin: 10px 0;
+}
+
+.satset-infrastruktur-work-package-list > summary {
+	cursor: pointer;
+	font-weight: 600;
+}
+
+.satset-infrastruktur-work-package-list > p {
+	margin: 8px 0 0;
+}
+
+.satset-infrastruktur-work-package {
+	margin-top: 10px;
+	padding: 10px;
+	border: 1px solid #dcdcde;
+	border-radius: 6px;
+	background: #fff;
+}
+
+.satset-infrastruktur-work-package h6 {
+	margin: 0 0 6px;
+}
+
+.satset-infrastruktur-work-package table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 12px;
+}
+
+.satset-infrastruktur-work-package th,
+.satset-infrastruktur-work-package td {
+	padding: 4px 6px;
+	border-bottom: 1px solid #e5e5e5;
+	text-align: left;
+	vertical-align: top;
+	overflow-wrap: anywhere;
+}
+
+.satset-infrastruktur-work-package th {
 	min-width: 105px;
 }
 

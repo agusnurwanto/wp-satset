@@ -931,6 +931,46 @@ class Wp_Satset_Public {
 			wp_send_json_error(array('message' => 'Gagal membaca atribut custom Infrastruktur: ' . $wpdb->last_error), 500);
 		}
 
+		$monev_table = 'data_monev_infrastruktur';
+		$existing_monev_table = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($monev_table)));
+		if ($existing_monev_table !== $monev_table) {
+			wp_send_json_error(array('message' => 'Tabel data_monev_infrastruktur belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options.'), 500);
+		}
+		$mapping_column = $wpdb->get_var("SHOW COLUMNS FROM {$monev_table} LIKE 'infrastruktur_id'");
+		if ($mapping_column === null) {
+			if ($wpdb->last_error !== '') {
+				wp_send_json_error(array('message' => 'Gagal memeriksa kolom pemetaan Data Infrastruktur: ' . $wpdb->last_error), 500);
+			}
+			wp_send_json_error(array('message' => 'Kolom pemetaan infrastruktur_id belum tersedia pada data Monev Infrastruktur.'), 500);
+		}
+
+		$infrastructure_ids = array_map('intval', array_column($rows, 'id'));
+		$infrastructure_id_lookup = array_fill_keys($infrastructure_ids, true);
+		$mapped_packages = array();
+		$monev_records = $wpdb->get_results(
+			"SELECT id, tahun_anggaran, data_paket, infrastruktur_id FROM {$monev_table} WHERE infrastruktur_id IS NOT NULL AND infrastruktur_id > 0 ORDER BY tahun_anggaran DESC, id ASC",
+			ARRAY_A
+		);
+		if ($wpdb->last_error !== '') {
+			wp_send_json_error(array('message' => 'Gagal membaca paket Monev Infrastruktur yang terpetakan: ' . $wpdb->last_error), 500);
+		}
+		foreach ($monev_records as $monev_record) {
+			$infrastructure_id = (int) $monev_record['infrastruktur_id'];
+			if (!isset($infrastructure_id_lookup[$infrastructure_id])) {
+				continue;
+			}
+			$package_data = json_decode($monev_record['data_paket'], true);
+			if (json_last_error() !== JSON_ERROR_NONE || !is_array($package_data)) {
+				wp_send_json_error(array(
+					'message' => sprintf('Data JSON paket pekerjaan dengan ID %d tidak valid dan tidak dapat ditampilkan.', (int) $monev_record['id'])
+				), 500);
+			}
+			$mapped_packages[$infrastructure_id][] = array(
+				'tahun_anggaran' => (string) $monev_record['tahun_anggaran'],
+				'data_paket' => $package_data
+			);
+		}
+
 		$records = array();
 		$years = array();
 		$invalid_geometry_count = 0;
@@ -953,14 +993,25 @@ class Wp_Satset_Public {
 				$invalid_geometry_count++;
 			}
 
-			$year = isset($attributes['thn_data']) ? (string) $attributes['thn_data'] : '';
-			if ($year !== '' && !in_array($year, $years, true)) {
-				$years[] = $year;
+			$record_packages = isset($mapped_packages[(int) $row['id']])
+				? $mapped_packages[(int) $row['id']]
+				: array();
+			$record_work_years = array();
+			foreach ($record_packages as $package) {
+				$work_year = $package['tahun_anggaran'];
+				if ($work_year !== '' && !in_array($work_year, $record_work_years, true)) {
+					$record_work_years[] = $work_year;
+				}
+				if ($work_year !== '' && !in_array($work_year, $years, true)) {
+					$years[] = $work_year;
+				}
 			}
 
 			$records[] = array(
 				'id' => (int) $row['id'],
 				'attributes' => $attributes,
+				'work_years' => $record_work_years,
+				'work_packages' => $record_packages,
 				'custom_attribute' => isset($custom_attributes_by_entity[(int) $row['id']])
 					? $custom_attributes_by_entity[(int) $row['id']]
 					: array(),
@@ -998,7 +1049,17 @@ class Wp_Satset_Public {
 			'status' => 'Status',
 			'thn_data' => 'Tahun Data'
 		);
-		$columns = array_merge(array('id'), array_keys($fields), array('geometry'));
+		$filter_fields = array(
+			'kab_kot',
+			'propinsi',
+			'fungsi',
+			'panjang',
+			'kon_baik',
+			'kon_sdg',
+			'kon_rgn',
+			'kon_rusak'
+		);
+		$columns = array_merge(array('id'), array_keys($fields), $filter_fields, array('geometry'));
 		$column_sql = implode(', ', array_map(function($column) {
 			return '`' . esc_sql($column) . '`';
 		}, $columns));
@@ -1009,6 +1070,55 @@ class Wp_Satset_Public {
 		$custom_attributes_by_entity = $this->get_infrastruktur_custom_attributes(array_column($rows, 'id'));
 		if ($custom_attributes_by_entity === false) {
 			wp_send_json_error(array('message' => 'Gagal membaca atribut custom Infrastruktur: ' . $wpdb->last_error), 500);
+		}
+
+		$monev_table = 'data_monev_infrastruktur';
+		$existing_monev_table = $wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $wpdb->esc_like($monev_table)));
+		if ($existing_monev_table !== $monev_table) {
+			wp_send_json_error(array('message' => 'Tabel data_monev_infrastruktur belum tersedia. Jalankan SQL Migrate pada menu WP SATSET Options.'), 500);
+		}
+		$mapping_column = $wpdb->get_var("SHOW COLUMNS FROM {$monev_table} LIKE 'infrastruktur_id'");
+		if ($mapping_column === null) {
+			if ($wpdb->last_error !== '') {
+				wp_send_json_error(array('message' => 'Gagal memeriksa kolom pemetaan Data Infrastruktur: ' . $wpdb->last_error), 500);
+			}
+			wp_send_json_error(array('message' => 'Kolom pemetaan infrastruktur_id belum tersedia pada data Monev Infrastruktur.'), 500);
+		}
+
+		$infrastructure_id_lookup = array_fill_keys(array_map('intval', array_column($rows, 'id')), true);
+		$mapped_packages = array();
+		$monev_records = $wpdb->get_results(
+			"SELECT id, tahun_anggaran, data_paket, infrastruktur_id FROM {$monev_table} WHERE infrastruktur_id IS NOT NULL AND infrastruktur_id > 0 ORDER BY tahun_anggaran DESC, id ASC",
+			ARRAY_A
+		);
+		if ($wpdb->last_error !== '') {
+			wp_send_json_error(array('message' => 'Gagal membaca paket Monev Infrastruktur yang terpetakan: ' . $wpdb->last_error), 500);
+		}
+		foreach ($monev_records as $monev_record) {
+			$infrastructure_id = (int) $monev_record['infrastruktur_id'];
+			if (!isset($infrastructure_id_lookup[$infrastructure_id])) {
+				continue;
+			}
+			$package_data = json_decode($monev_record['data_paket'], true);
+			if (json_last_error() !== JSON_ERROR_NONE || !is_array($package_data)) {
+				wp_send_json_error(array(
+					'message' => sprintf('Data JSON paket pekerjaan dengan ID %d tidak valid dan tidak dapat ditampilkan.', (int) $monev_record['id'])
+				), 500);
+			}
+
+			$package_name = '';
+			foreach (array('nama', 'nama_paket', 'name') as $name_key) {
+				if (isset($package_data[$name_key]) && is_scalar($package_data[$name_key])) {
+					$package_name = trim((string) $package_data[$name_key]);
+					if ($package_name !== '') {
+						break;
+					}
+				}
+			}
+			$mapped_packages[$infrastructure_id][] = array(
+				'tahun_anggaran' => (string) $monev_record['tahun_anggaran'],
+				'nama_paket' => $package_name !== '' ? $package_name : 'Paket Pekerjaan'
+			);
 		}
 
 		$records = array();
@@ -1033,14 +1143,26 @@ class Wp_Satset_Public {
 				$invalid_geometry_count++;
 			}
 
-			$year = isset($attributes['thn_data']) ? (string) $attributes['thn_data'] : '';
-			if ($year !== '' && !in_array($year, $years, true)) {
-				$years[] = $year;
+			$record_packages = isset($mapped_packages[(int) $row['id']])
+				? $mapped_packages[(int) $row['id']]
+				: array();
+			$record_work_years = array();
+			foreach ($record_packages as $package) {
+				$work_year = $package['tahun_anggaran'];
+				if ($work_year !== '' && !in_array($work_year, $record_work_years, true)) {
+					$record_work_years[] = $work_year;
+				}
+				if ($work_year !== '' && !in_array($work_year, $years, true)) {
+					$years[] = $work_year;
+				}
 			}
 
 			$records[] = array(
 				'id' => (int) $row['id'],
 				'attributes' => $attributes,
+				'filter_attributes' => array_intersect_key($row, array_fill_keys($filter_fields, true)),
+				'work_years' => $record_work_years,
+				'work_packages' => $record_packages,
 				'custom_attribute' => isset($custom_attributes_by_entity[(int) $row['id']])
 					? $custom_attributes_by_entity[(int) $row['id']]
 					: array(),
