@@ -6,6 +6,10 @@
 	box-shadow: 0 6px 22px rgba(20, 45, 65, .14);
 }
 
+#map-canvas.satset-public-leaflet-no-basemap {
+	background: #fff;
+}
+
 .satset-public-leaflet-controls {
 	display: flex;
 	align-items: center;
@@ -31,6 +35,40 @@
 .satset-public-map-alert {
 	margin: 10px auto;
 	width: 95%;
+}
+
+.satset-public-map-tooltip {
+	padding: 7px 10px;
+	border: 1px solid #263238;
+	border-radius: 5px;
+	background: #fff;
+	color: #17212b;
+	font-size: 13px;
+	font-weight: 600;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, .25);
+}
+
+.satset-tbc-popup {
+	min-width: 220px;
+	color: #17212b;
+	line-height: 1.6;
+}
+
+.satset-tbc-popup-title {
+	display: block;
+	margin-bottom: 7px;
+	font-size: 16px;
+}
+
+.satset-tbc-popup-section {
+	margin-top: 8px;
+	padding-top: 7px;
+	border-top: 1px solid #d5dce2;
+}
+
+.satset-tbc-popup-section ul {
+	margin: 4px 0 0;
+	padding-left: 20px;
 }
 
 @media (max-width: 767px) {

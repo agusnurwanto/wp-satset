@@ -105,6 +105,7 @@ class Wp_Satset_Public {
 			'data_p3ke',
 			'data_stunting',
 			'data_tbc',
+			'progress_intervensi_tbc',
 			'data_aids',
 			'data_malaria',
 			'data_rtlh',
@@ -329,8 +330,19 @@ class Wp_Satset_Public {
 			);
 			wp_localize_script($this->plugin_name . 'leaflet-public-map', 'satsetLeafletPublic', array(
 				'hasGoogleMapsApiKey' => $google_maps_api_key !== '',
+				'noBaseLayer' => $this->is_progress_intervensi_tbc_page(),
 			));
 		}
+	}
+
+	private function is_progress_intervensi_tbc_page(){
+		if (!is_singular()) {
+			return false;
+		}
+		$post = get_queried_object();
+		return is_object($post)
+			&& isset($post->post_content)
+			&& has_shortcode($post->post_content, 'progress_intervensi_tbc');
 	}
 
 	function get_center(){
@@ -488,6 +500,13 @@ class Wp_Satset_Public {
 			return '';
 		}
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/tbc/wp-satset-public-tbc.php';
+	}
+
+	function progress_intervensi_tbc(){
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/tbc/wp-satset-public-progress-intervensi-tbc.php';
 	}
 
 	function data_rtlh(){

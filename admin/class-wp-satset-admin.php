@@ -253,6 +253,14 @@ class Wp_Satset_Admin {
 			'post_status' => 'publish'
 		));
 
+		$progress_intervensi_tbc = $this->functions->generatePage(array(
+			'nama_page' => 'Progress Intervensi TBC',
+			'content' => '[progress_intervensi_tbc]',
+			'show_header' => 1,
+			'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
 		$data_aids = $this->functions->generatePage(array(
 			'nama_page' => 'Data AIDS', 
 			'content' => '[data_aids]',
@@ -501,13 +509,14 @@ class Wp_Satset_Admin {
 	            		<li><a target="_blank" href="'.$data_p3ke['url'].'">'.$data_p3ke['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_stunting['url'].'">'.$data_stunting['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_tbc['url'].'">'.$data_tbc['title'].'</a></li>
+	            		<li><a target="_blank" href="'.$progress_intervensi_tbc['url'].'">'.$progress_intervensi_tbc['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_aids['url'].'">'.$data_aids['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_malaria['url'].'">'.$data_malaria['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_rtlh['url'].'">'.$data_rtlh['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_dtks['url'].'">'.$data_dtks['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_dtsen['url'].'">'.$data_dtsen['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_ats['url'].'">'.$data_ats['title'].'</a></li>
-					<li><a target="_blank" rel="noopener noreferrer" href="' . esc_url($data_infrastruktur_publik['url']) . '">' . esc_html($data_infrastruktur_publik['title']) . '</a></li>
+						<li><a target="_blank" rel="noopener noreferrer" href="' . esc_url($data_infrastruktur_publik['url']) . '">' . esc_html($data_infrastruktur_publik['title']) . '</a></li>
 	            		<li><a target="_blank" href="'.$petunjuk_penggunaan['url'].'">'.$petunjuk_penggunaan['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$dokumentasi_sistem['url'].'">'.$dokumentasi_sistem['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$tanggapan_publik['url'].'">'.$tanggapan_publik['title'].'</a></li>

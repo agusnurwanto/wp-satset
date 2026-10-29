@@ -282,6 +282,7 @@ class Wp_Satset {
 		add_shortcode('data_p3ke_anggota_keluarga', array($plugin_public, 'data_p3ke_anggota_keluarga'));
 		add_shortcode('data_stunting', array($plugin_public, 'data_stunting'));
 		add_shortcode('data_tbc', array($plugin_public, 'data_tbc'));
+		add_shortcode('progress_intervensi_tbc', array($plugin_public, 'progress_intervensi_tbc'));
 		add_shortcode('data_rtlh', array($plugin_public, 'data_rtlh'));
 		add_shortcode('data_dtks', array($plugin_public, 'data_dtks'));
 		add_shortcode('data_dtsen', array($plugin_public, 'data_dtsen'));

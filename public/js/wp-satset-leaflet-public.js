@@ -115,6 +115,14 @@
 	function bindRecordPopup(layer, record) {
 		var content = record.html || JSON.stringify(record.data || {});
 		layer.bindPopup(content, { maxWidth: 540 });
+		if (record.tooltip) {
+			layer.bindTooltip(record.tooltip, {
+				sticky: true,
+				direction: 'top',
+				opacity: 1,
+				className: 'satset-public-map-tooltip'
+			});
+		}
 		layer.on('popupopen', function (event) {
 			if (!record.chart && !record.chart_dtks) {
 				return;
@@ -130,13 +138,49 @@
 	}
 
 	function makePolygonStyle(record) {
+		var noBaseLayer = !!(window.satsetLeafletPublic && window.satsetLeafletPublic.noBaseLayer);
 		return {
-			color: record.color || '#3388ff',
-			weight: 2,
-			opacity: 0.75,
+			color: record.color ? (noBaseLayer ? '#263238' : record.color) : '#3388ff',
+			weight: noBaseLayer ? 1.5 : 2,
+			opacity: noBaseLayer ? 0.95 : 0.75,
 			fillColor: record.color || '#3388ff',
-			fillOpacity: 0.3
+			fillOpacity: noBaseLayer ? 0.86 : 0.3
 		};
+	}
+
+	function lightenHexColor(color) {
+		var hex = String(color || '').replace('#', '');
+		if (!/^[0-9a-f]{6}$/i.test(hex)) {
+			return color;
+		}
+		var channels = [0, 2, 4].map(function (offset) {
+			return parseInt(hex.slice(offset, offset + 2), 16);
+		});
+		return '#' + channels.map(function (channel) {
+			return Math.round(channel + (255 - channel) * 0.2).toString(16).padStart(2, '0');
+		}).join('');
+	}
+
+	function bindPolygonHover(layer, record) {
+		if (!(window.satsetLeafletPublic && window.satsetLeafletPublic.noBaseLayer)) {
+			return;
+		}
+		var baseStyle = makePolygonStyle(record);
+		layer.on('mouseover', function () {
+			layer.setStyle({
+				color: '#101820',
+				weight: 3,
+				opacity: 1,
+				fillColor: lightenHexColor(baseStyle.fillColor),
+				fillOpacity: 1
+			});
+			if (layer.bringToFront) {
+				layer.bringToFront();
+			}
+		});
+		layer.on('mouseout', function () {
+			layer.setStyle(baseStyle);
+		});
 	}
 
 	function fallBackToOpenStreetMap(layer) {
@@ -181,10 +225,16 @@
 			preferCanvas: true,
 			attributionControl: false
 		}).setView([lat, lng], 13);
+		var noBaseLayer = !!(window.satsetLeafletPublic && window.satsetLeafletPublic.noBaseLayer);
+		if (noBaseLayer) {
+			mapElement.classList.add('satset-public-leaflet-no-basemap');
+		}
 		baseLayers.osm = window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			maxZoom: 19
 		});
-		currentBaseLayer = baseLayers.osm.addTo(map);
+		if (!noBaseLayer) {
+			currentBaseLayer = baseLayers.osm.addTo(map);
+		}
 
 		labelButton = document.getElementById('btn-label-map');
 		labelToggleEnabled = !!labelButton;
@@ -193,7 +243,7 @@
 			labelButton.style.display = 'none';
 		}
 
-		if (window.satsetLeafletPublic && window.satsetLeafletPublic.hasGoogleMapsApiKey) {
+		if (!noBaseLayer && window.satsetLeafletPublic && window.satsetLeafletPublic.hasGoogleMapsApiKey) {
 			if (window.L.gridLayer && typeof window.L.gridLayer.googleMutant === 'function') {
 				try {
 					['google-streets', 'google-satellite', 'google-hybrid', 'google-terrain'].forEach(function (name) {
@@ -207,7 +257,9 @@
 			}
 		}
 
-		addBaseLayerControl();
+		if (!noBaseLayer) {
+			addBaseLayerControl();
+		}
 		updateLabelButton('osm');
 		renderRecords();
 	}
@@ -330,6 +382,7 @@
 			try {
 				var layer = window.L.polygon(record.coor, makePolygonStyle(record)).addTo(map);
 				bindRecordPopup(layer, record);
+				bindPolygonHover(layer, record);
 				record.layers.push(layer);
 			} catch (error) {
 				showMapAlert('Sebagian geometri peta tidak valid dan tidak dapat ditampilkan.', 'warning');
@@ -408,6 +461,21 @@
 		} else {
 			showMapAlert('Masukkan nama lokasi yang ingin dicari.', 'warning');
 		}
+	};
+
+	window.satsetLeafletFocusRecord = function (index) {
+		if (!map) {
+			showMapAlert('Peta belum siap. Muat ulang halaman lalu coba kembali.', 'warning');
+			return;
+		}
+		var record = mapRecords.find(function (item) {
+			return Number(item.index) === Number(index);
+		});
+		if (!record) {
+			showMapAlert('Wilayah ini tidak ditemukan pada peta.', 'warning');
+			return;
+		}
+		focusRecords([record]);
 	};
 
 	window.satsetLeafletSetCenter = function (lat, lng) {
