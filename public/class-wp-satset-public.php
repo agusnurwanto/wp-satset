@@ -1882,6 +1882,11 @@ public function cari_data_filter_satset(){
 			'message' => 'Berhasil get data!',
 			'data' => array()
 		);
+		$debug_queries = array();
+		$get_debug_results = static function($query) use ($wpdb, &$debug_queries){
+			$debug_queries[] = $query;
+			return $wpdb->get_results($query);
+		};
 			if (!empty($_POST['api_key']) && $_POST['api_key'] == get_option( SATSET_APIKEY )) {
 				$where = '';
 				if(!empty($_POST['kec'])){
@@ -1893,164 +1898,128 @@ public function cari_data_filter_satset(){
 				if(!empty($_POST['tahun_anggaran'])){
 					$where .= $wpdb->prepare(" and tahun_anggaran = %s", $_POST['tahun_anggaran']);
 				}
-				$all_nik = array(
-					'nik' => array(),
-					'cek' => array()
+				$where_dtsen = " AND d.active = 1";
+				$where_dtsen_members = " AND member.active = 1";
+				if(!empty($_POST['kec'])){
+					$where_dtsen .= $wpdb->prepare(" AND TRIM(d.kecamatan) = %s", $_POST['kec']);
+					$where_dtsen_members .= $wpdb->prepare(" AND TRIM(member.kecamatan) = %s", $_POST['kec']);
+				}
+				if(!empty($_POST['desa'])){
+					$where_dtsen .= $wpdb->prepare(" AND TRIM(d.kelurahan) = %s", $_POST['desa']);
+					$where_dtsen_members .= $wpdb->prepare(" AND TRIM(member.kelurahan) = %s", $_POST['desa']);
+				}
+				$sources = array(
+					'p3ke' => array('table' => 'data_p3ke', 'where' => $where),
+					'stunting' => array('table' => 'data_stunting', 'where' => $where),
+					'tbc' => array('table' => 'data_tbc', 'where' => $where),
+					'rtlh' => array('table' => 'data_rtlh', 'where' => $where),
+					'dtks' => array('table' => 'data_dtks_satset', 'where' => $where)
 				);
-				if(!empty($_POST['p3ke'])){
-					$nik = $wpdb->get_results("
-					SELECT
-						nik
-					FROM data_p3ke
-					WHERE 1=1 $where", ARRAY_A);
-					foreach($nik as $n){
-						$all_nik['nik'][] = "'".$n['nik']."'";
-					}
-					$all_nik['cek'][] = "p3ke";
-				}
-				if(!empty($_POST['stunting'])){
-					if(!empty($all_nik['cek'])){
-						if(!empty($all_nik['nik'])){
-							$where_nik = " and nik in (".implode(',', $all_nik['nik']).")";
-							$nik = $wpdb->get_results("
-								SELECT
-									nik
-								FROM data_stunting
-								WHERE 1=1 $where $where_nik
-							", ARRAY_A);
-						}else{
-							$nik = array();
+				$matching_nik_sources = array();
+				if(!empty($_POST['p3ke']) || !empty($_POST['dtsen'])){
+					foreach($sources as $source => $filter){
+						if(empty($_POST[$source])){
+							continue;
 						}
-					}else{
-						$nik = $wpdb->get_results("
-							SELECT
-								nik
-							FROM data_stunting
-							WHERE 1=1 $where
-						", ARRAY_A);
-					}
-					$all_nik['nik'] = array();
-					foreach($nik as $n){
-						$all_nik['nik'][] = "'".$n['nik']."'";
+						$matching_nik_sources[] = array(
+							'query' => "
+							SELECT nik
+							FROM {$filter['table']}
+							WHERE 1=1 {$filter['where']}
+							AND nik IS NOT NULL
+							AND nik <> ''"
+						);
 					}
 				}
-				if(!empty($_POST['tbc'])){
-					if(!empty($all_nik['cek'])){
-						if(!empty($all_nik['nik'])){
-							$where_nik = " and nik in (".implode(',', $all_nik['nik']).")";
-							$nik = $wpdb->get_results("
-								SELECT
-									nik
-								FROM data_tbc
-								WHERE 1=1 $where $where_nik
-							", ARRAY_A);
-						}else{
-							$nik = array();
+				if(!empty($matching_nik_sources)){
+					$matching_nik_conditions = array();
+					foreach($matching_nik_sources as $nik_source){
+						$matching_nik_conditions[] = "nik IN ({$nik_source['query']})";
+					}
+					$where .= ' AND ' . implode(' AND ', $matching_nik_conditions);
+				}
+				$source_data = array(
+					'p3ke' => array(),
+					'stunting' => array(),
+					'tbc' => array(),
+					'rtlh' => array(),
+					'dtks' => array()
+				);
+				foreach($sources as $source => $filter){
+					if(empty($_POST[$source])){
+						continue;
+					}
+					$source_data[$source] = $get_debug_results("
+						SELECT *
+						FROM {$filter['table']}
+						WHERE 1=1 {$where}");
+				}
+				$has_matching_nik_sources = !empty($matching_nik_sources);
+				$matched_niks = array();
+				if($has_matching_nik_sources){
+					foreach($source_data as $source_rows){
+						foreach((array) $source_rows as $source_row){
+							$nik = isset($source_row->nik) ? trim((string) $source_row->nik) : '';
+							if($nik !== ''){
+								$matched_niks[$nik] = $nik;
+							}
 						}
-					}else{
-						$nik = $wpdb->get_results("
-							SELECT
-								nik
-							FROM data_tbc
-							WHERE 1=1 $where
-						", ARRAY_A);
 					}
-					$all_nik['nik'] = array();
-					foreach($nik as $n){
-						$all_nik['nik'][] = "'".$n['nik']."'";
-					}
+					$matched_niks = array_values($matched_niks);
 				}
-				if(!empty($_POST['rtlh'])){
-					if(!empty($all_nik['cek'])){
-						if(!empty($all_nik['nik'])){
-							$where_nik = " and nik in (".implode(',', $all_nik['nik']).")";
-							$nik = $wpdb->get_results("
-								SELECT
-									nik
-								FROM data_rtlh
-								WHERE 1=1 $where $where_nik
-							", ARRAY_A);
+				$data_dtsen = array();
+				$data_dtsen_anggota = array();
+				if(!empty($_POST['dtsen'])){
+					$dtsen_nik = isset($_POST['dtsen_nik'])
+						? sanitize_text_field(wp_unslash($_POST['dtsen_nik']))
+						: '';
+					$where_dtsen_data = $where_dtsen;
+					if($dtsen_nik !== ''){
+						$nik_like = '%' . $wpdb->esc_like($dtsen_nik) . '%';
+						$where_dtsen_data .= $wpdb->prepare(" AND d.nik LIKE %s", $nik_like);
+						$where_dtsen_members .= $wpdb->prepare(" AND member.nik LIKE %s", $nik_like);
+					}
+					if($has_matching_nik_sources){
+						if(empty($matched_niks)){
+							$where_dtsen_data .= " AND 1=0";
+							$where_dtsen_members .= " AND 1=0";
 						}else{
-							$nik = array();
+							$matched_nik_placeholders = implode(',', array_fill(0, count($matched_niks), '%s'));
+							$matched_nik_condition = " IN ({$matched_nik_placeholders})";
+							$where_dtsen_data .= $wpdb->prepare(" AND d.nik{$matched_nik_condition}", ...$matched_niks);
+							$where_dtsen_members .= $wpdb->prepare(" AND member.nik{$matched_nik_condition}", ...$matched_niks);
 						}
-					}else{
-						$nik = $wpdb->get_results("
-							SELECT
-								nik
-							FROM data_rtlh
-							WHERE 1=1 $where
-						", ARRAY_A);
 					}
-					$all_nik['nik'] = array();
-					foreach($nik as $n){
-						$all_nik['nik'][] = "'".$n['nik']."'";
+					$data_dtsen = $get_debug_results("
+						SELECT d.*
+						FROM data_dtsen_satset d
+						WHERE 1=1 {$where_dtsen_data}");
+					if(!empty($wpdb->last_error)){
+						$ret['status'] = 'error';
+						$ret['message'] = 'Gagal mengambil data DTSEN.';
+						$ret['data']['sql'] = $debug_queries;
+						die(json_encode($ret));
 					}
-				}
-				if(!empty($_POST['dtks'])){
-					if(!empty($all_nik['cek'])){
-						if(!empty($all_nik['nik'])){
-							$where_nik = " and nik in (".implode(',', $all_nik['nik']).")";
-							$nik = $wpdb->get_results("
-								SELECT
-									nik
-								FROM data_dtks_satset
-								WHERE 1=1 $where $where_nik
-							", ARRAY_A);
-						}else{
-							$nik = array();
-						}
-					}else{
-						$nik = $wpdb->get_results("
-							SELECT
-								nik
-							FROM data_dtks_satset
-							WHERE 1=1 $where
-						", ARRAY_A);
-					}
-					$all_nik['nik'] = array();
-					foreach($nik as $n){
-						$all_nik['nik'][] = "'".$n['nik']."'";
+					$data_dtsen_anggota = $get_debug_results("
+						SELECT member.*
+						FROM data_dtsen_anggota_keluarga member
+						WHERE 1=1 {$where_dtsen_members}
+						ORDER BY member.nama ASC");
+					if(!empty($wpdb->last_error)){
+						$ret['status'] = 'error';
+						$ret['message'] = 'Gagal mengambil data anggota keluarga DTSEN.';
+						$ret['data']['sql'] = $debug_queries;
+						die(json_encode($ret));
 					}
 				}
-
-				if(!empty($all_nik['cek'])){
-					if(!empty($all_nik['nik'])){
-						$where .= " and nik in (".implode(',', $all_nik['nik']).")";
-					}else{
-						$where .= " and 1=2";
-					}
-				}
-				$data = $wpdb->get_results("
-					SELECT
-						*
-					FROM data_p3ke
-					WHERE 1=1 $where");
-				$data_stunting = $wpdb->get_results("
-					SELECT
-						*
-					FROM data_stunting
-					WHERE 1=1 $where");
-				$data_tbc = $wpdb->get_results("
-					SELECT
-						*
-					FROM data_tbc
-					WHERE 1=1 $where");
-				$data_rtlh = $wpdb->get_results("
-					SELECT
-						*
-					FROM data_rtlh
-					WHERE 1=1 $where");
-				$data_dtks = $wpdb->get_results("
-					SELECT
-						*
-					FROM data_dtks_satset
-					WHERE 1=1 $where");
-				$ret['data']['p3ke'] = $data;
-				$ret['data']['stunting'] = $data_stunting;
-				$ret['data']['tbc'] = $data_tbc;
-				$ret['data']['rtlh'] = $data_rtlh;
-				$ret['data']['dtks'] = $data_dtks;
-				$ret['data']['sql'] = $wpdb->last_query;
+				$ret['data']['p3ke'] = $source_data['p3ke'];
+				$ret['data']['stunting'] = $source_data['stunting'];
+				$ret['data']['tbc'] = $source_data['tbc'];
+				$ret['data']['rtlh'] = $source_data['rtlh'];
+				$ret['data']['dtks'] = $source_data['dtks'];
+				$ret['data']['dtsen'] = $data_dtsen;
+				$ret['data']['dtsen_anggota'] = $data_dtsen_anggota;
+				$ret['data']['sql'] = $debug_queries;
 			}else{
 				$ret['status']	= 'error';
 				$ret['message']	= 'Api key tidak ditemukan!';

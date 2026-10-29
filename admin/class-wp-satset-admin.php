@@ -2592,6 +2592,39 @@ class Wp_Satset_Admin {
 				'url' => $url
 			]);
 		}
+		if (array_key_exists('data_anggota', $dtsen) && !is_array($dtsen['data_anggota'])) {
+			wp_send_json([
+				'status' => 'error',
+				'message' => 'Format data anggota dari SIKS tidak valid!',
+				'response' => $dtsen
+			]);
+		}
+		foreach ($dtsen['data_anggota'] ?? [] as $anggota) {
+			if (
+				!is_array($anggota)
+				|| empty($anggota['id_keluarga'])
+				|| (empty($anggota['nik']) && empty($anggota['idsemesta']))
+			) {
+				wp_send_json([
+					'status' => 'error',
+					'message' => 'Data anggota tidak memiliki identitas yang valid!'
+				]);
+			}
+		}
+
+		$family_locations = [];
+		foreach ($dtsen['data'] as $orang) {
+			$id_keluarga = (string) ($orang['id_keluarga'] ?? '');
+			if ($id_keluarga !== '') {
+				$family_locations[$id_keluarga] = [
+					'provinsi' => $orang['provinsi'] ?? '',
+					'kabupaten' => $orang['kabupaten'] ?? '',
+					'kecamatan' => $orang['kecamatan'] ?? '',
+					'kelurahan' => $orang['kelurahan'] ?? ''
+				];
+			}
+		}
+
 		// DEBUG
 		//wp_send_json($dtsen['data'][0]);
 		foreach ($dtsen['data'] as $orang) {
@@ -2640,10 +2673,130 @@ class Wp_Satset_Admin {
 			}
 		}
 
+		$anggota_fields = [
+			'hub_kepala_keluarga',
+			'id_keluarga',
+			'idsemesta',
+			'nama',
+			'nik',
+			'no_kk',
+			'pekerjaan_utama',
+			'button_status_dapodik',
+			'button_status_ortu',
+			'flag_aktif',
+			'keberadaan_anggota',
+			'status_button_hamil',
+			'status_kedudukan_pekerjaan_utama',
+			'status_kpd',
+			'status_meninggal',
+			'alasan_tolak_meninggal',
+			'tempat_lahir',
+			'tanggal_lahir',
+			'alamat_ktp',
+			'rt',
+			'rw',
+			'provinsi',
+			'kabupaten',
+			'kecamatan',
+			'kelurahan',
+			'jenis_kelamin',
+			'status_perkawinan',
+			'kartu_identitas',
+			'partisipasi_sekolah',
+			'jenjang_pendidikan',
+			'kelas_tertinggi',
+			'ijazah_tertinggi',
+			'status_kedudukan_pekerjaan_utama_detail',
+			'kepemilikan_izin_usaha',
+			'omset_usaha_utama',
+			'penggunaan_internet_usaha',
+			'penyakit_menahun',
+			'kondisi_gizi',
+			'id_ketrampilan',
+			'ketrampilan_sertifikat',
+			'group_ketrampilan',
+			'id_disabilitas',
+			'jenis_disabilitas',
+			'pendapatan_bulan_terakhir',
+			'jumlah_jenis_usaha',
+			'jumlah_pekerja_dibayar',
+			'jumlah_pekerja_tidak_dibayar',
+			'usaha_utama',
+			'ada_jenis_usaha'
+		];
+
+		if (array_key_exists('data_anggota', $dtsen)) {
+			$family_ids = [];
+			foreach ($dtsen['data'] as $orang) {
+				if (!empty($orang['id_keluarga'])) {
+					$family_ids[(string) $orang['id_keluarga']] = true;
+				}
+			}
+
+			foreach (array_keys($family_ids) as $id_keluarga) {
+				$deactivated = $wpdb->update(
+					'data_dtsen_anggota_keluarga',
+					['active' => 0],
+					['id_keluarga' => $id_keluarga]
+				);
+				if ($deactivated === false) {
+					wp_send_json([
+						'status' => 'error',
+						'message' => 'Gagal menonaktifkan data anggota lama: ' . $wpdb->last_error
+					]);
+				}
+			}
+
+			foreach ($dtsen['data_anggota'] as $anggota) {
+				$anggota_data = [];
+				foreach ($anggota_fields as $field) {
+					$value = $anggota[$field] ?? null;
+					$anggota_data[$field] = is_string($value) ? sanitize_text_field($value) : $value;
+				}
+				$family_location = $family_locations[(string) $anggota_data['id_keluarga']] ?? [];
+				foreach (['provinsi', 'kabupaten', 'kecamatan', 'kelurahan'] as $field) {
+					$value = !empty($anggota[$field]) ? $anggota[$field] : ($family_location[$field] ?? '');
+					$anggota_data[$field] = is_string($value) ? sanitize_text_field($value) : $value;
+				}
+				$anggota_data['active'] = 1;
+				$anggota_data['update_at'] = current_time('mysql');
+
+				$cek_anggota = $wpdb->get_var($wpdb->prepare("
+					SELECT id
+					FROM data_dtsen_anggota_keluarga
+					WHERE id_keluarga = %s
+						AND COALESCE(nik, '') = %s
+						AND COALESCE(idsemesta, '') = %s
+						AND COALESCE(no_kk, '') = %s
+				", $anggota_data['id_keluarga'], $anggota_data['nik'] ?? '', $anggota_data['idsemesta'] ?? '', $anggota_data['no_kk'] ?? ''));
+
+				if ($cek_anggota) {
+					$saved = $wpdb->update(
+						'data_dtsen_anggota_keluarga',
+						$anggota_data,
+						['id' => $cek_anggota]
+					);
+				} else {
+					$saved = $wpdb->insert(
+						'data_dtsen_anggota_keluarga',
+						$anggota_data
+					);
+				}
+
+				if ($saved === false) {
+					wp_send_json([
+						'status' => 'error',
+						'message' => 'Gagal menyimpan data anggota: ' . $wpdb->last_error
+					]);
+				}
+			}
+		}
+
 		wp_send_json([
 			'status' => 'success',
 			'message' => 'Sinkronisasi berhasil!',
-			'count' => count($dtsen['data'])
+			'count' => count($dtsen['data']),
+			'count_anggota' => count($dtsen['data_anggota'] ?? [])
 		]);
 	}
 

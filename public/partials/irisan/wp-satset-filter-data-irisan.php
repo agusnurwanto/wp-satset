@@ -89,12 +89,13 @@ foreach($tahun as $tahun_value){
             <?php echo $select_tahun; ?>
         </select>
     </div>
+    <div class="form-group">
+        <label for="dtsen_nik">Filter NIK DTSEN</label>
+        <input class="form-control" type="text" id="dtsen_nik" inputmode="numeric" placeholder="Masukkan NIK">
+    </div>
     <div class="row">
         <legend class="col-form-label col-sm-3 pt-0">Data Irisan :</legend>
         <div class="col-sm-4">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="" id="p3ke" value="p3ke">P3KE</label>
-            </div>
             <div class="form-check">
               <input class="form-check-input" type="checkbox" name="" id="stunting" value="stunting">Stunting</label>
             </div>
@@ -105,8 +106,15 @@ foreach($tahun as $tahun_value){
               <input class="form-check-input" type="checkbox" name="" id="rtlh" value="rtlh">RTLH</label>
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="" id="dtks" value="dtks">DTKS</label>
+              <input class="form-check-input" type="checkbox" name="" id="dtsen" value="dtsen">
+              <label class="form-check-label" for="dtsen">DTSEN</label>
             </div>
+            <!-- <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="" id="p3ke" value="p3ke">P3KE</label>
+            </div> -->
+            <!-- <div class="form-check">
+              <input class="form-check-input" type="checkbox" name="" id="dtks" value="dtks">DTKS</label>
+            </div> -->
         </div>    
     </div>
     <div class="form-group">
@@ -124,10 +132,16 @@ foreach($tahun as $tahun_value){
     </div>
     <div id="pesan4" class="isi-pesan">
     </div>
+    <div id="pesan5" class="isi-pesan">
+    </div>
 </div>
 <script>
     var data_desa = <?php echo json_encode($data_desa); ?>;
     jQuery(document).ready(function(){
+        jQuery('#kec, #desa, #tahun_anggaran').select2({
+            width: '100%'
+        });
+
         jQuery("#cari").click(function(){
             cari_data_filter_satset(jQuery('#irisan').val());
         });
@@ -138,16 +152,26 @@ foreach($tahun as $tahun_value){
             }
         });
         jQuery('#kec').on('change', function(){
-            var kec = jQuery(this).val();
-            if(kec != '-1'){
-                var html = '<option value="-1">Semua Desa</option>';
-                data_desa.map(function(b, i){
-                    if(kec == b.kecamatan){
-                        html += '<option value="'+b.desa+'">('+b.id2012+') '+b.desa+'</option>';
-                    }
-                });
-                jQuery('#desa').html(html);
-            }
+            var kecamatan = jQuery(this).val();
+            var kecamatanNormalized = kecamatan === '-1' ? '-1' : String(kecamatan).trim().toLowerCase();
+            var desaSelect = jQuery('#desa').empty();
+
+            desaSelect.append(jQuery('<option>', {
+                value: '-1',
+                text: 'Semua Desa'
+            }));
+
+            data_desa.forEach(function(desa){
+                var desaKecamatanNormalized = String(desa.kecamatan || '').trim().toLowerCase();
+                if(kecamatanNormalized === '-1' || kecamatanNormalized === desaKecamatanNormalized){
+                    desaSelect.append(jQuery('<option>', {
+                        value: desa.desa,
+                        text: '(' + desa.id2012 + ') ' + desa.desa
+                    }));
+                }
+            });
+
+            desaSelect.val('-1').trigger('change');
         });
     })
 
@@ -181,6 +205,10 @@ foreach($tahun as $tahun_value){
         if(jQuery('#dtks').is(':checked')){
             dtks = 1;
         }
+        var dtsen = '';
+        if(jQuery('#dtsen').is(':checked')){
+            dtsen = 1;
+        }
         jQuery('#wrap-loading').show();
         jQuery.ajax({
             method: 'post',
@@ -196,7 +224,9 @@ foreach($tahun as $tahun_value){
                 'stunting': stunting,
                 'tbc': tbc,
                 'rtlh': rtlh,
-                'dtks': dtks
+                'dtks': dtks,
+                'dtsen': dtsen,
+                'dtsen_nik': jQuery('#dtsen_nik').val()
             },
            success: function(response) {
                 if(response.status == 'error'){
@@ -607,6 +637,92 @@ foreach($tahun as $tahun_value){
                     }else{
                         jQuery('#pesan4').html('');
                     }
+                    var pesan5 = '';
+                    let data_dtsen = '';
+                    if(response.data.dtsen.length > 0){
+                        response.data.dtsen.map(function(value, index){
+                            data_dtsen +='<tr>';
+                                data_dtsen +='<th scope="row">'+(index+1)+'</th>';
+                                data_dtsen +='<td>'+escapeHtml(value.no_kk)+'</td>';
+                                data_dtsen +='<td>'+escapeHtml(value.nik)+'</td>';
+                                data_dtsen +='<td>'+escapeHtml(value.nama_kepala_keluarga)+'</td>';
+                                data_dtsen +='<td>'+escapeHtml(value.kecamatan)+'</td>';
+                                data_dtsen +='<td>'+escapeHtml(value.kelurahan)+'</td>';
+                                data_dtsen +='<td>'+escapeHtml(value.alamat)+'</td>';
+                                data_dtsen +='<td>'+escapeHtml(value.rt != null ? value.rt : '-')+'/'+escapeHtml(value.rw != null ? value.rw : '-')+'</td>';
+                                data_dtsen +='<td>'+escapeHtml(value.desil_nasional)+'</td>';
+                                data_dtsen +='<td>'+escapeHtml(value.status_nonaktif)+'</td>';
+                                data_dtsen +='<td>'+escapeHtml(value.padan_bulan_ini)+'</td>';
+                                data_dtsen +='<td>'+escapeHtml(value.update_at)+'</td>';
+                            data_dtsen +='</tr>';
+                        });
+                        pesan5 += ''
+                            +'<h4 class="text-center">Data DTSEN</h4>'
+                            +'<div class="wrap-table">'
+                                +'<table class="table table-bordered">'
+                                    +'<thead>'
+                                        +'<tr>'
+                                            +'<th class="text-center" style="width: 20px;">No</th>'
+                                            +'<th class="text-center">No. KK</th>'
+                                            +'<th class="text-center">NIK</th>'
+                                            +'<th class="text-center">Nama Kepala Keluarga</th>'
+                                            +'<th class="text-center">Kecamatan</th>'
+                                            +'<th class="text-center">Desa / Kelurahan</th>'
+                                            +'<th class="text-center">Alamat</th>'
+                                            +'<th class="text-center">RT/RW</th>'
+                                            +'<th class="text-center">Desil Nasional</th>'
+                                            +'<th class="text-center">Status Nonaktif</th>'
+                                            +'<th class="text-center">Padan Bulan Ini</th>'
+                                            +'<th class="text-center">Update Terakhir</th>'
+                                        +'</tr>'
+                                    +'</thead>'
+                                    +'<tbody>'
+                                        +data_dtsen
+                                    +'</tbody>'
+                                +'</table>'
+                            +'</div>';
+                    }
+                    let data_dtsen_anggota = '';
+                    if(response.data.dtsen_anggota.length > 0){
+                        response.data.dtsen_anggota.map(function(value, index){
+                            data_dtsen_anggota +='<tr>';
+                                data_dtsen_anggota +='<th scope="row">'+(index+1)+'</th>';
+                                data_dtsen_anggota +='<td>'+escapeHtml(value.no_kk)+'</td>';
+                                data_dtsen_anggota +='<td>'+escapeHtml(value.nik)+'</td>';
+                                data_dtsen_anggota +='<td>'+escapeHtml(value.nama)+'</td>';
+                                data_dtsen_anggota +='<td>'+escapeHtml(value.hub_kepala_keluarga)+'</td>';
+                                data_dtsen_anggota +='<td>'+escapeHtml(value.jenis_kelamin)+'</td>';
+                                data_dtsen_anggota +='<td>'+escapeHtml(value.tanggal_lahir)+'</td>';
+                                data_dtsen_anggota +='<td>'+escapeHtml(value.pekerjaan_utama)+'</td>';
+                                data_dtsen_anggota +='<td>'+escapeHtml(value.keberadaan_anggota)+'</td>';
+                                data_dtsen_anggota +='<td>'+escapeHtml(formatStatusAnggota(value.flag_aktif))+'</td>';
+                            data_dtsen_anggota +='</tr>';
+                        });
+                        pesan5 += ''
+                            +'<h4 class="text-center">Anggota Keluarga DTSEN</h4>'
+                            +'<div class="wrap-table">'
+                                +'<table class="table table-bordered">'
+                                    +'<thead>'
+                                        +'<tr>'
+                                            +'<th class="text-center" style="width: 20px;">No</th>'
+                                            +'<th class="text-center">No. KK</th>'
+                                            +'<th class="text-center">NIK</th>'
+                                            +'<th class="text-center">Nama Lengkap</th>'
+                                            +'<th class="text-center">Hubungan dengan Kepala Keluarga</th>'
+                                            +'<th class="text-center">Jenis Kelamin</th>'
+                                            +'<th class="text-center">Tanggal Lahir</th>'
+                                            +'<th class="text-center">Pekerjaan Utama</th>'
+                                            +'<th class="text-center">Keberadaan Anggota</th>'
+                                            +'<th class="text-center">Status Anggota</th>'
+                                        +'</tr>'
+                                    +'</thead>'
+                                    +'<tbody>'
+                                        +data_dtsen_anggota
+                                    +'</tbody>'
+                                +'</table>'
+                            +'</div>';
+                    }
+                    jQuery('#pesan5').html(pesan5);
                 }
                 if(
                     response.data.p3ke.length == 0
@@ -614,6 +730,8 @@ foreach($tahun as $tahun_value){
                     && response.data.stunting.length == 0
                     && response.data.tbc.length == 0
                     && response.data.dtks.length == 0
+                    && response.data.dtsen.length == 0
+                    && response.data.dtsen_anggota.length == 0
                 ){
                     alert('Data tidak ditemukan!');
                 }else{
@@ -622,5 +740,22 @@ foreach($tahun as $tahun_value){
                 jQuery('#wrap-loading').hide();
             }
         });
+}
+
+function escapeHtml(value) {
+    return jQuery('<div>').text(value == null || value === '' ? '-' : String(value)).html();
+}
+
+function formatStatusAnggota(value) {
+    if(value === null || value === '' || value === undefined){
+        return '-';
+    }
+    if(String(value) === '1'){
+        return 'Aktif';
+    }
+    if(String(value) === '0'){
+        return 'Tidak Aktif';
+    }
+    return value;
 }
 </script>

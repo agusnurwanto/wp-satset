@@ -72,7 +72,8 @@ CREATE TABLE `data_p3ke` (
     `active` tinyint(4) DEFAULT 1,
     `update_at` datetime DEFAULT current_timestamp,
     `tahun_anggaran` year(4) DEFAULT NULL,
-    PRIMARY KEY  (id)
+    PRIMARY KEY  (id),
+    KEY `idx_p3ke_filter_nik` (`tahun_anggaran`, `kecamatan`(32), `desa`(32), `nik`(32))
 );
 
 CREATE TABLE `data_p3ke_anggota_keluarga` (
@@ -162,7 +163,8 @@ CREATE TABLE `data_stunting` (
     `active` tinyint(4) DEFAULT 1,
     `update_at` datetime DEFAULT current_timestamp,
     `tahun_anggaran` year(4) DEFAULT NULL,
-    PRIMARY KEY  (id)
+    PRIMARY KEY  (id),
+    KEY `idx_stunting_filter_nik` (`tahun_anggaran`, `kecamatan`(32), `desa`(32), `nik`(32))
 );
 
 CREATE TABLE `data_tbc` (
@@ -189,7 +191,8 @@ CREATE TABLE `data_tbc` (
     `active` tinyint(4) DEFAULT 1,
     `update_at` datetime DEFAULT current_timestamp,
     `tahun_anggaran` year(4) DEFAULT NULL,
-    PRIMARY KEY  (id)
+    PRIMARY KEY  (id),
+    KEY `idx_tbc_filter_nik` (`tahun_anggaran`, `kecamatan`(32), `desa`(32), `nik`(32))
 );
 
 CREATE TABLE `data_rtlh` (
@@ -210,7 +213,8 @@ CREATE TABLE `data_rtlh` (
     `active` tinyint(4) DEFAULT 1,
     `update_at` datetime DEFAULT current_timestamp,
     `tahun_anggaran` year(4) DEFAULT NULL,
-    PRIMARY KEY  (id)
+    PRIMARY KEY  (id),
+    KEY `idx_rtlh_filter_nik` (`tahun_anggaran`, `kecamatan`(32), `desa`(32), `nik`(32))
 );
 
 CREATE TABLE `data_dtks_satset` (
@@ -264,7 +268,8 @@ CREATE TABLE `data_dtks_satset` (
     `update_at` datetime DEFAULT current_timestamp,
     `tahun_anggaran` year(4) DEFAULT NULL,
     PRIMARY KEY  (id),
-    INDEX(`id_desa`)
+    INDEX(`id_desa`),
+    KEY `idx_dtks_filter_nik` (`tahun_anggaran`, `kecamatan`(32), `desa`(32), `NIK`(32))
 );
 
 CREATE TABLE `satset_data_unit` (
@@ -337,7 +342,9 @@ CREATE TABLE `data_dtsen_satset` (
     INDEX(`desil_nasional`),
     INDEX(`no_kk`),
     INDEX(`active`),
-    INDEX(`nik`)
+    INDEX(`nik`),
+    KEY `idx_dtsen_active_family` (`active`, `id_keluarga`(64)),
+    KEY `idx_dtsen_active_kk` (`active`, `no_kk`(64))
 );
 
 CREATE TABLE `data_dtsen_anggota_keluarga` (
@@ -363,6 +370,10 @@ CREATE TABLE `data_dtsen_anggota_keluarga` (
     `alamat_ktp` TEXT DEFAULT NULL,
     `rt` VARCHAR(20) DEFAULT NULL,
     `rw` VARCHAR(20) DEFAULT NULL,
+    `provinsi` TEXT DEFAULT NULL,
+    `kabupaten` TEXT DEFAULT NULL,
+    `kecamatan` TEXT DEFAULT NULL,
+    `kelurahan` TEXT DEFAULT NULL,
     `jenis_kelamin` VARCHAR(50) DEFAULT NULL,
     `status_perkawinan` VARCHAR(100) DEFAULT NULL,
     `kartu_identitas` VARCHAR(100) DEFAULT NULL,
@@ -394,7 +405,10 @@ CREATE TABLE `data_dtsen_anggota_keluarga` (
     INDEX(`no_kk`),
     INDEX(`nik`),
     INDEX(`active`),
-    INDEX(`idsemesta`)
+    INDEX(`idsemesta`),
+    KEY `idx_dtsen_member_active_family` (`active`, `id_keluarga`(64)),
+    KEY `idx_dtsen_member_active_kk` (`active`, `no_kk`(64)),
+    KEY `idx_dtsen_member_active_nik` (`active`, `nik`(64))
 );
 
 CREATE TABLE `data_dtsen_aset_keluarga` (
