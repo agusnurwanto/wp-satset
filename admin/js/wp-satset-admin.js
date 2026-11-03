@@ -1065,3 +1065,65 @@ function import_monev_infrastruktur() {
         }
     });
 }
+
+function satset_test_ai_connection() {
+    var prompt = jQuery('#satset_test_ai_prompt').val();
+    var button = jQuery('#satset_btn_test_ai');
+    var spinner = jQuery('#satset_spinner_test_ai');
+    var result = jQuery('#satset_test_ai_result');
+
+    if (!prompt || !prompt.trim()) {
+        alert('Silakan masukkan pertanyaan terlebih dahulu.');
+        return;
+    }
+
+    button.prop('disabled', true);
+    spinner.addClass('is-active');
+    result.hide().text('').css('color', '');
+
+    jQuery.ajax({
+        url: ajaxurl,
+        type: 'POST',
+        dataType: 'json',
+        data: {
+            action: 'satset_test_ai_connection',
+            nonce: satset.test_ai_nonce,
+            prompt: prompt
+        },
+        success: function(response) {
+            if (!response || !response.success) {
+                var errorMessage = response && response.data && response.data.message
+                    ? response.data.message
+                    : 'Tidak ada respons yang valid dari server.';
+                result.text('Gagal: ' + errorMessage).css('color', 'red').show();
+                return;
+            }
+
+            var answer = response.data;
+            if (typeof answer === 'string') {
+                try {
+                    var parsed = JSON.parse(answer);
+                    if (parsed.choices && parsed.choices[0] && parsed.choices[0].message) {
+                        answer = parsed.choices[0].message.content;
+                    } else if (parsed.error) {
+                        answer = parsed.error.message || JSON.stringify(parsed.error);
+                    }
+                } catch (error) {
+                    answer = response.data;
+                }
+            }
+
+            result.text('Hasil:\n' + answer).show();
+        },
+        error: function(xhr) {
+            var errorMessage = xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message
+                ? xhr.responseJSON.data.message
+                : 'Terjadi kesalahan koneksi AJAX.';
+            result.text('Gagal: ' + errorMessage).css('color', 'red').show();
+        },
+        complete: function() {
+            button.prop('disabled', false);
+            spinner.removeClass('is-active');
+        }
+    });
+}

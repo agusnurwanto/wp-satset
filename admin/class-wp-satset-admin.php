@@ -107,7 +107,8 @@ class Wp_Satset_Admin {
 		wp_localize_script($this->plugin_name, 'satset', array(
 			'api_key' => get_option(SATSET_APIKEY),
 			'import_geojson_nonce' => wp_create_nonce('satset_import_geojson_infrastruktur'),
-			'import_monev_nonce' => wp_create_nonce('satset_import_monev_infrastruktur')
+			'import_monev_nonce' => wp_create_nonce('satset_import_monev_infrastruktur'),
+			'test_ai_nonce' => wp_create_nonce('satset_test_ai_connection')
 		));
 
 	}
@@ -557,6 +558,10 @@ class Wp_Satset_Admin {
 
             ) );
 
+		Container::make( 'theme_options', __( 'AI Settings' ) )
+			->set_page_parent( $basic_options_container )
+			->add_fields( $this->generate_fields_ai() );
+
 		Container::make( 'theme_options', __( 'Tampilan Beranda' ) )
 			->set_page_parent( $basic_options_container )
 			->add_tab( __( 'Logo' ), array(
@@ -993,6 +998,60 @@ class Wp_Satset_Admin {
 				Field::make( 'html', 'crb_monev_infrastruktur_upload' )
 					->set_html( '<p><label for="monev-infrastruktur-year">Tahun Anggaran</label><br><input type="number" id="monev-infrastruktur-year" min="1900" max="2155" step="1" value="' . esc_attr(date('Y')) . '" required></p><p><input type="file" id="monev-infrastruktur-json-file" accept=".json,application/json"></p><p><button type="button" class="button button-primary" id="monev-infrastruktur-import" onclick="import_monev_infrastruktur(); return false;">Import JSON Monev</button></p><div id="monev-infrastruktur-status" role="status" aria-live="polite"></div>' )
 			) );
+	}
+
+	function generate_fields_ai(){
+		if (empty($_GET['page']) || $_GET['page'] !== 'crb_carbon_fields_container_ai_settings.php') {
+			return array();
+		}
+
+		$html_test_ai = '
+		<div style="background:#fff; padding:15px; border:1px solid #ccd0d4; margin-top:10px;">
+			<h4>Testing AI Connection</h4>
+			<p>Masukkan pertanyaan untuk mengetes koneksi AI menggunakan pengaturan yang telah disimpan. Simpan pengaturan terlebih dahulu.</p>
+			<textarea id="satset_test_ai_prompt" style="width:100%; height:80px; margin-bottom:10px;" placeholder="Tuliskan pertanyaan Anda...">Jelaskan secara singkat fungsi utama aplikasi SATSET.</textarea><br>
+			<button type="button" class="button button-primary" id="satset_btn_test_ai" onclick="satset_test_ai_connection();">Test AI</button>
+			<span class="spinner" id="satset_spinner_test_ai" style="float:none;"></span>
+			<div id="satset_test_ai_result" style="margin-top:15px; padding:10px; background:#f1f1f1; border-left:4px solid #0073aa; display:none; white-space:pre-wrap;"></div>
+		</div>
+		';
+
+		return array(
+			Field::make('checkbox', 'crb_ai_enabled', 'Aktifkan Fitur AI (Artificial Intelligent)')
+				->set_help_text('Centang untuk mengaktifkan fitur AI di aplikasi ini.'),
+			Field::make('text', 'crb_base_url_ai', __('URL Server AI'))
+				->set_default_value('https://openrouter.ai/api/v1/chat/completions')
+				->set_help_text('Masukkan URL endpoint Chat Completions atau URL dasar server AI.'),
+			Field::make('text', 'crb_api_key_ai', __('API Key AI'))
+				->set_help_text('Kosongkan jika server AI lokal tidak memerlukan API key. Model gratis tersedia di <a href="https://openrouter.ai" target="_blank" rel="noopener noreferrer">OpenRouter</a>.'),
+			Field::make('text', 'crb_ai_model', __('Model AI'))
+				->set_default_value('openrouter/free')
+				->set_help_text('Contoh model: <a href="https://openrouter.ai/openrouter/free" target="_blank" rel="noopener noreferrer">openrouter/free</a>.'),
+			Field::make('html', 'crb_ai_testing_html')
+				->set_html($html_test_ai)
+		);
+	}
+
+	function satset_test_ai_connection() {
+		if (!current_user_can('manage_options')) {
+			wp_send_json_error(array('message' => 'Akses ditolak.'), 403);
+		}
+
+		if (!check_ajax_referer('satset_test_ai_connection', 'nonce', false)) {
+			wp_send_json_error(array('message' => 'Permintaan tidak valid. Muat ulang halaman dan coba lagi.'), 403);
+		}
+
+		$prompt = isset($_POST['prompt']) ? sanitize_textarea_field(wp_unslash($_POST['prompt'])) : '';
+		if ($prompt === '') {
+			wp_send_json_error(array('message' => 'Prompt kosong.'));
+		}
+
+		$result = $this->functions->chat_ai(array('prompt' => $prompt));
+		if (is_wp_error($result)) {
+			wp_send_json_error(array('message' => $result->get_error_message()));
+		}
+
+		wp_send_json_success($result);
 	}
 
 	function import_excel_p3ke(){ 

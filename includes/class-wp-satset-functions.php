@@ -429,6 +429,94 @@ class SATSET_Functions
         return $response;
     }
 
+    public function chat_ai($options = array()){
+        if (empty(get_option('_crb_ai_enabled'))) {
+            return new WP_Error('satset_ai_disabled', 'Fitur AI belum diaktifkan.');
+        }
+
+        $prompt = isset($options['prompt']) ? sanitize_textarea_field($options['prompt']) : '';
+        if ($prompt === '') {
+            return new WP_Error('satset_ai_prompt_empty', 'Prompt kosong.');
+        }
+
+        $model = trim((string) get_option('_crb_ai_model'));
+        if ($model === '') {
+            $model = 'openrouter/free';
+        }
+
+        $url = trim((string) get_option('_crb_base_url_ai'));
+        if ($url === '') {
+            $url = 'https://openrouter.ai/api/v1/chat/completions';
+        }
+
+        $url_parts = wp_parse_url($url);
+        if (
+            empty($url_parts['scheme'])
+            || empty($url_parts['host'])
+            || !in_array(strtolower($url_parts['scheme']), array('http', 'https'), true)
+            || !empty($url_parts['fragment'])
+        ) {
+            return new WP_Error('satset_ai_invalid_url', 'URL server AI tidak valid.');
+        }
+
+        $path = isset($url_parts['path']) ? untrailingslashit($url_parts['path']) : '';
+        if (!preg_match('~/chat/completions$~i', $path)) {
+            $query = '';
+            $query_position = strpos($url, '?');
+            if ($query_position !== false) {
+                $query = substr($url, $query_position);
+                $url = substr($url, 0, $query_position);
+            }
+            $url = untrailingslashit($url) . '/chat/completions' . $query;
+        }
+
+        $headers = array(
+            'Content-Type' => 'application/json'
+        );
+        $api_key = trim((string) get_option('_crb_api_key_ai'));
+        if ($api_key !== '') {
+            $headers['Authorization'] = 'Bearer ' . $api_key;
+        }
+
+        $response = wp_remote_post($url, array(
+            'headers' => $headers,
+            'body' => wp_json_encode(array(
+                'model' => $model,
+                'messages' => array(
+                    array(
+                        'role' => 'system',
+                        'content' => 'Anda adalah asisten AI untuk aplikasi SATSET (Satu Data Terpadu). Jawab pertanyaan secara jelas dan ringkas.'
+                    ),
+                    array(
+                        'role' => 'user',
+                        'content' => $prompt
+                    )
+                )
+            )),
+            'timeout' => 60
+        ));
+
+        if (is_wp_error($response)) {
+            return $response;
+        }
+
+        $response_body = wp_remote_retrieve_body($response);
+        $status_code = wp_remote_retrieve_response_code($response);
+        if ($status_code < 200 || $status_code >= 300) {
+            $response_data = json_decode($response_body, true);
+            $error_message = !empty($response_data['error']['message'])
+                ? $response_data['error']['message']
+                : sprintf('Server AI mengembalikan HTTP %d.', $status_code);
+            return new WP_Error('satset_ai_http_error', $error_message);
+        }
+
+        if ($response_body === '') {
+            return new WP_Error('satset_ai_empty_response', 'Tidak ada respons dari server AI.');
+        }
+
+        return $response_body;
+    }
+
     function send_tg($options){
 		$login = false;
 		if(is_user_logged_in()){

@@ -187,6 +187,7 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_get_api_param_wpsipd', $plugin_admin, 'get_api_param_wpsipd');
 		$this->loader->add_action('wp_ajax_generate_user_satset', $plugin_admin, 'generate_user_satset');
 		$this->loader->add_action('wp_ajax_satset_load_ajax_carbon', $plugin_admin, 'satset_load_ajax_carbon');
+		$this->loader->add_action('wp_ajax_satset_test_ai_connection', $plugin_admin, 'satset_test_ai_connection');
 
 	}
 
@@ -209,6 +210,8 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_get_datatable_p3ke_anggota_keluarga', $plugin_public, 'get_datatable_p3ke_anggota_keluarga');
 		$this->loader->add_action('wp_ajax_get_datatable_stunting', $plugin_public, 'get_datatable_stunting');
 		$this->loader->add_action('wp_ajax_get_datatable_tbc', $plugin_public, 'get_datatable_tbc');
+		$this->loader->add_action('wp_ajax_satset_analyze_tbc_progress', $plugin_public, 'analyze_tbc_progress_ai');
+		$this->loader->add_action('wp_ajax_nopriv_satset_analyze_tbc_progress', $plugin_public, 'analyze_tbc_progress_ai');
 		$this->loader->add_action('wp_ajax_get_datatable_rtlh', $plugin_public, 'get_datatable_rtlh');
 		$this->loader->add_action('wp_ajax_get_datatable_batas_desa', $plugin_public, 'get_datatable_batas_desa');
 		$this->loader->add_action('wp_ajax_get_datatable_batas_kecamatan', $plugin_public, 'get_datatable_batas_kecamatan');

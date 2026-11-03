@@ -86,6 +86,10 @@ $get_progress_counts = function ($records) {
 
 $total_progress = 0;
 $total_pasien = 0;
+$total_akan_diobati = 0;
+$total_dirujuk = 0;
+$total_tanpa_tindak_lanjut = 0;
+$ai_areas = array();
 $body = '';
 foreach ($maps_all as $i => $desa) {
     $kdwil = isset($desa['data']['id2012']) ? $desa['data']['id2012'] : '';
@@ -96,6 +100,24 @@ foreach ($maps_all as $i => $desa) {
     $patients_without_follow_up = isset($counts['tindak_lanjut']['(Tidak Ada Tindak Lanjut)'])
         ? $counts['tindak_lanjut']['(Tidak Ada Tindak Lanjut)']
         : 0;
+    if ($counts['total'] > 0) {
+        $area_location = array(
+            isset($desa['data']['provinsi']) ? trim((string) $desa['data']['provinsi']) : '',
+            isset($desa['data']['kab_kot']) ? trim((string) $desa['data']['kab_kot']) : '',
+            isset($desa['data']['kecamatan']) ? trim((string) $desa['data']['kecamatan']) : '',
+            isset($desa['data']['desa']) ? trim((string) $desa['data']['desa']) : '',
+        );
+        $area_location = array_values(array_filter($area_location, 'strlen'));
+        $ai_areas[] = array(
+            'name' => implode(', ', array_reverse($area_location)),
+            'total' => $counts['total'],
+            'akan_diobati' => $counts['akan_diobati'],
+            'dirujuk' => $counts['dirujuk'],
+            'progress' => $counts['progress'],
+            'tanpa_tindak_lanjut' => $patients_without_follow_up,
+            'persentase_progress' => $counts['total'] > 0 ? round($progress_rate * 100, 1) : 0,
+        );
+    }
 
     if ($counts['total'] === 0) {
         $color = '#263238';
@@ -177,12 +199,36 @@ foreach ($maps_all as $i => $desa) {
 
     $total_progress += $counts['progress'];
     $total_pasien += $counts['total'];
+    $total_akan_diobati += $counts['akan_diobati'];
+    $total_dirujuk += $counts['dirujuk'];
+    $total_tanpa_tindak_lanjut += $patients_without_follow_up;
     unset($tbc_all_desa[$kdwil]);
 }
 
 foreach ($tbc_all_desa as $kdwil => $records) {
     $counts = $get_progress_counts($records);
     $info = reset($records);
+    if ($counts['total'] > 0) {
+        $area_location = array(
+            isset($info['provinsi']) ? trim((string) $info['provinsi']) : '',
+            isset($info['kabkot']) ? trim((string) $info['kabkot']) : '',
+            isset($info['kecamatan']) ? trim((string) $info['kecamatan']) : '',
+            isset($info['desa']) ? trim((string) $info['desa']) : '',
+        );
+        $area_location = array_values(array_filter($area_location, 'strlen'));
+        $without_follow_up = isset($counts['tindak_lanjut']['(Tidak Ada Tindak Lanjut)'])
+            ? $counts['tindak_lanjut']['(Tidak Ada Tindak Lanjut)']
+            : 0;
+        $ai_areas[] = array(
+            'name' => implode(', ', array_reverse($area_location)),
+            'total' => $counts['total'],
+            'akan_diobati' => $counts['akan_diobati'],
+            'dirujuk' => $counts['dirujuk'],
+            'progress' => $counts['progress'],
+            'tanpa_tindak_lanjut' => $without_follow_up,
+            'persentase_progress' => round(($counts['progress'] / $counts['total']) * 100, 1),
+        );
+    }
     $follow_up = array();
     foreach ($counts['tindak_lanjut'] as $label => $count) {
         $follow_up[] = esc_html($label) . ': ' . $count;
@@ -202,7 +248,29 @@ foreach ($tbc_all_desa as $kdwil => $records) {
         . '</tr>';
     $total_progress += $counts['progress'];
     $total_pasien += $counts['total'];
+    $total_akan_diobati += $counts['akan_diobati'];
+    $total_dirujuk += $counts['dirujuk'];
+    $total_tanpa_tindak_lanjut += $without_follow_up;
 }
+
+usort($ai_areas, function ($left, $right) {
+    if ($left['tanpa_tindak_lanjut'] !== $right['tanpa_tindak_lanjut']) {
+        return $right['tanpa_tindak_lanjut'] - $left['tanpa_tindak_lanjut'];
+    }
+    if ($left['persentase_progress'] !== $right['persentase_progress']) {
+        return $left['persentase_progress'] < $right['persentase_progress'] ? -1 : 1;
+    }
+    return $right['total'] - $left['total'];
+});
+$ai_areas = array_slice($ai_areas, 0, 10);
+$ai_summary = array(
+    'total' => $total_pasien,
+    'akan_diobati' => $total_akan_diobati,
+    'dirujuk' => $total_dirujuk,
+    'progress' => $total_progress,
+    'tanpa_tindak_lanjut' => $total_tanpa_tindak_lanjut,
+);
+$ai_summary['persentase_progress'] = $total_pasien > 0 ? round(($total_progress / $total_pasien) * 100, 1) : 0;
 
 $tahun = $wpdb->get_results('
     SELECT tahun_anggaran
@@ -252,6 +320,11 @@ foreach ($tahun as $tahun_value) {
             </div>
         <?php endforeach; ?>
     </div>
+    <div style="text-align:center;margin:0 0 35px;">
+        <button type="button" class="btn btn-primary" id="satset-tbc-ai-button" style="padding:12px 24px;font-size:16px;">
+            Analisis AI
+        </button>
+    </div>
     <div style="width: 100%; overflow: auto; height: 100vh;">
         <table class="table table-bordered" id="table-data">
             <thead>
@@ -273,9 +346,88 @@ foreach ($tahun as $tahun_value) {
         </table>
     </div>
 </div>
+<div id="satset-tbc-ai-modal" aria-hidden="true" style="display:none;position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.65);padding:24px;overflow:auto;">
+    <section role="dialog" aria-modal="true" aria-labelledby="satset-tbc-ai-title" style="position:relative;max-width:900px;margin:3vh auto;padding:24px;background:#fff;border-radius:12px;box-shadow:0 16px 50px rgba(0,0,0,.3);">
+        <button type="button" id="satset-tbc-ai-close" aria-label="Tutup popup" style="position:absolute;right:14px;top:10px;border:0;background:transparent;font-size:28px;cursor:pointer;">&times;</button>
+        <h2 id="satset-tbc-ai-title" style="margin:0 40px 8px 0;">Analisis AI Progress TBC</h2>
+        <p id="satset-tbc-ai-scope" style="color:#52606d;margin-top:0;"></p>
+        <div id="satset-tbc-ai-loading" role="status" aria-live="polite">
+            <p id="satset-tbc-ai-loading-text">Menyiapkan ringkasan data...</p>
+            <div style="height:8px;overflow:hidden;border-radius:8px;background:#e5e7eb;">
+                <div style="height:100%;width:35%;border-radius:8px;background:#2563eb;animation:satset-tbc-ai-progress 1.2s ease-in-out infinite alternate;"></div>
+            </div>
+        </div>
+        <p id="satset-tbc-ai-error" role="alert" style="display:none;color:#b91c1c;"></p>
+        <div id="satset-tbc-ai-result" style="display:none;">
+            <div id="satset-tbc-ai-infographic" style="width:100%;overflow:auto;margin:20px 0;"></div>
+            <div style="text-align:center;">
+                <button type="button" id="satset-tbc-ai-show-areas" class="btn btn-default" style="display:none;margin:0 auto 20px;">Lihat lokasi lainnya</button>
+            </div>
+            <div id="satset-tbc-ai-analysis" style="line-height:1.7;border-top:1px solid #e5e7eb;padding-top:16px;"></div>
+            <details style="margin-top:20px;">
+                <summary>Prompt yang dikirim ke AI (nama lokasi disamarkan)</summary>
+                <pre id="satset-tbc-ai-prompt" style="white-space:pre-wrap;overflow-wrap:anywhere;max-height:300px;overflow:auto;padding:12px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:6px;"></pre>
+            </details>
+        </div>
+    </section>
+</div>
+<style>
+    @keyframes satset-tbc-ai-progress {
+        from { transform: translateX(-20%); }
+        to { transform: translateX(190%); }
+    }
+    #satset-tbc-ai-analysis h2,
+    #satset-tbc-ai-analysis h3 {
+        margin: 22px 0 12px;
+        padding: 10px 14px;
+        border-left: 4px solid #2563eb;
+        border-radius: 6px;
+        background: #eff6ff;
+    }
+    #satset-tbc-ai-analysis .satset-ai-section-risk {
+        border-color: #ea580c;
+        background: #fff7ed;
+    }
+    #satset-tbc-ai-analysis .satset-ai-section-action {
+        border-color: #15803d;
+        background: #f0fdf4;
+    }
+    #satset-tbc-ai-analysis .satset-ai-section-action + ul,
+    #satset-tbc-ai-analysis .satset-ai-section-action + ol {
+        padding-left: 0;
+        list-style: none;
+    }
+    #satset-tbc-ai-analysis .satset-ai-section-action + ul li,
+    #satset-tbc-ai-analysis .satset-ai-section-action + ol li {
+        margin: 8px 0;
+        padding: 12px 14px;
+        border: 1px solid #bbf7d0;
+        border-radius: 8px;
+        background: #f0fdf4;
+    }
+    #satset-tbc-ai-analysis .satset-ai-section-action + ul li::before,
+    #satset-tbc-ai-analysis .satset-ai-section-action + ol li::before {
+        content: "✓";
+        margin-right: 8px;
+        color: #15803d;
+        font-weight: 700;
+    }
+    #satset-tbc-ai-analysis .satset-ai-section-risk + ul li,
+    #satset-tbc-ai-analysis .satset-ai-section-risk + ol li {
+        padding: 7px 0;
+    }
+</style>
 <script type="text/javascript">
     window.maps_all = <?php echo wp_json_encode($maps_all, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>;
     window.maps_center = <?php echo wp_json_encode($center); ?>;
+    window.satsetTbcAiConfig = {
+        ajaxUrl: <?php echo wp_json_encode(admin_url('admin-ajax.php')); ?>,
+        nonce: <?php echo wp_json_encode(wp_create_nonce('satset_analyze_tbc_progress')); ?>,
+        year: <?php echo wp_json_encode((string) $tahun_anggaran); ?>,
+        areaName: <?php echo wp_json_encode(trim(preg_replace('/\s+/', ' ', wp_strip_all_tags(str_replace('<br>', ' ', $this->getNamaDaerah()))))); ?>,
+        summary: <?php echo wp_json_encode($ai_summary, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>,
+        areas: <?php echo wp_json_encode($ai_areas, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT); ?>
+    };
     jQuery('#table-data').dataTable({
         lengthMenu: [[20, 50, 100, -1], [20, 50, 100, "All"]],
         order: [[8, 'desc']]
@@ -287,4 +439,224 @@ foreach ($tahun as $tahun_value) {
         }
         window.location.href = window.location.href.split('?')[0] + '?tahun_anggaran=' + encodeURIComponent(tahunAnggaran);
     }
+
+    (function () {
+        var button = document.getElementById('satset-tbc-ai-button');
+        var modal = document.getElementById('satset-tbc-ai-modal');
+        var closeButton = document.getElementById('satset-tbc-ai-close');
+        var loading = document.getElementById('satset-tbc-ai-loading');
+        var loadingText = document.getElementById('satset-tbc-ai-loading-text');
+        var error = document.getElementById('satset-tbc-ai-error');
+        var result = document.getElementById('satset-tbc-ai-result');
+        var infographic = document.getElementById('satset-tbc-ai-infographic');
+        var analysis = document.getElementById('satset-tbc-ai-analysis');
+        var promptPreview = document.getElementById('satset-tbc-ai-prompt');
+        var showAreasButton = document.getElementById('satset-tbc-ai-show-areas');
+        var currentAreas = [];
+        var currentSummary = {};
+        var showAllAreas = false;
+
+        function closeModal() {
+            modal.style.display = 'none';
+            modal.setAttribute('aria-hidden', 'true');
+        }
+
+        function appendSvgElement(svg, name, attributes, text) {
+            var element = document.createElementNS('http://www.w3.org/2000/svg', name);
+            Object.keys(attributes).forEach(function (key) {
+                element.setAttribute(key, attributes[key]);
+            });
+            if (text !== undefined) {
+                element.textContent = text;
+            }
+            svg.appendChild(element);
+            return element;
+        }
+
+        function escapeMarkdownHtml(value) {
+            return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        function renderMarkdown(markdown) {
+            var lines = markdown.split(/\r?\n/);
+            var output = [];
+            var paragraph = [];
+            var listTag = '';
+            var firstHeading = true;
+
+            function inline(text) {
+                return escapeMarkdownHtml(text)
+                    .replace(/`([^`]+)`/g, '<code>$1</code>')
+                    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*([^*]+)\*/g, '<em>$1</em>');
+            }
+
+            function closeList() {
+                if (listTag) {
+                    output.push('</' + listTag + '>');
+                    listTag = '';
+                }
+            }
+
+            function flushParagraph() {
+                if (paragraph.length) {
+                    output.push('<p>' + inline(paragraph.join(' ')) + '</p>');
+                    paragraph = [];
+                }
+            }
+
+            lines.forEach(function (line) {
+                var heading = line.match(/^(#{1,3})\s+(.+)$/);
+                var bullet = line.match(/^\s*[-*]\s+(.+)$/);
+                var ordered = line.match(/^\s*\d+[.)]\s+(.+)$/);
+                if (!line.trim()) {
+                    flushParagraph();
+                    closeList();
+                } else if (heading) {
+                    flushParagraph();
+                    closeList();
+                    var normalizedHeading = heading[2].trim().toLowerCase();
+                    var isRepeatedMainTitle = firstHeading && (
+                        heading[1].length === 1
+                        || /^(analisis|ikhtisar|ringkasan|progress|progres)\b.*(tbc|penanganan)?/.test(normalizedHeading)
+                    );
+                    if (!isRepeatedMainTitle) {
+                        var level = Math.min(3, heading[1].length + 1);
+                        var sectionTitle = heading[2].toLowerCase();
+                        var sectionClass = /kesenjangan|risiko/.test(sectionTitle)
+                            ? 'satset-ai-section-risk'
+                            : /rekomendasi|tindak lanjut/.test(sectionTitle)
+                                ? 'satset-ai-section-action'
+                                : 'satset-ai-section';
+                        output.push('<h' + level + ' class="' + sectionClass + '">' + inline(heading[2]) + '</h' + level + '>');
+                    }
+                    firstHeading = false;
+                } else if (bullet || ordered) {
+                    flushParagraph();
+                    var nextListTag = bullet ? 'ul' : 'ol';
+                    if (listTag !== nextListTag) {
+                        closeList();
+                        listTag = nextListTag;
+                        output.push('<' + listTag + '>');
+                    }
+                    output.push('<li>' + inline((bullet || ordered)[1]) + '</li>');
+                } else {
+                    closeList();
+                    paragraph.push(line.trim());
+                }
+            });
+            flushParagraph();
+            closeList();
+            return output.join('');
+        }
+
+        function createInfographic(data) {
+            var summary = data.summary;
+            currentAreas = data.areas || [];
+            var areas = showAllAreas ? currentAreas : currentAreas.slice(0, 5);
+            var rowHeight = 38;
+            var height = 200 + (areas.length * rowHeight);
+            var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+            svg.setAttribute('viewBox', '0 0 760 ' + height);
+            svg.setAttribute('role', 'img');
+            svg.setAttribute('aria-label', 'Infografis progress tindak lanjut TBC tahun ' + data.year);
+            appendSvgElement(svg, 'rect', { x: 0, y: 0, width: 760, height: height, rx: 14, fill: '#f8fafc' });
+            appendSvgElement(svg, 'text', { x: 28, y: 38, fill: '#0f172a', 'font-size': 22, 'font-weight': 700 }, 'Progress Tindak Lanjut TBC ' + data.year);
+            appendSvgElement(svg, 'text', { x: 28, y: 64, fill: '#475569', 'font-size': 14 }, data.area);
+
+            var percentage = Number(summary.persentase_progress) || 0;
+            appendSvgElement(svg, 'text', { x: 28, y: 105, fill: '#0f172a', 'font-size': 16, 'font-weight': 600 }, 'Progress utama: ' + summary.progress + ' dari ' + summary.total + ' pasien (' + percentage + '%)');
+            appendSvgElement(svg, 'rect', { x: 28, y: 118, width: 704, height: 16, rx: 8, fill: '#e2e8f0' });
+            appendSvgElement(svg, 'rect', { x: 28, y: 118, width: 704 * Math.min(100, Math.max(0, percentage)) / 100, height: 16, rx: 8, fill: '#15803d' });
+            appendSvgElement(svg, 'text', { x: 28, y: 160, fill: '#334155', 'font-size': 14 }, 'Akan diobati: ' + summary.akan_diobati + '  |  Dirujuk: ' + summary.dirujuk + '  |  Belum ada tindak lanjut: ' + summary.tanpa_tindak_lanjut);
+            appendSvgElement(svg, 'text', { x: 28, y: 190, fill: '#0f172a', 'font-size': 15, 'font-weight': 700 }, 'Lokasi prioritas untuk perhatian');
+
+            areas.forEach(function (area, index) {
+                var y = 218 + (index * rowHeight);
+                var areaPercentage = Number(area.persentase_progress) || 0;
+                appendSvgElement(svg, 'text', { x: 28, y: y, fill: '#334155', 'font-size': 13 }, area.name + ' (' + area.progress + '/' + area.total + ', ' + areaPercentage + '%)');
+                appendSvgElement(svg, 'rect', { x: 28, y: y + 7, width: 704, height: 10, rx: 5, fill: '#e2e8f0' });
+                appendSvgElement(svg, 'rect', { x: 28, y: y + 7, width: 704 * Math.min(100, Math.max(0, areaPercentage)) / 100, height: 10, rx: 5, fill: areaPercentage === 0 || area.tanpa_tindak_lanjut > 0 ? '#dc2626' : '#2563eb' });
+            });
+
+            infographic.replaceChildren(svg);
+            showAreasButton.style.display = currentAreas.length > 5 ? 'inline-block' : 'none';
+            showAreasButton.textContent = showAllAreas ? 'Tampilkan lebih sedikit lokasi' : 'Lihat ' + (currentAreas.length - 5) + ' lokasi lainnya';
+        }
+
+        button.addEventListener('click', function () {
+            modal.style.display = 'block';
+            modal.setAttribute('aria-hidden', 'false');
+            loading.style.display = 'block';
+            loadingText.textContent = 'Menyiapkan ringkasan data agregat...';
+            error.style.display = 'none';
+            result.style.display = 'none';
+            button.disabled = true;
+
+            var loadingTimer = window.setTimeout(function () {
+                loadingText.textContent = 'Menunggu hasil analisis AI...';
+            }, 2500);
+            var body = new URLSearchParams();
+            body.append('action', 'satset_analyze_tbc_progress');
+            body.append('nonce', window.satsetTbcAiConfig.nonce);
+            body.append('analysis_data', JSON.stringify({
+                year: window.satsetTbcAiConfig.year,
+                area_name: window.satsetTbcAiConfig.areaName,
+                summary: window.satsetTbcAiConfig.summary,
+                areas: window.satsetTbcAiConfig.areas
+            }));
+
+            fetch(window.satsetTbcAiConfig.ajaxUrl, {
+                method: 'POST',
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                body: body.toString()
+            }).then(function (response) {
+                return response.json().then(function (payload) {
+                    if (!response.ok || !payload.success) {
+                        throw new Error(payload && payload.data && payload.data.message ? payload.data.message : 'Analisis AI gagal diproses.');
+                    }
+                    return payload.data;
+                });
+            }).then(function (data) {
+                loading.style.display = 'none';
+                document.getElementById('satset-tbc-ai-scope').textContent = data.area + ' | Tahun anggaran ' + data.year;
+                analysis.innerHTML = renderMarkdown(data.analysis);
+                promptPreview.textContent = data.prompt;
+                showAllAreas = false;
+                currentSummary = data.summary;
+                createInfographic(data);
+                result.style.display = 'block';
+            }).catch(function (requestError) {
+                loading.style.display = 'none';
+                error.textContent = requestError.message || 'Terjadi kesalahan saat meminta analisis AI.';
+                error.style.display = 'block';
+            }).finally(function () {
+                window.clearTimeout(loadingTimer);
+                button.disabled = false;
+            });
+        });
+
+        closeButton.addEventListener('click', closeModal);
+        showAreasButton.addEventListener('click', function () {
+            showAllAreas = !showAllAreas;
+            createInfographic({
+                summary: currentSummary,
+                areas: currentAreas,
+                year: window.satsetTbcAiConfig.year,
+                area: window.satsetTbcAiConfig.areaName
+            });
+        });
+        modal.addEventListener('click', function (event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && modal.style.display !== 'none') {
+                closeModal();
+            }
+        });
+    }());
 </script>
