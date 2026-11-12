@@ -106,6 +106,7 @@ class Wp_Satset_Public {
 			'data_stunting',
 			'data_tbc',
 			'progress_intervensi_tbc',
+			'progress_intervensi_aids',
 			'data_aids',
 			'data_malaria',
 			'data_rtlh',
@@ -330,7 +331,7 @@ class Wp_Satset_Public {
 			);
 			wp_localize_script($this->plugin_name . 'leaflet-public-map', 'satsetLeafletPublic', array(
 				'hasGoogleMapsApiKey' => $google_maps_api_key !== '',
-				'noBaseLayer' => $this->is_progress_intervensi_tbc_page(),
+				'noBaseLayer' => $this->is_progress_intervensi_tbc_page() || $this->is_progress_intervensi_aids_page(),
 			));
 		}
 	}
@@ -343,6 +344,16 @@ class Wp_Satset_Public {
 		return is_object($post)
 			&& isset($post->post_content)
 			&& has_shortcode($post->post_content, 'progress_intervensi_tbc');
+	}
+
+	private function is_progress_intervensi_aids_page(){
+		if (!is_singular()) {
+			return false;
+		}
+		$post = get_queried_object();
+		return is_object($post)
+			&& isset($post->post_content)
+			&& has_shortcode($post->post_content, 'progress_intervensi_aids');
 	}
 
 	function get_center(){
@@ -507,6 +518,13 @@ class Wp_Satset_Public {
 			return '';
 		}
 		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/tbc/wp-satset-public-progress-intervensi-tbc.php';
+	}
+
+	function progress_intervensi_aids(){
+		if(!empty($_GET) && !empty($_GET['post'])){
+			return '';
+		}
+		require_once plugin_dir_path(dirname(__FILE__)) . 'public/partials/aids/wp-satset-public-progress-intervensi-aids.php';
 	}
 
 	function data_rtlh(){
@@ -1914,6 +1932,164 @@ public function getNamaDaerah($value=''){
 			'area' => $area_name,
 			'summary' => $summary,
 			'areas' => array_slice($display_areas, 0, 10),
+		));
+	}
+
+	public function analyze_aids_progress_ai(){
+		if (!check_ajax_referer('satset_analyze_aids_progress', 'nonce', false)) {
+			wp_send_json_error(array('message' => 'Permintaan tidak valid. Muat ulang halaman dan coba lagi.'), 403);
+		}
+		if (empty(get_option('_crb_ai_enabled'))) {
+			wp_send_json_error(array('message' => 'Fitur AI belum diaktifkan pada pengaturan SATSET.'), 400);
+		}
+
+		$request_data = isset($_POST['analysis_data'])
+			? json_decode(wp_unslash($_POST['analysis_data']), true)
+			: null;
+		if (!is_array($request_data)) {
+			wp_send_json_error(array('message' => 'Data analisis dari halaman tidak valid.'), 400);
+		}
+		$tahun_anggaran = isset($request_data['year']) && is_scalar($request_data['year'])
+			? sanitize_text_field((string) $request_data['year'])
+			: '';
+		if (!preg_match('/^\d{4}$/', $tahun_anggaran)) {
+			wp_send_json_error(array('message' => 'Tahun anggaran tidak valid.'), 400);
+		}
+
+		$rate_limit_key = 'satset_aids_ai_' . md5(isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : 'unknown');
+		if (get_transient($rate_limit_key)) {
+			wp_send_json_error(array('message' => 'Analisis baru saja diminta. Silakan coba kembali beberapa menit lagi.'), 429);
+		}
+		if (
+			!isset($request_data['summary'])
+			|| !is_array($request_data['summary'])
+			|| !isset($request_data['summary']['total'])
+			|| !is_numeric($request_data['summary']['total'])
+			|| !isset($request_data['areas'])
+			|| !is_array($request_data['areas'])
+			|| count($request_data['areas']) > 10
+			|| !isset($request_data['area_name'])
+			|| !is_scalar($request_data['area_name'])
+		) {
+			wp_send_json_error(array('message' => 'Ringkasan data analisis tidak lengkap.'), 400);
+		}
+
+		$read_count = function ($value) {
+			if (!is_numeric($value)) {
+				return new WP_Error('satset_aids_ai_invalid_count', 'Angka dalam ringkasan tidak valid.');
+			}
+			$count = (float) $value;
+			if ($count < 0 || $count > 100000000 || floor($count) !== $count) {
+				return new WP_Error('satset_aids_ai_invalid_count', 'Angka dalam ringkasan di luar batas yang diizinkan.');
+			}
+			return (int) $count;
+		};
+		$total = $read_count($request_data['summary']['total']);
+		if (is_wp_error($total) || $total < 5) {
+			wp_send_json_error(array('message' => is_wp_error($total) ? $total->get_error_message() : 'Jumlah data belum memenuhi ambang analisis.'), 400);
+		}
+		$summary = array('total' => $total);
+		$metric_labels = array(
+			'capaian_tt' => 'Capaian T&T layanan',
+			'pendampingan' => 'Pendampingan komunitas',
+			'populasi_lsl' => 'Indikator populasi LSL',
+		);
+		foreach ($metric_labels as $metric_key => $metric_label) {
+			if (!isset($request_data['summary'][$metric_key])) {
+				continue;
+			}
+			$metric = $request_data['summary'][$metric_key];
+			if (!is_array($metric)) {
+				wp_send_json_error(array('message' => 'Data indikator analisis tidak valid.'), 400);
+			}
+			$normalized_metric = array();
+			$metric_total = 0;
+			foreach (array('Ya', 'Tidak', 'Tidak diketahui') as $label) {
+				$count = isset($metric[$label]) ? $read_count($metric[$label]) : new WP_Error('satset_aids_ai_invalid_count', 'Data indikator analisis tidak lengkap.');
+				if (is_wp_error($count)) {
+					wp_send_json_error(array('message' => $count->get_error_message()), 400);
+				}
+				if ($count > 0 && $count < 5) {
+					wp_send_json_error(array('message' => 'Rincian kelompok kecil tidak dapat dikirim untuk analisis.'), 400);
+				}
+				$normalized_metric[$label] = $count;
+				$metric_total += $count;
+			}
+			if ($metric_total !== $total) {
+				wp_send_json_error(array('message' => 'Jumlah indikator tidak sesuai dengan total pasien.'), 400);
+			}
+			$summary[$metric_key] = array('label' => $metric_label, 'counts' => $normalized_metric);
+		}
+
+		$area_name = sanitize_text_field((string) $request_data['area_name']);
+		if ($area_name === '' || strlen($area_name) > 500) {
+			wp_send_json_error(array('message' => 'Nama wilayah analisis tidak valid.'), 400);
+		}
+		$location_names = array('[WILAYAH_UTAMA]' => $area_name);
+		$masked_areas = array();
+		$display_areas = array();
+		foreach ($request_data['areas'] as $index => $area) {
+			if (
+				!is_array($area)
+				|| !isset($area['name'])
+				|| !is_scalar($area['name'])
+				|| !isset($area['total'])
+			) {
+				wp_send_json_error(array('message' => 'Data lokasi analisis tidak valid.'), 400);
+			}
+			$count = $read_count($area['total']);
+			if (is_wp_error($count) || $count < 5 || $count > $total) {
+				wp_send_json_error(array('message' => is_wp_error($count) ? $count->get_error_message() : 'Jumlah data pada lokasi analisis tidak valid.'), 400);
+			}
+			$name = trim(sanitize_text_field((string) $area['name']));
+			if ($name === '') {
+				$name = 'Wilayah tanpa nama ' . ($index + 1);
+			}
+			if (function_exists('mb_substr')) {
+				$name = mb_substr($name, 0, 500, 'UTF-8');
+			} else {
+				$name = substr($name, 0, 500);
+			}
+			$token = sprintf('[LOKASI_%03d]', $index + 1);
+			$location_names[$token] = $name;
+			$masked_areas[] = array('lokasi' => $token, 'total' => $count);
+			$display_areas[] = array('name' => $name, 'total' => $count);
+		}
+
+		// Send only location tokens and aggregate counts to the AI provider.
+		$prompt = "Analisis ringkasan agregat progress intervensi AIDS/HIV tahun anggaran {$tahun_anggaran} di [WILAYAH_UTAMA]. "
+			. "Data ini hanya berupa hitungan agregat, bukan data identitas pasien. Nama wilayah telah diganti token; pertahankan token lokasi persis dan jangan menebak nama aslinya. "
+			. "Jelaskan gambaran umum, kesenjangan program yang tampak, prioritas tindak lanjut, dan rekomendasi operasional yang realistis. "
+			. "Jawab dalam bahasa Indonesia menggunakan Markdown dengan subjudul dan poin ringkas. Jangan membuat judul utama, jangan gunakan tabel, dan jangan memberi diagnosis atau saran klinis individual. "
+			. "Jangan menarik kesimpulan dari kelompok kecil atau membuat asumsi di luar angka yang tersedia.\n\n"
+			. 'Ringkasan total: ' . wp_json_encode($summary, JSON_UNESCAPED_UNICODE) . "\n"
+			. 'Lokasi dengan sedikitnya lima pasien (nama disamarkan): ' . wp_json_encode($masked_areas, JSON_UNESCAPED_UNICODE);
+		$result = $this->functions->chat_ai(array('prompt' => $prompt));
+		if (is_wp_error($result)) {
+			wp_send_json_error(array('message' => $result->get_error_message()), 502);
+		}
+		$response_data = json_decode($result, true);
+		$analysis = isset($response_data['choices'][0]['message']['content'])
+			? $response_data['choices'][0]['message']['content']
+			: '';
+		if (!is_string($analysis) || trim($analysis) === '') {
+			wp_send_json_error(array('message' => 'Format respons AI tidak sesuai atau tidak berisi analisis.'), 502);
+		}
+		$analysis = preg_replace_callback('/\[(?:LOKASI_0*(\d+)|WILAYAH_UTAMA)\]/i', function ($matches) use ($location_names) {
+			$token = isset($matches[1]) && $matches[1] !== ''
+				? sprintf('[LOKASI_%03d]', (int) $matches[1])
+				: '[WILAYAH_UTAMA]';
+			return isset($location_names[$token]) ? $location_names[$token] : 'lokasi prioritas';
+		}, $analysis);
+		set_transient($rate_limit_key, 1, 2 * MINUTE_IN_SECONDS);
+
+		wp_send_json_success(array(
+			'analysis' => $analysis,
+			'prompt' => $prompt,
+			'year' => (int) $tahun_anggaran,
+			'area' => $area_name,
+			'summary' => $summary,
+			'areas' => $display_areas,
 		));
 	}
 

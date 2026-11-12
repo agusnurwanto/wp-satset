@@ -39,7 +39,11 @@ $aids_all = $wpdb->get_results($wpdb->prepare("
         a.kode_upk,
         m.kode_desa_satset
     FROM data_aids a
-    LEFT JOIN mapping_aids m
+    LEFT JOIN (
+        SELECT kode_desa_aids, MAX(kode_desa_satset) AS kode_desa_satset
+        FROM mapping_aids
+        GROUP BY kode_desa_aids
+    ) m
         ON CONCAT_WS('-', a.provinsi_domisili, a.kabkot_domisili, a.kecamatan_domisili, a.desa_domisili) = m.kode_desa_aids
     WHERE a.active = 1
         AND a.tahun_anggaran = %d

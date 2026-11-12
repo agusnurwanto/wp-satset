@@ -262,6 +262,17 @@
 		}
 		updateLabelButton('osm');
 		renderRecords();
+		if (noBaseLayer) {
+			var bounds = window.L.latLngBounds([]);
+			mapRecords.forEach(function (record) {
+				(record.layers || []).forEach(function (layer) {
+					bounds.extend(layer.getBounds());
+				});
+			});
+			if (bounds.isValid()) {
+				map.fitBounds(bounds, { padding: [24, 24] });
+			}
+		}
 	}
 
 	function createGoogleBaseLayer(name) {

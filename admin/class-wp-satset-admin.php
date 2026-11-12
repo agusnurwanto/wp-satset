@@ -270,6 +270,14 @@ class Wp_Satset_Admin {
 			'post_status' => 'publish'
 		));
 
+		$progress_intervensi_aids = $this->functions->generatePage(array(
+			'nama_page' => 'Progress Intervensi AIDS',
+			'content' => '[progress_intervensi_aids]',
+			'show_header' => 1,
+			'no_key' => 1,
+			'post_status' => 'publish'
+		));
+
 		$data_malaria = $this->functions->generatePage(array(
 			'nama_page' => 'Data Malaria', 
 			'content' => '[data_malaria]',
@@ -512,6 +520,7 @@ class Wp_Satset_Admin {
 	            		<li><a target="_blank" href="'.$data_tbc['url'].'">'.$data_tbc['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$progress_intervensi_tbc['url'].'">'.$progress_intervensi_tbc['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_aids['url'].'">'.$data_aids['title'].'</a></li>
+					<li><a target="_blank" href="'.$progress_intervensi_aids['url'].'">'.$progress_intervensi_aids['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_malaria['url'].'">'.$data_malaria['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_rtlh['url'].'">'.$data_rtlh['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$data_dtks['url'].'">'.$data_dtks['title'].'</a></li>
@@ -868,6 +877,7 @@ class Wp_Satset_Admin {
 	            	<ol>
 	            		<li><a target="_blank" href="'.$management_data_aids['url'].'">'.$management_data_aids['title'].'</a></li>
 	            		<li><a target="_blank" href="'.$mapping_desa_aids['url'].'">'.$mapping_desa_aids['title'].'</a></li>
+					<li><a target="_blank" href="'.$progress_intervensi_aids['url'].'">'.$progress_intervensi_aids['title'].'</a></li>
 	            	</ol>
 		        	' ),
 		        Field::make( 'html', 'crb_aids_upload_html' )
