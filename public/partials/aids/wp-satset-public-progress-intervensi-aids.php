@@ -101,24 +101,12 @@ foreach ($map_rows as $map_row) {
     $areas_by_location[$area_key]['total']++;
 }
 
-$registration_rows = $wpdb->get_results("
-    SELECT id_pasien, tanggal_register
-    FROM data_aids
-    WHERE active = 1
-", ARRAY_A);
-if ($wpdb->last_error !== '' || !is_array($registration_rows)) {
-    echo '<div class="alert alert-danger">Tren pendaftaran AIDS tidak dapat dimuat. Silakan hubungi administrator.</div>';
-    return;
-}
-
 $total_pasien = count($rows);
 $tt_counts = array('Ya' => 0, 'Tidak' => 0, 'Tidak diketahui' => 0);
 $pendampingan_counts = array('Ya' => 0, 'Tidak' => 0, 'Tidak diketahui' => 0);
 $umur_counts = array();
 $upk_counts = array();
 $lsl_counts = array('Ya' => 0, 'Tidak' => 0, 'Tidak diketahui' => 0);
-$registrasi_tahunan = array();
-$registrasi_pertama_per_pasien = array();
 
 $normalisasi_boolean = function ($value) {
     if ($value === null || trim((string) $value) === '') {
@@ -132,31 +120,6 @@ $normalisasi_boolean = function ($value) {
         return 'Tidak';
     }
     return 'Tidak diketahui';
-};
-
-$parse_date = function ($value) {
-    $value = trim((string) $value);
-    if ($value === '') {
-        return null;
-    }
-
-    $candidates = array();
-    if (preg_match('/^\d{4}-\d{2}-\d{2}(?:[ T].*)?$/', $value)) {
-        $candidates[] = array('!Y-m-d', substr($value, 0, 10));
-    } elseif (preg_match('/^\d{1,2}\/\d{1,2}\/\d{4}$/', $value)) {
-        $candidates[] = array('!d/m/Y', $value);
-    } elseif (preg_match('/^\d{1,2}-\d{1,2}-\d{4}$/', $value)) {
-        $candidates[] = array('!d-m-Y', $value);
-    }
-
-    foreach ($candidates as $candidate) {
-        $date = DateTimeImmutable::createFromFormat($candidate[0], $candidate[1]);
-        $errors = DateTimeImmutable::getLastErrors();
-        if ($date && ($errors === false || (!$errors['warning_count'] && !$errors['error_count']))) {
-            return $date;
-        }
-    }
-    return null;
 };
 
 foreach ($rows as $row) {
@@ -187,30 +150,6 @@ foreach ($rows as $row) {
 
 }
 
-foreach ($registration_rows as $row) {
-    $patient_id = trim((string) (isset($row['id_pasien']) ? $row['id_pasien'] : ''));
-    if ($patient_id === '') {
-        continue;
-    }
-    $date = $parse_date(isset($row['tanggal_register']) ? $row['tanggal_register'] : '');
-    if ($date) {
-        $patient_key = 'id:' . strtolower($patient_id);
-        if (
-            !isset($registrasi_pertama_per_pasien[$patient_key])
-            || $date->getTimestamp() < $registrasi_pertama_per_pasien[$patient_key]->getTimestamp()
-        ) {
-            $registrasi_pertama_per_pasien[$patient_key] = $date;
-        }
-    }
-}
-foreach ($registrasi_pertama_per_pasien as $date) {
-    $year = $date->format('Y');
-    if (!isset($registrasi_tahunan[$year])) {
-        $registrasi_tahunan[$year] = 0;
-    }
-    $registrasi_tahunan[$year]++;
-}
-
 $contains_small_group = function ($counts) use ($jumlah_minimum_publikasi) {
     foreach ($counts as $count) {
         if ($count > 0 && $count < $jumlah_minimum_publikasi) {
@@ -218,6 +157,25 @@ $contains_small_group = function ($counts) use ($jumlah_minimum_publikasi) {
         }
     }
     return false;
+};
+
+$combine_small_groups = function ($counts) use ($jumlah_minimum_publikasi) {
+    $visible_counts = array();
+    $small_group_total = 0;
+    foreach ($counts as $label => $count) {
+        if ($count > 0 && $count < $jumlah_minimum_publikasi) {
+            $small_group_total += $count;
+        } else {
+            $visible_counts[$label] = $count;
+        }
+    }
+
+    $small_group_hidden = $small_group_total > 0;
+    if ($small_group_total >= $jumlah_minimum_publikasi) {
+        $visible_counts['Kategori lain (digabung)'] = $small_group_total;
+        $small_group_hidden = false;
+    }
+    return array($visible_counts, $small_group_hidden);
 };
 
 $status_kpi_aman = !$contains_small_group($tt_counts);
@@ -294,14 +252,24 @@ foreach ($areas_by_location as $area_key => $area) {
         . '</tr>';
 }
 
-$chart_bars = function ($title, $description, $counts) use ($contains_small_group, $jumlah_minimum_publikasi) {
+$chart_bars = function ($title, $description, $counts, $combine_small = false, $sort_by_count_desc = false) use ($contains_small_group, $jumlah_minimum_publikasi, $combine_small_groups) {
     $html = '<section class="satset-aids-progress-card"><h3>' . esc_html($title) . '</h3>';
     if (!$counts) {
         return $html . '<p class="satset-aids-progress-muted">Belum ada data yang dapat ditampilkan.</p></section>';
     }
-    if ($contains_small_group($counts)) {
+    $has_hidden_small_groups = false;
+    if ($combine_small) {
+        list($counts, $has_hidden_small_groups) = $combine_small_groups($counts);
+    } elseif ($contains_small_group($counts)) {
         return $html . '<p class="satset-aids-progress-muted">Rincian disamarkan untuk menjaga kerahasiaan kelompok dengan jumlah di bawah '
             . (int) $jumlah_minimum_publikasi . '.</p></section>';
+    }
+    if (!$counts) {
+        return $html . '<p class="satset-aids-progress-muted">Seluruh rincian disamarkan karena jumlah kelompok berada di bawah '
+            . (int) $jumlah_minimum_publikasi . '.</p></section>';
+    }
+    if ($sort_by_count_desc) {
+        arsort($counts, SORT_NUMERIC);
     }
 
     $maximum = max($counts);
@@ -314,25 +282,10 @@ $chart_bars = function ($title, $description, $counts) use ($contains_small_grou
             . '<div class="satset-aids-progress-bar-value">' . esc_html(number_format_i18n($count)) . '</div>'
             . '</div>';
     }
+    if ($has_hidden_small_groups) {
+        $html .= '<p class="satset-aids-progress-muted">Gabungan beberapa kategori kecil disamarkan untuk menjaga kerahasiaan.</p>';
+    }
     return $html . '</div></section>';
-};
-
-$upk_table = function ($counts) use ($contains_small_group, $jumlah_minimum_publikasi) {
-    $html = '<section class="satset-aids-progress-card"><h3>Rekap agregat per UPK</h3>';
-    if (!$counts) {
-        return $html . '<p class="satset-aids-progress-muted">Belum ada data UPK yang dapat ditampilkan.</p></section>';
-    }
-    if ($contains_small_group($counts)) {
-        return $html . '<p class="satset-aids-progress-muted">Tabel disamarkan karena terdapat kelompok di bawah '
-            . (int) $jumlah_minimum_publikasi . '.</p></section>';
-    }
-
-    $html .= '<div class="table-responsive"><table class="table table-bordered table-sm">'
-        . '<thead><tr><th>Fasilitas kesehatan (UPK)</th><th class="text-right">Total agregat</th></tr></thead><tbody>';
-    foreach ($counts as $label => $count) {
-        $html .= '<tr><td>' . esc_html($label) . '</td><td class="text-right">' . esc_html(number_format_i18n($count)) . '</td></tr>';
-    }
-    return $html . '</tbody></table></div></section>';
 };
 
 $format_kpi = function ($count, $is_safe) use ($total_pasien, $jumlah_minimum_publikasi) {
@@ -348,8 +301,6 @@ $format_kpi = function ($count, $is_safe) use ($total_pasien, $jumlah_minimum_pu
 
 ksort($umur_counts, SORT_NATURAL | SORT_FLAG_CASE);
 ksort($upk_counts, SORT_NATURAL | SORT_FLAG_CASE);
-ksort($registrasi_tahunan, SORT_NATURAL);
-
 ?>
 <style>
     .satset-aids-progress { max-width: 1240px; margin: 24px auto 60px; padding: 0 16px; }
@@ -482,17 +433,9 @@ ksort($registrasi_tahunan, SORT_NATURAL);
         <h2>Distribusi agregat</h2>
         <section class="satset-aids-progress-grid">
             <?php
-            echo $chart_bars('Distribusi fasilitas kesehatan (UPK)', 'Jumlah pasien per UPK; rincian kecil disamarkan', $upk_counts);
-            echo $chart_bars('Kelompok umur saat terdiagnosis', 'Kelompok umur yang tercatat', $umur_counts);
-            echo $chart_bars('Indikator populasi LSL', 'Nilai agregat yang tercatat; tidak ditampilkan per pasien', $lsl_counts);
-            ?>
-        </section>
-        <?php echo $upk_table($upk_counts); ?>
-
-        <h2>Tren pendaftaran lintas tahun</h2>
-        <section class="satset-aids-progress-grid">
-            <?php
-            echo $chart_bars('Pendaftaran per tahun', 'Pasien unik dengan ID pasien dan tanggal_register valid; deduplikasi lintas tahun anggaran. Identitas pasien tidak ditampilkan.', $registrasi_tahunan);
+            echo $chart_bars('Distribusi fasilitas kesehatan (UPK)', 'Jumlah pasien per UPK; kategori kecil digabung atau disamarkan', $upk_counts, true, true);
+            echo $chart_bars('Kelompok umur saat terdiagnosis', 'Kelompok umur yang tercatat; kategori kecil digabung atau disamarkan', $umur_counts, true, true);
+            echo $chart_bars('Indikator populasi LSL', 'Nilai agregat yang tercatat; kategori kecil digabung atau disamarkan', $lsl_counts, true, true);
             ?>
         </section>
     <?php endif; ?>

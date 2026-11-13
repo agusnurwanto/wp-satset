@@ -214,6 +214,8 @@ class Wp_Satset {
 		$this->loader->add_action('wp_ajax_nopriv_satset_analyze_tbc_progress', $plugin_public, 'analyze_tbc_progress_ai');
 		$this->loader->add_action('wp_ajax_satset_analyze_aids_progress', $plugin_public, 'analyze_aids_progress_ai');
 		$this->loader->add_action('wp_ajax_nopriv_satset_analyze_aids_progress', $plugin_public, 'analyze_aids_progress_ai');
+		$this->loader->add_action('wp_ajax_satset_analyze_malaria_progress', $plugin_public, 'analyze_malaria_progress_ai');
+		$this->loader->add_action('wp_ajax_nopriv_satset_analyze_malaria_progress', $plugin_public, 'analyze_malaria_progress_ai');
 		$this->loader->add_action('wp_ajax_get_datatable_rtlh', $plugin_public, 'get_datatable_rtlh');
 		$this->loader->add_action('wp_ajax_get_datatable_batas_desa', $plugin_public, 'get_datatable_batas_desa');
 		$this->loader->add_action('wp_ajax_get_datatable_batas_kecamatan', $plugin_public, 'get_datatable_batas_kecamatan');
@@ -289,6 +291,7 @@ class Wp_Satset {
 		add_shortcode('data_tbc', array($plugin_public, 'data_tbc'));
 		add_shortcode('progress_intervensi_tbc', array($plugin_public, 'progress_intervensi_tbc'));
 		add_shortcode('progress_intervensi_aids', array($plugin_public, 'progress_intervensi_aids'));
+		add_shortcode('progress_intervensi_malaria', array($plugin_public, 'progress_intervensi_malaria'));
 		add_shortcode('data_rtlh', array($plugin_public, 'data_rtlh'));
 		add_shortcode('data_dtks', array($plugin_public, 'data_dtks'));
 		add_shortcode('data_dtsen', array($plugin_public, 'data_dtsen'));
